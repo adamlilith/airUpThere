@@ -45,9 +45,14 @@ tcDownload <- function(
 	verbose = TRUE
 ) {
 
+	# base download URL
+	service <- 'http://thredds.northwestknowledge.net:8080/thredds/fileServer/TERRACLIMATE_ALL/data/'
+
 	if (is.null(year)) year <- NA
 
 	standVar <- tcConvertVar(var, standardToFile=FALSE)
+	fileVar <- tcConvertVar(var, standardToFile=TRUE)
+	
 	wantElev <- any(standVar == 'elev')
 	wantMonthly <- any(standVar != 'elev')
 
@@ -57,38 +62,29 @@ tcDownload <- function(
 		thisSuccess <- .tcDownloadElev(saveTo, overwrite, verbose)
 		success <- data.frame(var='elev', year=NA, alreadyHave=thisSuccess[['alreadyHave']], downloaded=thisSuccess[['downloaded']])
 		
-		if (wantMonthly) {
-			
-			nonElevVar <- standVar[standVar != 'elev']
-			
-			success <- rbind(
-				success,
-				expand.grid(nonElevVar, year, alreadyHave=NA, downloaded=NA)
-			)
-			
-		}
-
-	} else {
-	
-		success <- expand.grid(standVar, year, alreadyHave=NA, downloaded=NA)
-		names(success)[1:2] <- c('var', 'year')
-		
 	}
-		
-	for (thisVar in var) {
-
-		fileVar <- tcConvertVar(thisVar, standardToFile=TRUE)
 	
-		# elevation
-		if (thisVar == 'elevation') {
-		
-			thisSuccess <- .tcDownloadElev(saveTo, overwrite, verbose)
-			success$alreadyHave[success$var==thisVar] <- thisSuccess[['alreadyHave']]
-			success$downloaded[success$var==thisVar] <- thisSuccess[['downloaded']]
-		
-		# monthly variables
+	if (wantMonthly) {
+	
+		if (wantElev) {
+			monthlyVarFile <- fileVar[-which(fileVar %in% 'elevation')]
+			monthlyVarStand <- standVar[-which(standVar %in% 'elev')]
 		} else {
-			
+			monthlyVarFile <- fileVar
+			monthlyVarStand <- standVar
+		}
+	
+		thisSuccess <- expand.grid(monthlyVarStand, year, alreadyHave=NA, downloaded=NA)
+		names(thisSuccess)[1:2] <- c('var', 'year')
+		
+		success <- if (exists('success', inherits=FALSE)) {
+			rbind(success, thisSuccess)
+		} else {
+			thisSuccess
+		}
+		
+		for (thisVar in monthlyVarFile) {
+
 			for (thisYear in year) {
 		
 				if (verbose) cat(thisVar, thisYear); flush.console()
@@ -98,10 +94,9 @@ tcDownload <- function(
 				dir.create(saveToAppended, showWarnings=FALSE, recursive=TRUE)
 		
 				# file name and URL
-				fileName <- paste0('TerraClimate_', var, '_', thisYear, '.nc')
+				fileName <- paste0('TerraClimate_', thisVar, '_', thisYear, '.nc')
 				
-				url <- paste0('http://thredds.northwestknowledge.net:8080/thredds/fileServer/TERRACLIMATE_ALL/data/', fileName)
-				
+				url <- paste0(service, fileName)
 				
 				filePath <- paste0(saveToAppended, '/', fileName)
 				alreadyHave <- file.exists(filePath)
@@ -128,12 +123,12 @@ tcDownload <- function(
 							error=function(e) { downloaded <<- FALSE }
 						)
 
-						Sys.sleep(1)
+						if (nrow(success) > 1) Sys.sleep(1)
 						
 						tryNumber <- tryNumber + 1
 					}
 
-					if (nrow(success) > 1) Sys.sleep(1)
+					Sys.sleep(1)
 					
 				} # if new download or overwriting
 
@@ -150,10 +145,10 @@ tcDownload <- function(
 				success$downloaded[success$var==thisVar & success$year == thisYear] <- downloaded
 				
 			} # next year
-			
-		} # if getting monthly variables
-			
-	} # next variable 
+				
+		} # next variable 
+		
+	} # if wanting monthly variables
 
 	success
 
@@ -161,7 +156,7 @@ tcDownload <- function(
 
 .tcDownloadElev <- function(saveTo, overwrite, verbose) {
 
-	if (verbose) cat(thisVar); flush.console()
+	if (verbose) cat('elev'); flush.console()
 	
 	fileName <- 'metdata_elevationdata.nc'
 	filePath <- paste0(saveTo, '/', fileName)
@@ -196,8 +191,6 @@ tcDownload <- function(
 			tryNumber <- tryNumber + 1
 		}
 
-		if (nrow(success) > 1) Sys.sleep(1)
-		
 	} # if new download or overwriting
 
 	if (verbose) {
@@ -209,6 +202,6 @@ tcDownload <- function(
 		flush.console()
 	}
 
-	c(alreadyHave=alreadyHace, downloaded=downloaded)
+	c(alreadyHave=alreadyHave, downloaded=downloaded)
 
 }
