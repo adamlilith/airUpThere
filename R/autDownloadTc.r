@@ -22,7 +22,8 @@
 #' 	\item \code{vpd}: vapor pressure deficit
 #' }
 #' @param year Year(s) of the period from which to download monthly climate rasters. Valid years include 1958 through the present (often one or two years prior to the current year). This can be \code{NULL} only if the variable being downloaded is \code{elevation}.
-#' @param overwrite If \code{FALSE} (default), do not overwrite existing rasters.
+#' @param update If \code{TRUE} (default) and a raster is already saved to disk, update the raster if a newer version is available.
+#' @param forceUpdate If \code{TRUE}, update existing rasters even if the version saved to disk is the same as the version that is available. The default is \code{FALSE}.
 #' @param verbose If \coed{TRUE} (default), display progress.
 #' @return NetCDF rasters are saved to disk. The function also returns a data frame indicating if the desired file(s) were already on the disk and if they were downloaded.
 #' @references
@@ -31,22 +32,25 @@
 #' 
 #' \dontrun{
 #' dl <- 'C:/ecology/!Scratch/tc' 
-#' autTcDownload(dl, 'tmin', 1958)
-#' autTcDownload(dl, 'elev')
+#' autDownloadTc(dl, 'tmin', 1958)
+#' autDownloadTc(dl, 'elev')
 #' 
 #' }
 #' @export
 
-autTcDownload <- function(
+autDownloadTc <- function(
 	saveTo,
 	var,
 	year = NULL,
-	overwrite = FALSE,
+	update = TRUE,
+	forceUpdate = FALSE,
 	verbose = TRUE
 ) {
 
-	# base download URL
-	service <- 'http://thredds.northwestknowledge.net:8080/thredds/fileServer/TERRACLIMATE_ALL/data/'
+	# base download URLs
+	fileService <- 'http://thredds.northwestknowledge.net:8080/thredds/fileServer/TERRACLIMATE_ALL/data/'
+	metaService <- 'http://thredds.northwestknowledge.net:8080/thredds/catalog/TERRACLIMATE_ALL/data/catalog.html'
+
 
 	if (is.null(year)) year <- NA
 
@@ -59,13 +63,21 @@ autTcDownload <- function(
 	# elevation
 	if (wantElev) {
 	
-		thisSuccess <- .tcDownloadElev(saveTo, overwrite, verbose)
-		success <- data.frame(var='elev', year=NA, alreadyHave=thisSuccess[['alreadyHave']], downloaded=thisSuccess[['downloaded']])
+		updatedElev <- .downloadTcElev(saveTo, update, forceUpdate, verbose)
+		success <- data.frame(var='elev', year=NA, versionOnServer=NA, versionOnDisk=NA, updated=updatedElev)
 		
 	}
 	
 	if (wantMonthly) {
-	
+
+		# get date each file was last modified
+		catalog <- xml2::read_html(metaService)
+		catalog <- xml2::xml_find_all(catalog, './/table')
+		catalog <- rvest::html_table(catalog)[[1]]
+		names(catalog) <- c('file', 'size', 'lastModified')
+		catalog <- catalog[-1, ]
+		catalog$lastModified <- as.Date(catalog$lastModified)
+
 		if (wantElev) {
 			monthlyVarFile <- fileVar[-which(fileVar %in% 'elevation')]
 			monthlyVarStand <- standVar[-which(standVar %in% 'elev')]
@@ -74,8 +86,7 @@ autTcDownload <- function(
 			monthlyVarStand <- standVar
 		}
 	
-		thisSuccess <- expand.grid(monthlyVarStand, year, alreadyHave=NA, downloaded=NA)
-		names(thisSuccess)[1:2] <- c('var', 'year')
+		thisSuccess <- expand.grid(var=monthlyVarStand, year=year, versionOnServer=NA, versionOnDisk=NA, updated=NA)
 		
 		success <- if (exists('success', inherits=FALSE)) {
 			rbind(success, thisSuccess)
@@ -83,46 +94,52 @@ autTcDownload <- function(
 			thisSuccess
 		}
 		
-		for (thisVar in monthlyVarFile) {
+		for (countVar in seq_along(monthlyVarFile)) {
+
+			thisVarFile <- monthlyVarFile[countVar]
+			thisVarStand <- monthlyVarStand[countVar]
 
 			for (thisYear in year) {
 		
-				if (verbose) cat(thisVar, thisYear); flush.console()
+				if (verbose) cat(thisVarStand, thisYear); flush.console()
 
 				# save to
-				saveToAppended <- paste0(saveTo, '/', thisVar, '/', thisYear)
+				saveToAppended <- paste0(saveTo, '/', thisVarFile)
 				dir.create(saveToAppended, showWarnings=FALSE, recursive=TRUE)
 		
 				# file name and URL
-				fileName <- paste0('TerraClimate_', thisVar, '_', thisYear, '.nc')
+				infoFileName <- paste0('TerraClimate_', thisVarFile, '_', thisYear, '_info.txt')
+				rastFileName <- paste0('TerraClimate_', thisVarFile, '_', thisYear, '.nc')
 				
-				url <- paste0(service, fileName)
+				url <- paste0(fileService, rastFileName)
 				
-				filePath <- paste0(saveToAppended, '/', fileName)
-				alreadyHave <- file.exists(filePath)
-				
-				if (verbose) {
-					if (alreadyHave) {
-						cat(paste0(' | file already on disk', ifelse(overwrite, ': overwriting', ': skipping')))
-					} else {
-						cat(' | file not on disk: downloading')
-					}
-					flush.console()
+				infoPath <- paste0(saveToAppended, '/', infoFileName)
+				filePath <- paste0(saveToAppended, '/', rastFileName)
+				versionOnDisk <- if (file.exists(infoPath) & file.exists(filePath)) {
+					read.csv(infoPath)$versionOnDisk
+				} else {
+					NA
 				}
-
+				
+				versionOnServer <- catalog$lastModified[catalog$file == rastFileName]
+				
+				doUpdate <- forceUpdate | (is.na(versionOnDisk) || (update & versionOnDisk < versionOnServer))
+				
 				downloaded <- FALSE
-				if (!alreadyHave | overwrite) {
+				if (doUpdate) {
 
+					if (verbose) cat(' | fetching'); flush.console()
 					tryNumber <- 1
 					
 					while (tryNumber <= 10 & !downloaded) {
 						
 						downloaded <- TRUE
 						tryCatch(
-							utils::download.file(url, destfile=filePath, mode='wb', quiet=TRUE),
+							httr::GET(url, httr::write_disk(filePath, overwrite=TRUE)),
+							# utils::download.file(url, destfile=filePath, method='auto', quiet=TRUE),
 							error=function(e) { downloaded <<- FALSE }
 						)
-
+						
 						if (nrow(success) > 1) Sys.sleep(1)
 						
 						tryNumber <- tryNumber + 1
@@ -130,19 +147,20 @@ autTcDownload <- function(
 
 					Sys.sleep(1)
 					
-				} # if new download or overwriting
-
-				if (verbose) {
-					if (downloaded) {
-						cat(' | downloaded\n')
-					} else {
-						cat(' | not downloaded\n')
-					}
-					flush.console()
+				} else {
+					if (verbose) cat(' | skipping\n'); flush.console()
 				}
 
-				success$alreadyHave[success$var==thisVar & success$year == thisYear] <- alreadyHave
-				success$downloaded[success$var==thisVar & success$year == thisYear] <- downloaded
+				if (downloaded) {
+					if (verbose) cat(' | downloaded\n'); flush.console()
+					info <- data.frame(versionOnDisk=versionOnServer)
+					write.csv(info, infoPath, row.names=FALSE)
+				}
+
+				this <- which(success$var==thisVarStand & success$year == thisYear)
+				success$versionOnServer[this] <- versionOnServer
+				success$versionOnDisk[this] <- versionOnDisk
+				success$updated[this] <- downloaded
 				
 			} # next year
 				
@@ -154,27 +172,29 @@ autTcDownload <- function(
 
 }
 
-.tcDownloadElev <- function(saveTo, overwrite, verbose) {
+.downloadTcElev <- function(saveTo, update, forceUpdate, verbose) {
 
 	if (verbose) cat('elev'); flush.console()
 	
-	fileName <- 'metdata_elevationdata.nc'
-	filePath <- paste0(saveTo, '/', fileName)
+	rastFileName <- 'metdata_elevationdata.nc'
+	filePath <- paste0(saveTo, '/', rastFileName)
 	alreadyHave <- file.exists(filePath)
 	
 	url <- 'https://climate.northwestknowledge.net/METDATA/data/metdata_elevationdata.nc'
 	
+	doUpdate <- (forceUpdate | !file.exists(filePath) | (file.exists(filePath) & update))
+	
 	if (verbose) {
-		if (alreadyHave) {
-			cat(paste0(' | file already on disk', ifelse(overwrite, ': overwriting', ': skipping')))
+		if (doUpdate) {
+			cat(' | fetching')
 		} else {
-			cat(' | file not on disk: downloading')
+			cat(' | skipping')
 		}
 		flush.console()
 	}
 
 	downloaded <- FALSE
-	if (!alreadyHave | overwrite) {
+	if (doUpdate) {
 
 		tryNumber <- 1
 		
@@ -182,7 +202,7 @@ autTcDownload <- function(
 			
 			downloaded <- TRUE
 			tryCatch(
-				utils::download.file(url, destfile=filePath, mode='wb', quiet=TRUE),
+				utils::download.file(url, destfile=filePath, method='auto', quiet=TRUE),
 				error=function(e) { downloaded <<- FALSE }
 			)
 
@@ -202,6 +222,6 @@ autTcDownload <- function(
 		flush.console()
 	}
 
-	c(alreadyHave=alreadyHave, downloaded=downloaded)
+	downloaded
 
 }
