@@ -31,10 +31,26 @@
 tcConvertVar <- function(var, standardToFile) {
 	
 	data(tcVars)
-	if (standardToFile) {
-		newVar <- tcVars$file[tcVars$standard == var]
-	} else {
-		newVar <- tcVars$standard[tcVars$file == var]
+	newVar <- rep(NA, length(var))
+	
+	for (i in seq_along(var)) {
+		
+		thisVar <- var[i]
+		
+		newVar[i] <- if (standardToFile) {
+			if (any(thisVar %in% tcVars$file)) {
+				thisVar # already in file format
+			} else {
+				tcVars$file[which(tcVars$standard %in% thisVar)]
+			}
+		} else {
+			if (any(thisVar %in% tcVars$standard)) {
+				thisVar # already in file format
+			} else {
+				tcVars$standard[which(tcVars$file %in% thisVar)]
+			}
+		}
+		
 	}
 
 	newVar
