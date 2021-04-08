@@ -23,12 +23,12 @@
 #' @return Character
 #' @examples
 #'
-#' tcConvertVar('tmin', TRUE) # same as input
-#' tcConvertVar('ws', FALSE)
-#' tcConvertVar('wind', TRUE) # same as input
+#' autConvertTcVar('tmin', TRUE) # same as input
+#' autConvertTcVar('ws', FALSE)
+#' autConvertTcVar('wind', TRUE) # same as input
 #' 
 #' @export
-tcConvertVar <- function(var, standardToFile) {
+autConvertTcVar <- function(var, standardToFile) {
 	
 	data(tcVars)
 	newVar <- rep(NA, length(var))

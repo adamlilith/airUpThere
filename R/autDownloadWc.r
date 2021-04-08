@@ -33,16 +33,16 @@
 #' 
 #' \dontrun{
 #' dl <- 'C:/ecology/!Scratch/wc'
-#' wcDownload(dl, 1.4, 10, 'tmin')
-#' wcDownload(dl, 2.1, 10, 'tmin')
+#' autDownloadWc(dl, 1.4, 10, 'tmin')
+#' autDownloadWc(dl, 2.1, 10, 'tmin')
 #'
-#' wcDownload(dl, 1.4, 10, 'tn', esm='AC', ghg=85, year=2070)
-#' wcDownload(dl, 2.1, 10, 'tmin', esm='BCC-CSM2-MR', ghg=585, year=2070)
+#' autDownloadWc(dl, 1.4, 10, 'tn', esm='AC', ghg=85, year=2070)
+#' autDownloadWc(dl, 2.1, 10, 'tmin', esm='BCC-CSM2-MR', ghg=585, year=2070)
 #' 
 #' }
 #' @export
 
-wcDownload <- function(
+autDownloadWc <- function(
 	saveTo,
 	ver,
 	res,
@@ -53,7 +53,7 @@ wcDownload <- function(
 	overwrite = FALSE
 ) {
 
-	ok <- wcCheckVer(ver)
+	ok <- autCheckWcVer(ver)
 	historical <- is.null(esm)
 
 	### historical
@@ -64,7 +64,7 @@ wcDownload <- function(
 	
 		for (thisRes in res) {
 	
-			resUnit <- wcGetRes(ver, res, time='historical')
+			resUnit <- autGetWcRes(ver, res, time='historical')
 			saveToAppended <- paste0(saveTo, '/', resUnit, '/historical')
 			dir.create(saveToAppended, showWarnings=FALSE, recursive=TRUE)
 	
@@ -73,7 +73,7 @@ wcDownload <- function(
 				cat('ver', ver, '| res', thisRes, '| var', thisVar)
 				flush.console()
 
-				fileVar <- wcConvertVar(ver=ver, time='historical', var=thisVar, standardToFile=TRUE)
+				fileVar <- autConvertWcVar(ver=ver, time='historical', var=thisVar, standardToFile=TRUE)
 
 				if (ver == 1.4) {
 
@@ -144,30 +144,30 @@ wcDownload <- function(
 			
 		for (thisRes in res) {
 
-			resUnit <- wcGetRes(ver, thisRes, time='future')
+			resUnit <- autGetWcRes(ver, thisRes, time='future')
 
 			for (thisYear in year) {
 				
-				yearCode <- wcGetYear(ver, thisYear)
+				yearCode <- autGetWcYear(ver, thisYear)
 						
 				for (thisGhg in ghg) {
 
-					ok <- wcCheckGhg(ver, thisGhg)
-					ghgNice <- wcNiceGhg(ver, thisGhg)
+					ok <- autCheckWcGhg(ver, thisGhg)
+					ghgNice <- autNiceWcGhg(ver, thisGhg)
 					
 					saveToAppended <- paste0(saveTo, '/', resUnit, '/', thisYear, ' ', ghgNice)
 					dir.create(saveToAppended, showWarnings=FALSE, recursive=TRUE)
 				
 					for (thisVar in var) {
 
-						fileVar <- wcConvertVar(ver=ver, time='future', var=thisVar, standardToFile=TRUE)
+						fileVar <- autConvertWcVar(ver=ver, time='future', var=thisVar, standardToFile=TRUE)
 					
 						for (thisEsm in esm) {
 
 							cat('ver', ver, '| res', thisRes, '| year', thisYear, '| ghg', thisGhg, '| var', thisVar, '| esm', thisEsm)
 							flush.console()
 							
-							esmCode <- wcGetEsm(ver, thisEsm)
+							esmCode <- autGetWcEsm(ver, thisEsm)
 							
 							# URL
 							if (ver == 1.4) {

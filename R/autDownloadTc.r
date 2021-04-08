@@ -31,13 +31,13 @@
 #' 
 #' \dontrun{
 #' dl <- 'C:/ecology/!Scratch/tc' 
-#' tcDownload(dl, 'tmin', 1958)
-#' tcDownload(dl, 'elev')
+#' autTcDownload(dl, 'tmin', 1958)
+#' autTcDownload(dl, 'elev')
 #' 
 #' }
 #' @export
 
-tcDownload <- function(
+autTcDownload <- function(
 	saveTo,
 	var,
 	year = NULL,
@@ -50,8 +50,8 @@ tcDownload <- function(
 
 	if (is.null(year)) year <- NA
 
-	standVar <- tcConvertVar(var, standardToFile=FALSE)
-	fileVar <- tcConvertVar(var, standardToFile=TRUE)
+	standVar <- autConvertTcVar(var, standardToFile=FALSE)
+	fileVar <- autConvertTcVar(var, standardToFile=TRUE)
 	
 	wantElev <- any(standVar == 'elev')
 	wantMonthly <- any(standVar != 'elev')

@@ -3,7 +3,7 @@
 #' @param scenario Valid values for CMIP5 (RCPs) are one or more of 26, 45, 60, and/or 85.  Valid values for SSPs (CMIP6) are one or more of 126, 245, 370, and/or 585.
 #' @return Logical
 #' @keywords internal
-wcCheckGhg <- function(ver, scenario) {
+autCheckWcGhg <- function(ver, scenario) {
 
 	if (ver == 1.4) {
 		if (!scenario %in% c(26, 45, 60, 85)) {
@@ -61,7 +61,7 @@ wcCheckGhg <- function(ver, scenario) {
 #' @param ver 1.4 or 2.1
 #' @return Logical
 #' @keywords internal
-wcCheckVer <- function(ver) {
+autCheckWcVer <- function(ver) {
 	
 	if (!(ver %in% c(1.4, 2.1))) {
 		stop('This is an invalid version number for WorldClim.')
@@ -74,7 +74,7 @@ wcCheckVer <- function(ver) {
 #' @param esm Character
 #' @return Character
 #' @keywords internal
-wcGetEsm <- function(ver, esm) {
+autGetWcEsm <- function(ver, esm) {
 
 	data(wcEsm)
 	if (ver == 1.4) {
@@ -118,7 +118,7 @@ wcGetEsm <- function(ver, esm) {
 #' 	\item \code{vapr}: vapor pressure deficit (available for WC 2.1 historical)
 #' 	\item \code{elev}: elevation (available for WC 2.1 historical)
 #' }
-#' A crosswalk table between standard and file names of variables can be obtained from \code{data(wcVars)}.
+#' A crosswalk table between standard and file names of variables can be obtained from \code{data(autWcVars)}.
 #' @param ver Version of WorldClim: 1.4 or 2.1
 #' @param var Name of variable in standard or file format.
 #' @param time \code{'historical'} or \code{'future'}.
@@ -126,26 +126,26 @@ wcGetEsm <- function(ver, esm) {
 #' @return Character
 #' @examples
 #'
-#' wcConvertVar(1.4, 'ppt', 'historical', TRUE)
-#' wcConvertVar(1.4, 'prec', 'historical', FALSE)
+#' autConvertWcVar(1.4, 'ppt', 'historical', TRUE)
+#' autConvertWcVar(1.4, 'prec', 'historical', FALSE)
 #'
-#' wcConvertVar(1.4, 'ppt', 'future', TRUE)
-#' wcConvertVar(1.4, 'pr', 'future', FALSE)
+#' autConvertWcVar(1.4, 'ppt', 'future', TRUE)
+#' autConvertWcVar(1.4, 'pr', 'future', FALSE)
 #'
-#' wcConvertVar(2.1, 'ppt', 'historical', TRUE)
-#' wcConvertVar(2.1, 'prec', 'historical', FALSE)
+#' autConvertWcVar(2.1, 'ppt', 'historical', TRUE)
+#' autConvertWcVar(2.1, 'prec', 'historical', FALSE)
 #'
-#' wcConvertVar(2.1, 'ppt', 'future', TRUE)
-#' wcConvertVar(2.1, 'prec', 'future', FALSE)
+#' autConvertWcVar(2.1, 'ppt', 'future', TRUE)
+#' autConvertWcVar(2.1, 'prec', 'future', FALSE)
 #' 
 #' @export
-wcConvertVar <- function(ver, var, time, standardToFile) {
+autConvertWcVar <- function(ver, var, time, standardToFile) {
 	
-	data(wcVars)
+	data(autWcVars)
 	if (standardToFile) {
-		newVar <- wcVars[wcVars$ver==ver & wcVars$time==time, names(wcVars)==var]
+		newVar <- autWcVars[autWcVars$ver==ver & autWcVars$time==time, names(autWcVars)==var]
 	} else {
-		fileNames <- unlist(wcVars[wcVars$ver == ver & wcVars$time==time, , drop=TRUE])
+		fileNames <- unlist(autWcVars[autWcVars$ver == ver & autWcVars$time==time, , drop=TRUE])
 		newVar <- names(fileNames)[which(fileNames == var)]
 	}
 
@@ -158,7 +158,7 @@ wcConvertVar <- function(ver, var, time, standardToFile) {
 #' @param ghg 
 #' @return Character
 #' @keyrords internal
-wcNiceGhg <- function(ver, ghg) {
+autNiceWcGhg <- function(ver, ghg) {
 
 	if (ver == 1.4) {
 		ghg <- as.character(ghg)
@@ -183,7 +183,7 @@ wcNiceGhg <- function(ver, ghg) {
 #' @param time 'historical' or 'future'
 #' @return Character
 #' @keywords internal
-wcGetRes <- function(ver, res, time) {
+autGetWcRes <- function(ver, res, time) {
 
 	resUnit <- if (ver == 1.4) {
 		if (time == 'historical') {
@@ -236,7 +236,7 @@ wcGetRes <- function(ver, res, time) {
 #' @param cmip 5 or 6
 #' @return Character
 #' @keywords internal
-wcGetYear <- function(ver, year) {
+autGetWcYear <- function(ver, year) {
 
 	yearCode <- if (ver == 1.4) {
 		if (year == 2050) {

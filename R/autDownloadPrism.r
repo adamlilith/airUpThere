@@ -36,14 +36,14 @@
 #' dl <- 'C:/ecology/!Scratch/prism'
 #' startDate <- '1981-01-01'
 #' endDate <- '1981-02-01'
-#' prismDownload(dl, 'annual', 'tmin', startDate, endDate)
-#' prismDownload(dl, 'monthly', 'tmin', startDate, endDate)
-#' # prismDownload(dl, 'daily', 'tmin', startDate, endDate) # subscription
+#' autDownloadPrism(dl, 'annual', 'tmin', startDate, endDate)
+#' autDownloadPrism(dl, 'monthly', 'tmin', startDate, endDate)
+#' # autDownloadPrism(dl, 'daily', 'tmin', startDate, endDate) # subscription
 #' 
 #' }
 #' @export
 
-prismDownload <- function(
+autDownloadPrism <- function(
 	saveTo,
 	unzipTo,
 	ver,
