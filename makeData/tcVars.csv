@@ -1,0 +1,16 @@
+file,standard,definition,units
+elevation,elev,elevation,m
+tmin,tmin,minimum temperature,C
+tmax,tmax,maximum temperature,C
+ppt,ppt,cumulative precipitation,mm
+swe,swe,snow water equivalent,mm
+aet,aet,actual avapotranspiration,mm
+pet,pet,reference evapotranspiration,mm
+def,awd,atmospheric water deficit,mm
+PDSI,PDSI,Palmer dought severity index,NA
+soil,soil,extractable soil water,mm
+srad,srad,downward shortwave flux at the surface (solar radiation),???
+ws,wind,mean wind speed,???
+q,q,cumulative streamflow,???
+vap,vap,vapor pressure,???
+vpd,vpd,vapor pressure deficit,???

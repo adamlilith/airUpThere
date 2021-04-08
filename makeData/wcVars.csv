@@ -1,0 +1,5 @@
+ver,time,tmin,tmax,tmean,ppt,bio,srad,wind,vapr,elev
+1.4,historical,tmin,tmax,tmean,prec,bio,NA,NA,NA,NA
+1.4,future,tn,tx,NA,pr,bi,NA,NA,NA,NA
+2.1,historical,tmin,tmax,tavg,prec,bio,srad,wind,vapr,elev
+2.1,future,tmin,tmax,NA,prec,bioc,NA,NA,NA,NA
