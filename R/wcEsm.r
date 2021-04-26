@@ -4,7 +4,7 @@
 #'
 #' @docType data
 #'
-#' @usage data(wcEsm)
+#' @usage data(aut_wcEsm)
 #'
 #' @format An object of class \code{'list'}.
 #'
@@ -19,6 +19,6 @@
 #' Hijmans, R.J., Cameron, S.E., Parra, J.L., Jones, P.G., and Jarvis, A. 2005. Very high resolution interpolated climate surfaces for global land areas. \emph{International Journal of Climatology} 25:1965-1978. doi: \href{https://doi.org/10.1002/joc.1276}{10.1002/joc.1276}.
 #' 
 #' @examples
-#' data(wcEsm)
-#' wcEsm
-'wcEsm'
+#' data(aut_wcEsm)
+#' aut_wcEsm
+'aut_wcEsm'

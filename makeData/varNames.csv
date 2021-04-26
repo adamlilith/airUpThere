@@ -1,0 +1,21 @@
+standard,definiton,chelsa_1,prism,terraclimate,worldclim_1.4_historical,worldclim_1.4_future,worldclim_2.1_historical,worldclim_2.1_future
+aet,actual evapotranspiration,,,aet,,,,
+awd,atmospheric water deficit,,,def,,,,
+bio,BIOCLIM variables,,,,bio,bi,bio,bioc
+elev,elevation,,,elevation,,,elev,
+pdsi,Palmer drought severity index,,,PDSI,,,,
+pet,reference evapotranspiration,,,pet,,,,
+ppt,precipitation,,ppt,ppt,prec,pr,prec,prec
+q,current flow,,,q,,,,
+soilWater,soil water content,,,soil,,,,
+srad,solar radiation,,,srad,,,srad,
+swe,snow water equivalent,,,swe,,,,
+tdmean,mean dewpoint temperature,,,,,,,
+tmax,maximum temerature,,tmax,tmax,tmax,tx,tmax,tmax
+tmean,mean temperature,,tmean,,tmean,,tavg,
+tmin,minimum temperature,,tmin,tmin,tmin,tn,tmin,tmin
+vap,vapor pressure,,,vap,,,vapr,
+vpd,vapor pressure,,,vpd,,,,
+vpdmax,"vapor pressure deficit, maximum",,vpdmax,,,,,
+vpdmin,"vapor pressure deficit, minimum",,vpdmin,,,,,
+windSpeed,wind speed,,,ws,,,wind,
