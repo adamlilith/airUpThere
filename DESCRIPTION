@@ -1,21 +1,22 @@
 Package: airUpThere
 Type: Package
-Title: Extract values from PRISM weather rasters (daily/monthly/annual)
-Version: 0.0.1
-Date: 2021-03-17
+Title: Download and process climate rasters from various sources
+Version: 0.0.9000
+Date: 2021-04-07
 Author: Adam B. Smith
 Maintainer: Adam B. Smith <adam.smith@mobot.org>
-Description: This package automates extraction of weather data from
-    PRISM climate rasters at daily, monthly, and annual time steps.
-    Extraction can be done for the date of each record plus a user-
-    defined temporal window preceeding the date of each record (e.g., 
-    the 72 days before each observation).
+Description: This package automates downloading, unpacking, and use
+	of rasters from WorldClim, CHELSA, TerraClimate, PRISM, and
+	similar	climate data sources.
 License: GPL (>=3) + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Depends:
+	httr,
 	lubridate,
-	terra
+	rvest,
+	terra,
+	xml2
 Imports:
 Remotes:
 Suggests:

@@ -1,3 +1,11 @@
+drive <- 'E:'
+
+######################
+### variable names ###
+######################
+	varNames <- read.csv(paste0(drive, '/Ecology/Drive/R/airUpThere/makeData/varNames.csv'))
+	save(varNames, file=paste0(drive, '/Ecology/Drive/R/airUpThere/data/varNames.rda'))
+
 ###########################
 ### WorldClim ESM names ###
 ###########################
@@ -58,16 +66,20 @@
 				'MIROC-ES2L',
 				'MIROC6',
 				'MRI-ESM2-0'
+			),
+			shortNames=c(
+				'BC',
+				'CC',
+				'CE',
+				'CA',
+				'GF',
+				'IP',
+				'MR',
+				'MC',
+				'ME'
 			)
 		)
 	)
 
-	save(wcEsm, file='E:/Ecology/Drive/R/airUpThere/data/wcEsm.rda')
-
-################################
-### WorldClim variable names ###
-################################
-
-	wcVars <- read.csv('E:/Ecology/Drive/R/airUpThere/makeData/wcVars.csv')
-	save(wcVars, file='E:/Ecology/Drive/R/airUpThere/data/wcVars.rda')
+	save(wcEsm, file=paste0(drive, '/Ecology/Drive/R/airUpThere/data/wcEsm.rda'))
 	

@@ -3,7 +3,7 @@
 #' @param scenario Valid values for CMIP5 (RCPs) are one or more of 26, 45, 60, and/or 85.  Valid values for SSPs (CMIP6) are one or more of 126, 245, 370, and/or 585.
 #' @return Logical
 #' @keywords internal
-wcCheckGhg <- function(ver, scenario) {
+wcCheckGhg_internal <- function(ver, scenario) {
 
 	if (ver == 1.4) {
 		if (!scenario %in% c(26, 45, 60, 85)) {
@@ -21,47 +21,11 @@ wcCheckGhg <- function(ver, scenario) {
 	
 }
 
-# wcVar
-	# if (ver == 1.4) {
-		# if (time == 'historical') {
-			# if (!(var %in% c('tmin', 'tmax', 'tmean', 'bio'))) {
-				# if (var == 'prec') {
-					# 'ppt'
-				# } else {
-					# stop('Valid variable names for WorldClim 1.4 historical climate include "tmin", "tmax", "tmean", "prec", and "bio".')
-				# }
-			# }
-		# } else if (time == 'future') {
-			# if (var == 'tmin') {
-				# 'tn'
-			# } else if (var == 'tx'
-		
-			# if (!(var %in% c('tn', 'tx', 'pr', 'bi'))) {
-				# stop('Valid variable names for WorldClim 1.4 future climate include "tn", "tx", "pr", and "bi".')
-			# }
-		# }
-	# } else if (ver == 2.1) {
-		# if (time == 'historical') {
-			# if (!(var %in% c('tmin', 'tmax', 'tmean', 'prec', 'srad', 'wind', 'vapr', 'bio', 'elev'))) {
-				# stop('Valid variable names for WorldClim 2.1 historical climate include "tmin", "tmax", "tmean", "prec", "srad", "wind", "vapr", "bio", and "elev".')
-			# }
-		# } else if (time == 'future') {
-			# if (!(var %in% c('tmin', 'tmax', 'prec', 'bioc'))) {
-				# stop('Valid variable names for WorldClim 2.1 future climate include "tmin", "tmax", "prec", and "bioc".')
-			# }
-		# }
-	# } else {
-		# stop('This is an invalid version number for WorldClim.')
-	# }
-	
-	# TRUE
-# }
-
 #' Check WorldClim version number
 #' @param ver 1.4 or 2.1
 #' @return Logical
 #' @keywords internal
-wcCheckVer <- function(ver) {
+wcCheckVer_internal <- function(ver) {
 	
 	if (!(ver %in% c(1.4, 2.1))) {
 		stop('This is an invalid version number for WorldClim.')
@@ -74,9 +38,10 @@ wcCheckVer <- function(ver) {
 #' @param esm Character
 #' @return Character
 #' @keywords internal
-wcGetEsm <- function(ver, esm) {
+wcGetEsm_internal <- function(ver, esm) {
 
-	data(wcEsm)
+	data('wcEsm', envir = environment())
+	
 	if (ver == 1.4) {
 		if (nchar(esm) == 2) {
 			esm <- tolower(esm)
@@ -93,7 +58,18 @@ wcGetEsm <- function(ver, esm) {
 			stop('This is an invalid ESM for WorldClim 1.4.')
 		}
 	} else if (ver == 2.1) {
-		if (!(esm %in% wcEsm$cmip6$longNames)) {
+		if (nchar(esm) == 2) {
+			esm <- tolower(esm)
+			if (!(esm %in% tolower(wcEsm$cmip6$shortNames))) {
+				stop('This is an invalid ESM for WorldClim 2.1.')
+			}
+		} else if (nchar(esm) > 2) {
+			esm <- wcEsm$cmip6$shortNames[toupper(esm) == wcEsm$cmip6$longNames]
+			esm <- tolower(esm)
+			if (!(esm %in% tolower(wcEsm$cmip6$shortNames))) {
+				stop('This is an invalid ESM for WorldClim 2.1.')
+			}
+		} else {
 			stop('This is an invalid ESM for WorldClim 2.1.')
 		}
 	} else {
@@ -104,60 +80,18 @@ wcGetEsm <- function(ver, esm) {
 		
 }
 
-#' Get name of WorldClim variable
-#'
-#' Given a "standard" name of a WorldClim climate variable, returns the name of variable as used in files and paths, or given the "file/path" name of a variable, returns the "standard" name. For example, in WorldClim 1.4, minimum temperature is called "tmin" in historical rasters and "tn" in future rasters. These are the "file" names. The standard name for minimum temperature (in this package) is "tmin". Standard names are:
-#' \itemize{
-#' 	\item \code{tmin}: minimum temperature (available for all)
-#' 	\item \code{tmax}: maximum temperature (available for all)
-#' 	\item \code{tmean}: mean temperature (available for WC 1.4 and 2.1 historical)
-#' 	\item \code{ppt}: precipitation (available for all)
-#' 	\item \code{bio}: BIOCLIM variables (available for all)
-#' 	\item \code{srad}: solar radiation (available for WC 2.1 historical)
-#' 	\item \code{wind}: average wind speed (available for WC 2.1 historical)
-#' 	\item \code{vapr}: vapor pressure deficit (available for WC 2.1 historical)
-#' 	\item \code{elev}: elevation (available for WC 2.1 historical)
-#' }
-#' A crosswalk table between standard and file names of variables can be obtained from \code{data(wcVars)}.
-#' @param ver Version of WorldClim: 1.4 or 2.1
-#' @param var Name of variable in standard or file format.
-#' @param time \code{'historical'} or \code{'future'}.
-#' @param standardToFile If \code{TRUE}, then convert the file format of the variable name to standard format. If \code{FALSE}, the convert the standard format to the file format.
+#' Nice name for GHG WorldClim scenarios
+#' 
+#' Create a nice name for a WorldClim future climate scenario.
+#' @param ver Version number: 1.4 or 2.1
+#' @param ghg Greenhouse gas emissions scenario. This is the RCP or SSP number (without a decimal point, for RCPs).
 #' @return Character
 #' @examples
-#'
-#' wcConvertVar(1.4, 'ppt', 'historical', TRUE)
-#' wcConvertVar(1.4, 'prec', 'historical', FALSE)
-#'
-#' wcConvertVar(1.4, 'ppt', 'future', TRUE)
-#' wcConvertVar(1.4, 'pr', 'future', FALSE)
-#'
-#' wcConvertVar(2.1, 'ppt', 'historical', TRUE)
-#' wcConvertVar(2.1, 'prec', 'historical', FALSE)
-#'
-#' wcConvertVar(2.1, 'ppt', 'future', TRUE)
-#' wcConvertVar(2.1, 'prec', 'future', FALSE)
-#' 
+#' wcNiceGhg(1.4, 45)
+#' wcNiceGhg(1.4, 85)
+#' wcNiceGhg(2.1, 126)
+#' wcNiceGhg(2.1, 370)
 #' @export
-wcConvertVar <- function(ver, var, time, standardToFile) {
-	
-	data(wcVars)
-	if (standardToFile) {
-		newVar <- wcVars[wcVars$ver==ver & wcVars$time==time, names(wcVars)==var]
-	} else {
-		fileNames <- unlist(wcVars[wcVars$ver == ver & wcVars$time==time, , drop=TRUE])
-		newVar <- names(fileNames)[which(fileNames == var)]
-	}
-
-	newVar
-	
-}
-
-#' Nice name for GHG WorldClim scenario
-#' @param ver 1.4 or 2.1
-#' @param ghg 
-#' @return Character
-#' @keyrords internal
 wcNiceGhg <- function(ver, ghg) {
 
 	if (ver == 1.4) {
@@ -178,15 +112,21 @@ wcNiceGhg <- function(ver, ghg) {
 
 #' Name of resolution in WorldClim URL and file names
 #' 
+#' Return the name of a resolution as used in WorldClim URLs and file names.
 #' @param ver 1.4 or 2.1
 #' @param res 10, 5, 2.5, or 30
-#' @param time 'historical' or 'future'
+#' @param period For WC 1.4, this is either \code{'historical'} or \coed{'future'}. For WC 2.1 this is \code{NULL}.
 #' @return Character
-#' @keywords internal
-wcGetRes <- function(ver, res, time) {
+#' @examples
+#' wcGetRes(1.4, 2.5, 'historical')
+#' wcGetRes(1.4, 2.5, 'future')
+#' wcGetRes(2.1, 2.5)
+#' wcGetRes(2.1, 2.5)
+#' @export
+wcGetRes <- function(ver, res, period = NULL) {
 
 	resUnit <- if (ver == 1.4) {
-		if (time == 'historical') {
+		if (period == 'historical') {
 			if (res == 10) {
 				'10m'
 			} else if (res == 5) {
@@ -198,7 +138,7 @@ wcGetRes <- function(ver, res, time) {
 			} else {
 				stop('This is not a valid resolution for WorldClim 1.4.')
 			}
-		} else if (time == 'future') {
+		} else if (period == 'future') {
 			if (res == 10) {
 				'10m'
 			} else if (res == 5) {
@@ -232,34 +172,63 @@ wcGetRes <- function(ver, res, time) {
 	
 }
 
-#' Name of period in WorldClim URL and file names
-#' @param cmip 5 or 6
+#' Name of future time period in WorldClim URL and file names
+#'
+#' Return the name of a future time WorldClim time period in the format used in URLs and file names.
+#' @param ver WorldClim version: 1.4 or 2.1.
+#' @param period Year indicating time period.
+#' @param type Either of \code{future} or \code{decadal}. Only needed for WC 2.1.
 #' @return Character
-#' @keywords internal
-wcGetYear <- function(ver, year) {
+#' @examples
+#' wcGetPeriod(1.4, 2050)
+#' wcGetPeriod(1.4, 2070)
+#' wcGetPeriod(2.1, 2030)
+#' wcGetPeriod(2.1, 2050)
+#' wcGetPeriod(2.1, 2070)
+#' wcGetPeriod(2.1, 2090)
+#' @export
+wcGetPeriod <- function(ver, period, type = NULL) {
 
 	yearCode <- if (ver == 1.4) {
-		if (year == 2050) {
+		if (period == 2050) {
 			'50'
-		} else if (year == 2070) {
+		} else if (period == 2070) {
 			'70'
 		} else {
-			stop('This is not a valid year for CMIP5.')
+			stop('This is not a valid time period for CMIP5.')
 		}
 	} else if (ver == 2.1) {
-		if (year == 2030) {
-			'2021-2040'
-		} else if (year == 2050) {
-			'2041-2060'
-		} else if (year == 2070) {
-			'2061-2080'
-		} else if (year == 2090) {
-			'2081-2100'
-		} else {
-			stop('This is not a valid year for CMIP6.')
+		if (type == 'future') {
+			if (period == 2030) {
+				'2021-2040'
+			} else if (period == 2050) {
+				'2041-2060'
+			} else if (period == 2070) {
+				'2061-2080'
+			} else if (period == 2090) {
+				'2081-2100'
+			} else {
+				stop('This is not a valid time period for CMIP6.')
+			}
+		} else if (type == 'decadal') {
+			if (period == 1960) {
+				'1960-1969'
+			} else if (period == 1970) {
+				'1970-1979'
+			} else if (period == 1980) {
+				'1980-1989'
+			} else if (period == 1990) {
+				'1990-1999'
+			} else if (period == 2000) {
+				'2000-2009'
+			} else if (period == 2010) {
+				'2010-2018'
+			} else {
+				stop('This is not a valid time period for decadal rasters.')
+			}
 		}
 	} else {
-		stop('This is an invalid CMIP.')
+		stop('This is an invalid verion.')
 	}
 	
 	yearCode
