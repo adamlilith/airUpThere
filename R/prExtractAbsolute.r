@@ -238,10 +238,10 @@ prExtractAbsoluteMonthly <- function(
 	dateOrder <- order(endDates, startDates)
 	startEndDates <- startEndDates[dateOrder, ]
 
-	startYear <- as.numeric(substr(startEndDates$startDate, 1, 4))
-	startMonth <- as.numeric(substr(startEndDates$startDate, 6, 7))
-	endYear <- as.numeric(substr(startEndDates$endDate, 1, 4))
-	endMonth <- as.numeric(substr(startEndDates$endDate, 6, 7))
+	startYear <- getYMD(startEndDates$startDate, 'y')
+	startMonth <- getYMD(startEndDates$startDate, 'm')
+	endYear <- getYMD(startEndDates$endDate, 'y')
+	endMonth <- getYMD(startEndDates$endDate, 'm')
 	
 	startEndDates$startYearMonth <- paste0(startYear, '-', ifelse(startMonth < 10, '0', ''), startMonth)
 	startEndDates$endYearMonth <- paste0(endYear, '-', ifelse(endMonth < 10, '0', ''), endMonth)
@@ -295,7 +295,7 @@ prExtractAbsoluteMonthly <- function(
 				rasts <- prStack(prDir=prDir, vars=thisVar, dates=c(thisStartDate, thisEndDate), by='month', span=TRUE, res=res, rastSuffix=rastSuffix)
 			
 				# extract to records with this date
-				index <- which(getYearMonth(startDates) == getYearMonth(thisStartDate) & getYearMonth(endDates) == getYearMonth(thisEndDate))
+				index <- which(formatYYYYMM(startDates) == formatYYYYMM(thisStartDate) & formatYYYYMM(endDates) == formatYYYYMM(thisEndDate))
 				locs <- getCoords(x=x, index=index, longLat=longLat)
 				ext <- terra::extract(rasts, locs, ...)
 				# ext <- terra::extract(rasts, locs)
@@ -344,11 +344,8 @@ prExtractAbsoluteAnnual <- function(
 	startDates <- prGetDates(x, startDate)
 	endDates <- prGetDates(x, endDate)
 	
-	startYears <- substr(startDates, 1, 4)
-	endYears <- substr(endDates, 1, 4)
-	
-	startYears <- as.integer(startYears)
-	endYears <- as.integer(endYears)
+	startYears <- getYMD(startDates, 'y')
+	endYears <- getYMD(endDates, 'y')
 	
 	startEndDates <- data.frame(startDates=startYears, endDates=endYears)
 

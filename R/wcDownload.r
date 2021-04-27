@@ -127,7 +127,7 @@ wcDownloadElev(dl, res=10)
 #' 
 #' }
 #' @export
-
+NULL
 
 #' @describeIn wcDownload Download WorldClim historical normal rasters
 #' @export

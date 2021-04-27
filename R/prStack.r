@@ -130,7 +130,7 @@ prStack <- function(
 	} else if (by == 'month') {
 		subDir <- 'monthly'
 		if (!span) {
-			rastGrid <- expand.grid(date=getYearMonth(dates), var=vars)
+			rastGrid <- expand.grid(date=formatYYYYMM(dates), var=vars)
 		} else {
 			dateSpan <- seqMonths(dates[1], dates[2])
 			rastGrid <- expand.grid(date=dateSpan, var=vars)
