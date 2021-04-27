@@ -29,10 +29,12 @@
 #'
 #' @section Useful utilities:
 #'		\code{\link{convertVar}} Convert between "file/URL" and "standard" names of variables. \cr
+#' 		\code{\link{formatYYYYMM}} Get YYYY-MM format from a date. \cr
 #'		\code{\link{getCoords}} Get coordinates from a data frame, SpatialPoints, or SpatVector object. \cr
+#' 		\code{\link{getYMD}} Get year, month, or day from a date. \cr
+#'		\code{\link{monthDiff}} Difference in months between two dates expressed as YYYY-MM. \cr
 #' 		\code{\link{seqMonths}} Generate a sequence of years and months from a starting and ending date. \cr
 #' 		\code{\link{varNames}} "File/URL" and "standard" names of each variable available from each data source. \cr
-#' 		\code{\link{getYearMonth}} Get YYYY-MM format from a date. \cr
 #'
 #' @references
 #' @section CHELSA

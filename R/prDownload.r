@@ -106,11 +106,8 @@ prDownload <- function(
 		if ('annual' %in% ver) {
 		
 			# years
-			startYear <- substr(as.character(startDate), 1, 4)
-			endYear <- substr(as.character(endDate), 1, 4)
-			
-			startYear <- as.integer(startYear)
-			endYear <- as.integer(endYear)
+			startYear <- getYMD(startDate, 'y')
+			endYear <- getYMD(endDate, 'y')
 			
 			years <- startYear:endYear
 			

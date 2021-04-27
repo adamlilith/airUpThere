@@ -40,6 +40,7 @@
 #'		\item	\code{vpdmax}: Maximum vapor-pressure.
 #'		\item	\code{vpdmin}: Minimum vapor-pressure.
 #' }
+#' @param res Resolution of the rasters. Valid values are either \code{30} or \code{800} (these are treated as the same: 30-arcsecond also known as the "800-m" resolution version of PRISM), \emph{or} code{1} or \code{4} (these are also treated as the same: the 1-arcminute also known as the "4-km" resolution version of PRISM).
 #' @param rastSuffix Character. The "suffix" at the end of each weather raster. PRISM rasters are usually shipped in 'BIL' format, so normally this should be \code{bil}. However, any other suffix corresponding to a raster type that can be opened by the \code{\link[terra]{rast}} function can be used if the rasters have been converted to another format.
 #' @param annualDir Name of the highest-level folder in which annual rasters are stored. If you use the \code{prDownloadAnnual} function to download PRISM rasters, this will be \code{'annual'} (default). However, if you are extracting values from a purchased version of PRISM (i.e., that the PRISM staff sent you on a hard drive), the annual rasters are typically stored in the folder called \code{'monthly'}.
 #' @param longLat Character vector with two elements. If \code{x} is an object of class \code{data.frame}, this is the name of the columns in \code{x} with longitude and latitude (in that order). Coordinates will be assumed to be in the same coordinate reference system as the PRISM rasters. This argument is ignored if \code{x} is not a data frame.
@@ -56,56 +57,57 @@
 #' @return Matrix with one row per row in \code{x}. \code{NA} values represent days/months/years that did not fall within the specified window or for which rasters were unavailable. 
 #' @examples
 #' \dontrun{
-#' x <- data.frame(
-#' 	long=rep(-97.66, 5),
-#' 	lat=rep(38.37, 5),
-#' 	date=c('2015-12-31', '1981-01-05', '2020-12-01',
-#' 	'2019-01-05', '1895-05-01')
+#'  x <- data.frame(
+#'  	long=rep(-97.66, 5),
+#'  	lat=rep(38.37, 5),
+#'  	date=c('2015-12-31', '1981-01-05', '2020-12-01',
+#'  	'2019-01-05', '1895-05-01')
 #' )
-#' 
-#' ll <- c('long', 'lat')
-#' 
-#' 
+#'  
+#'  
 #' # NA values are unavailable
 #' prDir <- 'F:/ecology/Climate/PRISM/acquired_2020/an81'
-#' y <- prExtractWindowDaily(
-#' 	x,
-#' 	date = 'date',
-#' 	longLat = ll,
-#' 	prDir = prDir,
-#' 	vars = 'tmin',
-#' 	rastSuffix = 'tif',
-#' 	windowYears = 0,
-#' 	windowDays = 7,
-#' 	verbose = TRUE
-#' )
-#' 
-#' # NA values are unavailable
-#' prDir <- 'F:/ecology/Climate/PRISM/acquired_2020/lt81'
-#' y <- prExtractWindowMonthly(
-#' 	x,
-#' 	date = 'date',
-#' 	longLat = ll,
-#' 	prDir = prDir,
-#' 	vars = 'tmin',
-#' 	rastSuffix = 'tif',
-#' 	windowYears = 0,
-#' 	windowMonths = 5,
-#' 	verbose = TRUE
-#' )
-#' 
-#' # NA values are unavailable
-#' prDir <- 'F:/ecology/Climate/PRISM/acquired_2020/lt81'
-#' y <- prExtractWindowAnnual(
-#' 	x,
-#' 	date = 'date',
-#'  	longLat = ll,
+#' y <- prExtractRelativeDaily(
+#'  	x,
+#'  	date = 'date',
+#'  	longLat = c('long', 'lat'),
 #'  	prDir = prDir,
 #'  	vars = 'tmin',
+#' 		res = 30,
 #'  	rastSuffix = 'tif',
-#'		annualDir = 'monthly',
-#'  	windowYears = 3,
+#'  	windowYears = 0,
+#'  	windowDays = 7,
 #'  	verbose = TRUE
+#' )
+#'  
+#' # NA values are unavailable
+#' prDir <- 'F:/ecology/Climate/PRISM/acquired_2020/lt81'
+#' y <- prExtractRelativeMonthly(
+#'  	x,
+#'  	date = 'date',
+#'  	longLat = c('long', 'lat'),
+#'  	prDir = prDir,
+#'  	vars = 'tmin',
+#' 		res = 30,
+#'  	rastSuffix = 'tif',
+#'  	windowYears = 0,
+#'  	windowMonths = 5,
+#'  	verbose = TRUE
+#' )
+#'  
+#' # NA values are unavailable
+#' prDir <- 'F:/ecology/Climate/PRISM/acquired_2020/lt81'
+#' y <- prExtractRelativeAnnual(
+#'  	x,
+#'  	date = 'date',
+#' 		longLat = c('long', 'lat'),
+#' 		prDir = prDir,
+#' 		vars = 'tmin',
+#' 		res = 30,
+#' 		rastSuffix = 'tif',
+#' 		annualDir = 'monthly',
+#' 		windowYears = 3,
+#' 		verbose = TRUE
 #' )
 #' 
 #' }
@@ -113,12 +115,12 @@ NULL
 
 #' @describeIn prismExtractRelative Extract daily values from PRISM across a temporal window
 #' @export
-
-prExtractWindowDaily <- function(
-	x,
-	date,
+prExtractRelativeDaily <- function(
 	prDir,
-	vars = c('tmin', 'tmax', 'tmean', 'ppt'),
+	x,
+	vars,
+	date,
+	res = 4,
 	rastSuffix = 'bil',
 	longLat = NULL,
 	windowYears = 0,
@@ -170,19 +172,8 @@ prExtractWindowDaily <- function(
 				# date falls within PRISM data set range
 				if (thisDate >= earliestRasterDate & windowStartDate <= latestRasterDate) {
 			
-					datesNeeded <- seq(as.POSIXct(windowStartDate), as.POSIXct(windowEndDate), by='1 days')
-					datesNeeded <- as.Date(datesNeeded)
-			
-					yearsNeeded <- lubridate::year(datesNeeded)
-					monthsNeeded <- lubridate::month(datesNeeded)
-					daysNeeded <- lubridate::day(datesNeeded)
-			
-					rastDates <- paste0(yearsNeeded, sprintf('%02.0f', monthsNeeded), sprintf('%02.0f', daysNeeded)) 
-			
-					rastsNeeded <- paste0(prDir, '/', thisVar, '/daily/', yearsNeeded, '/prism_', thisVar, '_us_30s_', rastDates, '.', rastSuffix)
-
 					# get rasters
-					rasts <- terra::rast(rastsNeeded)
+					rasts <- prStack(prDir=prDir, vars=thisVar, dates=c(windowStartDate, windowEndDate), by='day', span=TRUE, res=res, rastSuffix=rastSuffix)
 				
 					# extract to records with this date
 					index <- which(recordDates == thisDate)
@@ -219,11 +210,12 @@ prExtractWindowDaily <- function(
 
 #' @describeIn prismExtractRelative Extract monthly values from PRISM across a temporal window
 #' @export
-prExtractWindowMonthly <- function(
-	x,
-	date = 'date',
+prExtractRelativeMonthly <- function(
 	prDir,
-	vars = c('tmin', 'tmax', 'tmean', 'ppt'),
+	x,
+	vars,
+	date,
+	res = 4,
 	rastSuffix = 'bil',
 	longLat = NULL,
 	windowYears = 0,
@@ -234,84 +226,69 @@ prExtractWindowMonthly <- function(
 
 	### get dates
 	dates <- prGetDates(x, date)
-
-	### allocate window monthly "years" to years
-	windowYears <- windowYears + floor(windowMonths / 12)
-	windowMonths <- windowMonths %% 12
-
-	recordYears <- lubridate::year(dates)
-	recordMonths <- lubridate::month(dates)
-	recordYearsMonths <- cbind(recordYears, recordMonths)
-
-	uniqueYearsMonths <- recordYearsMonths[!duplicated(recordYearsMonths), ]
-	uniqueYearsMonths <- uniqueYearsMonths[order(uniqueYearsMonths[ , 2]), ]
-	uniqueYearsMonths <- uniqueYearsMonths[order(uniqueYearsMonths[ , 1]), ]
 	
+	recordDates <- formatYYYYMM(dates)
+	uniqueDates <- unique(sort(recordDates))
+	
+	# if window months > 12 then allocate to years
+	if (windowMonths > 12) {
+		windowYears <- windowYears + floor(windowMonths / 12)
+		windowMonths <- windowMonths %% 12
+	}
+
 	### by VARIABLE
 	for (thisVar in vars) {
 	
 		if (!dir.exists(paste0(prDir, '/', thisVar))) {
 			warning(paste0('There is no directory for ', thisVar, '.'))
 		} else {
-
+		
 			### get available years
 			yearsAvail <- list.dirs(paste0(prDir, '/', thisVar, '/monthly'), full.names=FALSE, recursive=FALSE)
 			yearsAvail <- as.integer(yearsAvail)
 
-			earliestRastYearMonth <- cbind(min(yearsAvail), 1)
-			latestRastYearMonth <- cbind(max(yearsAvail), 12)
+			earliestRasterDate <- paste0(min(yearsAvail), '-01')
+			latestRasterDate <- paste0(max(yearsAvail), '-12')
 
 			### create data frame to store extracted values
-			monthsNeeded <- windowMonths + (12 * windowYears)
+			monthsNeeded <- 12 * windowYears + windowMonths
 			thisOut <- matrix(NA, nrow=nrow(x), ncol=monthsNeeded + 1)
 			colnames(thisOut) <- paste0(thisVar, '_', monthsNeeded:0, 'monthsPrior')
 
 			### extract by date
-			for (i in 1:nrow(uniqueYearsMonths)) {
+			for (countDate in seq_along(dates)) {
 			
-				yearMonth <- uniqueYearsMonths[i, , drop=FALSE]
-				if (verbose) print(paste0(thisVar, ' ', yearMonth[1, 1], '-', sprintf('%02.0f', yearMonth[1, 2]))); flush.console()
+				thisDate <- uniqueDates[countDate]
+				if (verbose) cat(paste0(thisVar, ' ', thisDate, '\n')); flush.console()
 			
 				# get date of window start
-				windowStart <- yearMonth
-				windowStart <- if (windowMonths < windowStart[1, 2]) {
-					windowStart[1, ] - cbind(windowYears, windowMonths)
+				windowStartDate <- thisDate
+				windowStartDate <- c(getYMD(windowStartDate, 'y'), getYMD(windowStartDate, 'm'))
+				
+				windowStartDate[1] <- windowStartDate[1] - windowYears
+				if (windowStartDate[2] - windowMonths < 1) {
+					windowStartDate[1] <- windowStartDate[1] - 1
+					windowStartDate[2] <- 12 - (windowMonths - windowStartDate[2])
 				} else {
-					cbind(windowStart[1, 1] - windowYears - 1, 12 - (windowMonths - windowStart[1, 2]))
+					windowStartDate[2] <- windowStartDate[2] - windowMonths
 				}
 				
-				if (windowStart[1, 1] < earliestRastYearMonth[1, 1]) windowStart <- earliestRastYearMonth
+				windowStartDate <- paste0(windowStartDate[1], '-', ifelse(windowStartDate[2] < 10, '0', ''), windowStartDate[2])
+				desiredWindowStartDate <- windowStartDate
+				if (windowStartDate < earliestRasterDate) windowStartDate <- earliestRasterDate
 				
-				windowEnd <- yearMonth
-				if (windowEnd[1, 1] > latestRastYearMonth[1, 1]) windowEnd <- latestRastYearMonth
-			
-				# date falls within PRISM data set range
-				if (windowStart[1, 1] >= earliestRastYearMonth[1, 1] & windowStart[1, 1] <= latestRastYearMonth[1, 1]) {
-			
-					# get years and months needed
-					yearsMonthsNeeded <- windowStart
-					n <- 1
-					while (any(yearsMonthsNeeded[n, ] < windowEnd)) {
-					
-						deltaMonth <- yearsMonthsNeeded[n, 2] + 1
-						newYear <- if (deltaMonth == 13) { yearsMonthsNeeded[n, 1] + 1 } else { yearsMonthsNeeded[n, 1] }
-						newMonth <- if (deltaMonth == 13) { 1 } else { yearsMonthsNeeded[n, 2] + 1 }
-						yearsMonthsNeeded <- rbind(yearsMonthsNeeded, cbind(newYear, newMonth))
-						n <- n + 1
-					
-					}
-					
-					yearsNeeded <- yearsMonthsNeeded[ , 1]
-					monthsNeeded <- yearsMonthsNeeded[ , 2]
-					
-					rastDates <- paste0(yearsNeeded, sprintf('%02.0f', monthsNeeded)) 
-					rastsNeeded <- paste0(prDir, '/', thisVar, '/monthly/', yearsNeeded, '/prism_', thisVar, '_us_30s_', rastDates, '.', rastSuffix)
+				# get date of window end
+				windowEndDate <- thisDate
+				desiredWindowEndDate <- windowStartDate
+				if (windowEndDate > latestRasterDate) windowEndDate <- latestRasterDate
+
+				if (windowStartDate <= latestRasterDate & windowEndDate >= earliestRasterDate) {
 
 					# get rasters
-					rasts <- terra::rast(rastsNeeded)
+					rasts <- prStack(prDir=prDir, vars=thisVar, dates=c(windowStartDate, windowEndDate), by='month', span=TRUE, res=res, rastSuffix=rastSuffix)
 				
 					# extract to records with this date
-					index <- which(yearMonth[1, 1] == recordYearsMonths[ , 1] & yearMonth[1, 2] == recordYearsMonths[ , 2])
+					index <- which(recordDates == thisDate)
 					locs <- getCoords(x=x, index=index, longLat=longLat)
 					ext <- terra::extract(rasts, locs, ...)
 					# ext <- terra::extract(rasts, locs)
@@ -320,13 +297,12 @@ prExtractWindowMonthly <- function(
 					# ext <- ext[ , 2:ncol(ext), drop=FALSE]
 
 					# remember
-					deltaMonths <- sum(yearMonth * cbind(12, 1)) - sum(windowEnd * cbind(12, 1))
-					lastCol <- ncol(thisOut) - deltaMonths
+					lastCol <- ncol(thisOut) - monthDiff(thisDate, windowEndDate)
 					firstCol <- lastCol - ncol(ext) + 1
 					thisOut[index, firstCol:lastCol] <- ext
-			
-				} # if record date falls within years available in PRISM
-			
+					
+				}
+				
 			} # next date
 
 			out <- if (exists('out', inherits=FALSE)) {
@@ -336,7 +312,7 @@ prExtractWindowMonthly <- function(
 			}
 			
 		} # directory for variable exists
-	
+		
 	} # next variable
 	
 	while (all(is.na(out[ , 1]))) out <- out[ , 2:ncol(out), drop=FALSE]
@@ -346,11 +322,12 @@ prExtractWindowMonthly <- function(
 
 #' @describeIn prismExtractRelative Extract annual values from PRISM across a temporal window
 #' @export
-prExtractWindowAnnual <- function(
-	x,
-	date = 'date',
+prExtractRelativeAnnual <- function(
 	prDir,
-	vars = c('tmin', 'tmax', 'tmean', 'ppt'),
+	x,
+	vars,
+	date,
+	res = 4,
 	rastSuffix = 'bil',
 	annualDir = 'annual',
 	longLat = NULL,
@@ -400,12 +377,8 @@ prExtractWindowAnnual <- function(
 					windowStartYear <- max(earliestRasterYear, startYear)
 					windowEndYear <- min(latestRasterYear, year)
 					
-					yearsNeeded <- windowStartYear:windowEndYear
-					
-					rastsNeeded <- paste0(prDir, '/', thisVar, '/', annualDir, '/', yearsNeeded, '/prism_', thisVar, '_us_30s_', yearsNeeded, '.', rastSuffix)
-
 					# get rasters
-					rasts <- terra::rast(rastsNeeded)
+					rasts <- prStack(prDir=prDir, vars=thisVar, dates=c(windowStartYear, windowEndYear), by='year', span=TRUE, res=res, rastSuffix=rastSuffix, annualDir=annualDir)
 				
 					# extract to records with this date
 					index <- which(recordYears == year)
