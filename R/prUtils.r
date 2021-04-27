@@ -30,3 +30,20 @@ prGetDates <- function(x, date) {
 	dates
 	
 }
+
+#' Convert PRISM resolution to name used in file names
+#'
+#' @param res Either 30 (30 arcsec) or 800 (30 arcsec), or 1 (1 arcmin) or 4 (1 arcmin)
+#' @return Character
+#' @keywords internal
+prGetRes <- function(res) {
+
+	res <- as.character(res)
+	out <- if (res == '30' | res == '800') {
+		'30s'
+	} else if (res == '1' | res == '4') {
+		'4km'
+	}
+	out
+
+}

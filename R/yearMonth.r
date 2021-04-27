@@ -4,9 +4,9 @@
 #' @param x Object(s) of class \code{Date}, or of class \code{character}.
 #' @return A character vector.
 #' @examples
-#' yearMonth(c('2015-10-24', '2017-02-26', '2021-04'))
+#' getYearMonth(c('2015-10-24', '2017-02-26', '2021-04'))
 #' @export
-yearMonth <- function(x) {
+getYearMonth <- function(x) {
 
 	x <- as.character(x)
 	out <- paste0(substr(x, 1, 4), '-', substr(x, 6, 7))

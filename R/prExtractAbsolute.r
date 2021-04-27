@@ -23,7 +23,7 @@
 #' The function does not assume that data for all PRISM years are available, but it does assume that all relevant rasters for a particular year are available within each yearly folder. If rasters preceding a date only partially cover the window, then values for the part covered will be extracted. For example if you try to extract annual values for a window spanning 2010 to 2020 but only have available rasters for 1981 to 2018, then values for 2010 to 2018 will be extracted. Values that cannot be extracted are represented by \code{NA} in the output.
 
 #' @param x "Points" object of class \code{SpatVector}, \code{SpatialPoints}, \code{SpatialPointsDataFrame}, \code{data.frame}, or \code{matrix}.
-#' @param startDate,endDate These def the beginning/ending date across which values are to be extracted. Either:
+#' @param startDate,endDate These define the beginning/ending date across which values are to be extracted. Either:
 #' \itemize{
 #'		\item 	Object of class \code{Date}. You can name a single date, in which case this date will be used for all records, or a vector of dates, one per point in \code{x}.
 #'		\item 	Name of column in \code{x} with date of each record. Values must be of in YYYY-MM-DD (year-month-day of month) format \emph{or} already of class \code{\link{Date}}. See \code{\link[lubridate]{ymd}} or related functions for more help.
@@ -40,16 +40,10 @@
 #'		\item	\code{vpdmax}: Maximum vapor-pressure.
 #'		\item	\code{vpdmin}: Minimum vapor-pressure.
 #' }
+#' @param res Resolution of the rasters. Valid values are either \code{30} or \code{800} (these are treated as the same: 30-arcsecond also known as the "800-m" resolution version of PRISM), \emph{or} code{1} or \code{4} (these are also treated as the same: the 1-arcminute also known as the "4-km" resolution version of PRISM).
 #' @param rastSuffix Character. The "suffix" at the end of each weather raster. PRISM rasters are usually shipped in 'BIL' format, so normally this should be \code{bil}. However, any other suffix corresponding to a raster type that can be opened by the \code{\link[terra]{rast}} function can be used if the rasters have been converted to another format.
 #' @param annualDir Name of the highest-level folder in which annual rasters are stored. If you use the \code{prDownloadAnnual} function to download PRISM rasters, this will be \code{'annual'} (default). However, if you are extracting values from a purchased version of PRISM (i.e., that the PRISM staff sent you on a hard drive), the annual rasters are typically stored in the folder called \code{'monthly'}.
 #' @param longLat Character vector with two elements. If \code{x} is an object of class \code{data.frame}, this is the name of the columns in \code{x} with longitude and latitude (in that order). Coordinates will be assumed to be in the same coordinate reference system as the PRISM rasters. This argument is ignored if \code{x} is not a data frame.
-#' @param windowYears,windowMonths,windowDays Integers >= 0. Extract data for this many years, months, and/or days before the day of each observation, \emph{plus} the day of observation. Note:
-#' \itemize{
-#'		\item For daily data, only \code{windowYears} and \code{windowDays} are used. Note that the difference between using, say, \code{windowYears = 1} and \code{windowDays = 365} is that the former can accommodate leap days whereas the latter just extracts the 365 days prior (which may be less than a full calendar year if the timespan encompasses a leap day).
-#'		\item For monthly data, only \code{windowYears} and \code{windowMonths} are used.
-#'		\item For annual data, only \code{windowYears} is used.
-#' }
-#' To get only data for the day/month/year of each record, set all of the respective \code{window} arguments to 0 (default).
 #' @param verbose Logical. If \code{TRUE} (default), show progress.
 #' @param ... Argument(s) to pass to \code{\link[terra]{extract}}.
 #'
@@ -60,7 +54,7 @@
 #' x <- data.frame(
 #' 	long=rep(-97.66, 3),
 #' 	lat=rep(38.37, 3),
-#'  	startDate=c('2014-04-22', '2014-04-25', '2014-04-22'),
+#'  startDate=c('2014-04-22', '2014-04-25', '2014-04-22'),
 #' 	endDate=c('2014-04-22', '2014-04-29', '2014-05-22')
 #' )
 #' 
@@ -72,6 +66,7 @@
 #' 	longLat = c('long', 'lat'),
 #' 	prDir = prDir,
 #' 	vars = 'tmin',
+#'	res = 30,
 #' 	rastSuffix = 'tif',
 #' 	verbose = TRUE
 #' )
@@ -80,7 +75,7 @@
 #' x <- data.frame(
 #' 	long=rep(-97.66, 3),
 #' 	lat=rep(38.37, 3),
-#'  	startDate=c('2014-04-22', '2014-06-01', '2014-05-22'),
+#'  startDate=c('2014-04-22', '2014-06-01', '2014-05-22'),
 #' 	endDate=c('2014-04-22', '2014-08-01', '2015-05-22')
 #' )
 #' 
@@ -92,6 +87,7 @@
 #' 	longLat = c('long', 'lat'),
 #' 	prDir = prDir,
 #'  vars = 'tmin',
+#'	res = 30,
 #'  rastSuffix = 'tif',
 #' 	verbose = TRUE
 #' )
@@ -100,7 +96,7 @@
 #' x <- data.frame(
 #' 	long=rep(-97.66, 3),
 #' 	lat=rep(38.37, 3),
-#'  	startDate=c('2016-01-01', '2016-06-01', '2018-01-01'),
+#'  startDate=c('2016-01-01', '2016-06-01', '2017-01-01'),
 #' 	endDate=c('2016-12-31', '2018-08-01', '2120-01-01')
 #' )
 #' 
@@ -109,12 +105,13 @@
 #' 	x,
 #' 	startDate = 'startDate',
 #' 	endDate = 'endDate',
-#'   	longLat = ll,
-#'   	prDir = prDir,
-#'  	vars = 'tmin',
-#'  	rastSuffix = 'tif',
-#' 		annualDir = 'monthly',
-#'  	verbose = TRUE
+#'  longLat = c('long', 'lat'),
+#'  prDir = prDir,
+#'  vars = 'tmin',
+#'	res = 30,
+#'  rastSuffix = 'tif',
+#' 	annualDir = 'monthly',
+#'  verbose = TRUE
 #' )
 #' 
 #' }
@@ -128,6 +125,7 @@ prExtractAbsoluteDaily <- function(
 	endDate,
 	prDir,
 	vars,
+	res = 4,
 	rastSuffix = 'bil',
 	longLat = NULL,
 	verbose = TRUE,
@@ -178,25 +176,14 @@ prExtractAbsoluteDaily <- function(
 			
 				thisStartDate <- startEndDates$startDate[countDate]
 				thisEndDate <- startEndDates$endDate[countDate]
-				if (verbose) cat(thisVar, thisStartDate, 'through', thisEndDate, '\n')); flush.console()
+				if (verbose) cat(paste0(thisVar, ' ', thisStartDate, ' through ', thisEndDate, '\n')); flush.console()
 				
 				if (thisStartDate < earliestRasterDate) thisStartDate <- earliestRasterDate
 				if (thisEndDate > latestRasterDate) thisEndDate <- latestRasterDate
 			
-				# dates needed
-				datesNeeded <- seq(thisStartDate, thisEndDate, by='1 days')
-		
-				yearsNeeded <- lubridate::year(datesNeeded)
-				monthsNeeded <- lubridate::month(datesNeeded)
-				daysNeeded <- lubridate::day(datesNeeded)
-		
-				rastDates <- paste0(yearsNeeded, sprintf('%02.0f', monthsNeeded), sprintf('%02.0f', daysNeeded)) 
-		
-				rastsNeeded <- paste0(prDir, '/', thisVar, '/daily/', yearsNeeded, '/prism_', thisVar, '_us_30s_', rastDates, '.', rastSuffix)
-
 				# get rasters
-				rasts <- terra::rast(rastsNeeded)
-			
+				rasts <- prStack(prDir=prDir, vars=thisVar, dates=c(thisStartDate, thisEndDate), by='day', span=TRUE, res=res, rastSuffix=rastSuffix)
+
 				# extract to records with this date
 				index <- which(startDates == thisStartDate & endDates == thisEndDate)
 				locs <- getCoords(x=x, index=index, longLat=longLat)
@@ -207,6 +194,7 @@ prExtractAbsoluteDaily <- function(
 				# ext <- ext[ , 2:ncol(ext), drop=FALSE]
 
 				# remember
+				datesNeeded <- seq(thisStartDate, thisEndDate, by='1 day')
 				cols <- paste0(thisVar, '_', datesNeeded)
 				thisOut[index, cols] <- ext
 						
@@ -234,6 +222,7 @@ prExtractAbsoluteMonthly <- function(
 	endDate,
 	prDir,
 	vars,
+	res = 4,
 	rastSuffix = 'bil',
 	longLat = NULL,
 	verbose = TRUE,
@@ -302,18 +291,11 @@ prExtractAbsoluteMonthly <- function(
 				if (thisStartDate < earliestRasterDate) thisStartDate <- earliestRasterDate
 				if (thisEndDate > latestRasterDate) thisEndDate <- latestRasterDate
 			
-				# dates needed
-				yearsMonthsNeeded <- seqMonths(thisStartDate, thisEndDate)
-				yearsNeeded <- substr(yearsMonthsNeeded, 1, 4)
-				rastYearsMonthsNeeded <- paste0(substr(yearsMonthsNeeded, 1, 4), substr(yearsMonthsNeeded, 6, 7))
-		
-				rastsNeeded <- paste0(prDir, '/', thisVar, '/monthly/', yearsNeeded, '/prism_', thisVar, '_us_30s_', rastYearsMonthsNeeded, '.', rastSuffix)
-
 				# get rasters
-				rasts <- terra::rast(rastsNeeded)
+				rasts <- prStack(prDir=prDir, vars=thisVar, dates=c(thisStartDate, thisEndDate), by='month', span=TRUE, res=res, rastSuffix=rastSuffix)
 			
 				# extract to records with this date
-				index <- which(yearMonth(startDates) == yearMonth(thisStartDate) & yearMonth(endDates) == yearMonth(thisEndDate))
+				index <- which(getYearMonth(startDates) == getYearMonth(thisStartDate) & getYearMonth(endDates) == getYearMonth(thisEndDate))
 				locs <- getCoords(x=x, index=index, longLat=longLat)
 				ext <- terra::extract(rasts, locs, ...)
 				# ext <- terra::extract(rasts, locs)
@@ -322,6 +304,7 @@ prExtractAbsoluteMonthly <- function(
 				# ext <- ext[ , 2:ncol(ext), drop=FALSE]
 
 				# remember
+				yearsMonthsNeeded <- seqMonths(thisStartDate, thisEndDate)
 				cols <- paste0(thisVar, '_', yearsMonthsNeeded)
 				thisOut[index, cols] <- ext
 						
@@ -349,6 +332,7 @@ prExtractAbsoluteAnnual <- function(
 	endDate,
 	prDir,
 	vars,
+	res = 4,
 	rastSuffix = 'bil',
 	longLat = NULL,
 	annualDir = 'annual',
@@ -416,13 +400,8 @@ prExtractAbsoluteAnnual <- function(
 				if (thisStartDate < earliestRasterDate) thisStartDate <- earliestRasterDate
 				if (thisEndDate > latestRasterDate) thisEndDate <- latestRasterDate
 			
-				# dates needed
-				yearsNeeded <- thisStartDate:thisEndDate
-		
-				rastsNeeded <- paste0(prDir, '/', thisVar, '/', annualDir, '/', yearsNeeded, '/prism_', thisVar, '_us_30s_', yearsNeeded, '.', rastSuffix)
-
 				# get rasters
-				rasts <- terra::rast(rastsNeeded)
+				rasts <- prStack(prDir=prDir, vars=thisVar, dates=c(thisStartDate, thisEndDate), by='year', span=TRUE, res=res, rastSuffix=rastSuffix, annualDir=annualDir)
 			
 				# extract to records with this date
 				index <- which(thisStartYears == thisStartDate & thisEndYears == thisEndDate)
@@ -434,6 +413,7 @@ prExtractAbsoluteAnnual <- function(
 				# ext <- ext[ , 2:ncol(ext), drop=FALSE]
 
 				# remember
+				yearsNeeded <- thisStartDate:thisEndDate
 				cols <- paste0(thisVar, '_', yearsNeeded)
 				thisOut[index, cols] <- ext
 						

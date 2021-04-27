@@ -12,6 +12,7 @@
 #' 		\code{\link{prDownload}} Download PRISM climate rasters \cr
 #' 		\code{\link{prExtractRelative}} Extract values from PRISM climate rasters across a temporal window relative to series of dates (e.g., all values up to 10 days prior to set of dates) \cr
 #' 		\code{\link{prExtractAbsolute}} Extract values from PRISM climate rasters across a specified temporal window (e.g., all values between 1 January 1981 and 31 January 1981, inclusive) \cr
+#' 		\code{\link{prStack}} Create a stack of rasters representing particular dates or across a time series \cr
 #'
 #' @section WorldClim:
 #' 		\code{\link{wcDownload}} Download WorldClim rasters (present/future of versions 1.4 and 2.1, elevation, decadal averages) \cr
@@ -31,7 +32,7 @@
 #'		\code{\link{getCoords}} Get coordinates from a data frame, SpatialPoints, or SpatVector object. \cr
 #' 		\code{\link{seqMonths}} Generate a sequence of years and months from a starting and ending date. \cr
 #' 		\code{\link{varNames}} "File/URL" and "standard" names of each variable available from each data source. \cr
-#' 		\code{\link{yearMonth}} Get YYYY-MM format from a date. \cr
+#' 		\code{\link{getYearMonth}} Get YYYY-MM format from a date. \cr
 #'
 #' @references
 #' @section CHELSA
