@@ -14,16 +14,11 @@ seqMonths <- function(start, end) {
 	start <- as.character(start)
 	end <- as.character(end)
 
-	yr1 <- substr(start, 1, 4)
-	yr2 <- substr(end, 1, 4)
+	yr1 <- getYMD(start, 'y')
+	yr2 <- getYMD(end, 'y')
 	
-	mo1 <- substr(start, 6, 7)
-	mo2 <- substr(end, 6, 7)
-
-	yr1 <- as.integer(yr1)
-	yr2 <- as.integer(yr2)
-	mo1 <- as.integer(mo1)
-	mo2 <- as.integer(mo2)
+	mo1 <- getYMD(start, 'm')
+	mo2 <- getYMD(end, 'm')
 
 	if (yr2 < yr1 | (yr1 == yr2 & mo2 < mo1)) stop('Ending date occurs before starting date.')
 	if (mo1 < 1 | mo1 > 12 | mo2 < 1 | mo2 > 12) stop('Invalid months.')
