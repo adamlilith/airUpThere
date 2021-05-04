@@ -33,9 +33,9 @@
 #' @examples
 #' 
 #' \dontrun{
-dl <- 'C:/ecology/!Scratch/tc'
-tcDownloadMonthly(dl, 'tmin', 1958)
-tcDownload(dl, 'elev')
+#' dl <- 'C:/ecology/!Scratch/tc'
+#' tcDownloadMonthly(dl, 'tmin', 1958)
+#' tcDownloadElev(dl, 'elev')
 #' 
 #' }
 #' @export

@@ -1,21 +1,21 @@
-standard,definiton,chelsa_1,prism,terraclimate,worldclim_1.4_historical,worldclim_1.4_future,worldclim_2.1_historical,worldclim_2.1_future
-aet,actual evapotranspiration,,,aet,,,,
-awd,atmospheric water deficit,,,def,,,,
-bio,BIOCLIM variables,,,,bio,bi,bio,bioc
-elev,elevation,,,elevation,,,elev,
-pdsi,Palmer drought severity index,,,PDSI,,,,
-pet,reference evapotranspiration,,,pet,,,,
-ppt,precipitation,,ppt,ppt,prec,pr,prec,prec
-q,current flow,,,q,,,,
-soilWater,soil water content,,,soil,,,,
-srad,solar radiation,,,srad,,,srad,
-swe,snow water equivalent,,,swe,,,,
-tdmean,mean dewpoint temperature,,,,,,,
-tmax,maximum temerature,,tmax,tmax,tmax,tx,tmax,tmax
-tmean,mean temperature,,tmean,,tmean,,tavg,
-tmin,minimum temperature,,tmin,tmin,tmin,tn,tmin,tmin
-vap,vapor pressure,,,vap,,,vapr,
-vpd,vapor pressure,,,vpd,,,,
-vpdmax,"vapor pressure deficit, maximum",,vpdmax,,,,,
-vpdmin,"vapor pressure deficit, minimum",,vpdmin,,,,,
-windSpeed,wind speed,,,ws,,,wind,
+standard,definition,chelsa_1,prism_public,prism_subscription,terraclimate,worldclim_1.4_historical,worldclim_1.4_future,worldclim_2.1_historical,worldclim_2.1_future,worldclim_2.1_decadal
+aet,actual evapotranspiration,NA,NA,NA,aet,NA,NA,NA,NA,NA
+awd,atmospheric water deficit,NA,NA,NA,def,NA,NA,NA,NA,NA
+bio,BIOCLIM variables,NA,NA,NA,NA,bio,bi,bio,bioc,NA
+elev,elevation,NA,NA,NA,elevation,NA,NA,elev,NA,NA
+pdsi,Palmer drought severity index,NA,NA,NA,PDSI,NA,NA,NA,NA,NA
+pet,reference evapotranspiration,NA,NA,NA,pet,NA,NA,NA,NA,NA
+ppt,precipitation,NA,ppt,ppt,ppt,prec,pr,prec,prec,ppt
+q,current flow,NA,NA,NA,q,NA,NA,NA,NA,NA
+soilWater,soil water content,NA,NA,NA,soil,NA,NA,NA,NA,NA
+srad,solar radiation,NA,NA,NA,srad,NA,NA,srad,NA,NA
+swe,snow water equivalent,NA,NA,NA,swe,NA,NA,NA,NA,NA
+tdmean,mean dewpoint temperature,NA,NA,tdmean,NA,NA,NA,NA,NA,NA
+tmax,maximum temerature,NA,tmax,tmax,tmax,tmax,tx,tmax,tmax,tmax
+tmean,mean temperature,NA,tmean,tmean,NA,tmean,NA,tavg,NA,NA
+tmin,minimum temperature,NA,tmin,tmin,tmin,tmin,tn,tmin,tmin,tmin
+vap,vapor pressure,NA,NA,NA,vap,NA,NA,vapr,NA,NA
+vpd,vapor pressure,NA,NA,NA,vpd,NA,NA,NA,NA,NA
+vpdmax,"vapor pressure deficit, maximum",NA,NA,vpdmax,NA,NA,NA,NA,NA,NA
+vpdmin,"vapor pressure deficit, minimum",NA,NA,vpdmin,NA,NA,NA,NA,NA,NA
+windSpeed,wind speed,NA,NA,NA,ws,NA,NA,wind,NA,NA

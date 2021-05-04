@@ -132,16 +132,22 @@ prExtractAbsoluteDaily <- function(
 	...
 ) {
 
-	### get dates
+	### get unique dates ranges
 	startDates <- prGetDates(x, startDate)
 	endDates <- prGetDates(x, endDate)
 	
 	startEndDates <- data.frame(startDates=startDates, endDates=endDates)
-	startEndDates <- unique(startEndDates)
+	startEndDates <- startEndDates[!duplicated(startEndDates), ]
 
 	# sort by end date then start date
-	dateOrder <- order(endDates, startDates)
+	dateOrder <- order(startEndDates$endDates, startEndDates$startDates)
 	startEndDates <- startEndDates[dateOrder, ]
+	
+	startEndDates$startDate <- lubridate::ymd(startEndDates$startDate)
+	startEndDates$endDate <- lubridate::ymd(startEndDates$endDate)
+	
+	firstStartDate <- startEndDates$startDate[1]
+	lastEndDate <- startEndDates$endDate[nrow(startEndDates)]
 
 	### by VARIABLE
 	for (thisVar in vars) {
@@ -150,68 +156,83 @@ prExtractAbsoluteDaily <- function(
 			warning(paste0('There is no directory for ', thisVar, '.'))
 		} else {
 		
-			### get available years
+			### get available dates
 			yearsAvail <- list.dirs(paste0(prDir, '/', thisVar, '/daily'), full.names=FALSE, recursive=FALSE)
 			yearsAvail <- as.integer(yearsAvail)
 
-			earliestRasterDate <- lubridate::make_date(min(yearsAvail), '01', '01')
-			latestRasterDate <- lubridate::make_date(max(yearsAvail), '12', '31')
+			earliestRasterDate <- lubridate::ymd(paste0(yearsAvail[1], '-01-01'))
+			latestRasterDate <- lubridate::ymd(paste0(tail(yearsAvail, 1), '-12-31'))
+			
+			# get first date of extraction
+			firstExtractDate <- if (earliestRasterDate %<d% firstStartDate) {
+				firstStartDate
+			} else {
+				earliestRasterDate
+			}
+			
+			# get last date of extraction
+			lastExtractDate <- if (latestRasterDate %>d% lastEndDate) {
+				lastEndDate
+			} else {
+				latestRasterDate
+			}
 
-			### range and number of dates needed
-			earliestStartDate <- min(startDates)
-			latestEndDate <- max(endDates)
-	
-			firstDate <- max(earliestRasterDate, earliestStartDate)
-			lastDate <- min(latestRasterDate, latestEndDate)
+			# create temporary data object to store extraction
+			datesNeeded <- seq(firstExtractDate, lastExtractDate, by='1 day')
+			numNeeded <- length(datesNeeded)
 			
-			numDates <- lastDate - firstDate + 1
-			numDates <- as.numeric(numDates)
-			
-			datesNeeded <- seq(firstDate, lastDate, by='1 days')
-			thisOut <- matrix(NA, nrow=nrow(x), ncol=numDates)
+			thisOut <- matrix(NA, nrow=nrow(x), ncol=numNeeded)
 			colnames(thisOut) <- paste0(thisVar, '_', datesNeeded)
 
-			### extract by date
+			### by date range
 			for (countDate in 1:nrow(startEndDates)) {
 			
 				thisStartDate <- startEndDates$startDate[countDate]
 				thisEndDate <- startEndDates$endDate[countDate]
-				if (verbose) cat(paste0(thisVar, ' ', thisStartDate, ' through ', thisEndDate, '\n')); flush.console()
 				
-				if (thisStartDate < earliestRasterDate) thisStartDate <- earliestRasterDate
-				if (thisEndDate > latestRasterDate) thisEndDate <- latestRasterDate
+				if (verbose) cat(paste0(thisVar, ' ', thisStartDate, ' through ', thisEndDate, '\n')); flush.console()
+
+				# if desired date range is at least partially within available date range
+				if (!(thisStartDate %>d% latestRasterDate | thisEndDate %<d% thisStartDate)) {
+
+					# get start/end dates of extraction (determined by available rasters)
+					thisStartExtractDate <- thisStartDate
+					thisEndExtractDate <- thisEndDate
+					
+					if (thisStartExtractDate %<d% earliestRasterDate) thisStartExtractDate <- earliestRasterDate
+					if (thisEndExtractDate %>d% latestRasterDate) thisEndExtractDate <- latestRasterDate
+				
+					# rasters
+					rasts <- prStack(prDir=prDir, vars=thisVar, dates=c(thisStartExtractDate, thisEndExtractDate), by='day', span=TRUE, res=res, rastSuffix=rastSuffix)
+					
+					# extract to records with this date
+					index <- which(startDates == thisStartDate & endDates == thisEndDate)
+					locs <- getCoords(x=x, index=index, longLat=longLat)
+					ext <- terra::extract(rasts, locs, ...)
+					# ext <- terra::extract(rasts, locs)
+					ext <- as.matrix(ext)
+					
+					# remember
+					datesExtracted <- seq(thisStartExtractDate, thisEndExtractDate, by='1 day')
+					cols <- paste0(thisVar, '_', datesExtracted)
+					thisOut[index, cols] <- ext
+					
+				} # if desired date range is at least partially within available date range
+				
+			} # next date range
 			
-				# get rasters
-				rasts <- prStack(prDir=prDir, vars=thisVar, dates=c(thisStartDate, thisEndDate), by='day', span=TRUE, res=res, rastSuffix=rastSuffix)
-
-				# extract to records with this date
-				index <- which(startDates == thisStartDate & endDates == thisEndDate)
-				locs <- getCoords(x=x, index=index, longLat=longLat)
-				ext <- terra::extract(rasts, locs, ...)
-				# ext <- terra::extract(rasts, locs)
-				ext <- as.matrix(ext)
-
-				# ext <- ext[ , 2:ncol(ext), drop=FALSE]
-
-				# remember
-				datesNeeded <- seq(thisStartDate, thisEndDate, by='1 day')
-				cols <- paste0(thisVar, '_', datesNeeded)
-				thisOut[index, cols] <- ext
-						
-			} # next date
-
 			out <- if (exists('out', inherits=FALSE)) {
 				cbind(out, thisOut)
 			} else {
 				thisOut
 			}
-			
-		} # directory for variable exists
+
+		} # if variable exists
 		
 	} # next variable
 	
 	out
-
+	
 }
 
 #' @describeIn prExtractAbsolute Extract monthly values from PRISM across a date range
@@ -229,26 +250,23 @@ prExtractAbsoluteMonthly <- function(
 	...
 ) {
 
-	### get dates
+	### get unique dates ranges
 	startDates <- prGetDates(x, startDate)
 	endDates <- prGetDates(x, endDate)
 	
+	startDates <- formatYYYYMM(startDates)
+	endDates <- formatYYYYMM(endDates)
+	
 	startEndDates <- data.frame(startDates=startDates, endDates=endDates)
+	startEndDates <- startEndDates[!duplicated(startEndDates), ]
 
-	dateOrder <- order(endDates, startDates)
+	# sort by end date then start date
+	dateOrder <- order(startEndDates$endDates, startEndDates$startDates)
 	startEndDates <- startEndDates[dateOrder, ]
-
-	startYear <- getYMD(startEndDates$startDate, 'y')
-	startMonth <- getYMD(startEndDates$startDate, 'm')
-	endYear <- getYMD(startEndDates$endDate, 'y')
-	endMonth <- getYMD(startEndDates$endDate, 'm')
 	
-	startEndDates$startYearMonth <- paste0(startYear, '-', ifelse(startMonth < 10, '0', ''), startMonth)
-	startEndDates$endYearMonth <- paste0(endYear, '-', ifelse(endMonth < 10, '0', ''), endMonth)
+	firstStartDate <- startEndDates$startDate[1]
+	lastEndDate <- startEndDates$endDate[nrow(startEndDates)]
 	
-	dups <- duplicated(startEndDates[ , c('startYearMonth', 'endYearMonth')])
-	startEndDates <- startEndDates[!dups, ]
-
 	### by VARIABLE
 	for (thisVar in vars) {
 	
@@ -256,67 +274,78 @@ prExtractAbsoluteMonthly <- function(
 			warning(paste0('There is no directory for ', thisVar, '.'))
 		} else {
 		
-			### get available years
+			### get available dates
 			yearsAvail <- list.dirs(paste0(prDir, '/', thisVar, '/monthly'), full.names=FALSE, recursive=FALSE)
 			yearsAvail <- as.integer(yearsAvail)
 
-			earliestRasterDate <- lubridate::make_date(min(yearsAvail), '01', '01')
-			latestRasterDate <- lubridate::make_date(max(yearsAvail), '12', '31')
-
-			### range and number of dates needed
-			earliestStartDate <- min(startDates)
-			latestEndDate <- max(endDates)
-	
-			firstDate <- max(earliestRasterDate, earliestStartDate)
-			lastDate <- min(latestRasterDate, latestEndDate)
+			earliestRasterDate <- paste0(yearsAvail[1], '-01')
+			latestRasterDate <- paste0(tail(yearsAvail, 1), '-12')
 			
-			datesNeeded <- seqMonths(firstDate, lastDate)
+			# get first date of extraction
+			firstExtractDate <- if (earliestRasterDate %<d% firstStartDate) {
+				firstStartDate
+			} else {
+				earliestRasterDate
+			}
 			
-			numDates <- length(datesNeeded)
-
-			thisOut <- matrix(NA, nrow=nrow(x), ncol=numDates)
+			# get last date of extraction
+			lastExtractDate <- if (latestRasterDate %>d% lastEndDate) {
+				lastEndDate
+			} else {
+				latestRasterDate
+			}
+			
+			# create temporary data object to store extraction
+			datesNeeded <- seqMonths(firstExtractDate, lastExtractDate)
+			numNeeded <- length(datesNeeded)
+			
+			thisOut <- matrix(NA, nrow=nrow(x), ncol=numNeeded)
 			colnames(thisOut) <- paste0(thisVar, '_', datesNeeded)
 
-			### extract by date
+			### by date range
 			for (countDate in 1:nrow(startEndDates)) {
 			
 				thisStartDate <- startEndDates$startDate[countDate]
 				thisEndDate <- startEndDates$endDate[countDate]
-
-				thisStartYearMonth <- startEndDates$startYearMonth[countDate]
-				thisEndYearMonth <- startEndDates$endYearMonth[countDate]
-
-				if (verbose) cat(thisVar, thisStartYearMonth, 'through', thisEndYearMonth, '\n'); flush.console()
 				
-				if (thisStartDate < earliestRasterDate) thisStartDate <- earliestRasterDate
-				if (thisEndDate > latestRasterDate) thisEndDate <- latestRasterDate
+				if (verbose) cat(paste0(thisVar, ' ', thisStartDate, ' through ', thisEndDate, '\n')); flush.console()
+
+				# if desired date range is at least partially within available date range
+				if (!(thisStartDate %>d% latestRasterDate | thisEndDate %<d% thisStartDate)) {
+
+					# get start/end dates of extraction (determined by available rasters)
+					thisStartExtractDate <- thisStartDate
+					thisEndExtractDate <- thisEndDate
+					
+					if (thisStartExtractDate %<d% earliestRasterDate) thisStartExtractDate <- earliestRasterDate
+					if (thisEndExtractDate %>d% latestRasterDate) thisEndExtractDate <- latestRasterDate
+				
+					# rasters
+					rasts <- prStack(prDir=prDir, vars=thisVar, dates=c(thisStartExtractDate, thisEndExtractDate), by='month', span=TRUE, res=res, rastSuffix=rastSuffix)
+					
+					# extract to records with this date
+					index <- which(startDates == thisStartDate & endDates == thisEndDate)
+					locs <- getCoords(x=x, index=index, longLat=longLat)
+					ext <- terra::extract(rasts, locs, ...)
+					# ext <- terra::extract(rasts, locs)
+					ext <- as.matrix(ext)
+					
+					# remember
+					datesExtracted <- seqMonths(thisStartExtractDate, thisEndExtractDate)
+					cols <- paste0(thisVar, '_', datesExtracted)
+					thisOut[index, cols] <- ext
+					
+				} # if desired date range is at least partially within available date range
+				
+			} # next date range
 			
-				# get rasters
-				rasts <- prStack(prDir=prDir, vars=thisVar, dates=c(thisStartDate, thisEndDate), by='month', span=TRUE, res=res, rastSuffix=rastSuffix)
-			
-				# extract to records with this date
-				index <- which(formatYYYYMM(startDates) == formatYYYYMM(thisStartDate) & formatYYYYMM(endDates) == formatYYYYMM(thisEndDate))
-				locs <- getCoords(x=x, index=index, longLat=longLat)
-				ext <- terra::extract(rasts, locs, ...)
-				# ext <- terra::extract(rasts, locs)
-				ext <- as.matrix(ext)
-
-				# ext <- ext[ , 2:ncol(ext), drop=FALSE]
-
-				# remember
-				yearsMonthsNeeded <- seqMonths(thisStartDate, thisEndDate)
-				cols <- paste0(thisVar, '_', yearsMonthsNeeded)
-				thisOut[index, cols] <- ext
-						
-			} # next date
-
 			out <- if (exists('out', inherits=FALSE)) {
 				cbind(out, thisOut)
 			} else {
 				thisOut
 			}
-			
-		} # directory for variable exists
+				
+		} # if variable exists
 		
 	} # next variable
 	
@@ -340,21 +369,23 @@ prExtractAbsoluteAnnual <- function(
 	...
 ) {
 
-	### get dates
+	### get unique dates ranges
 	startDates <- prGetDates(x, startDate)
 	endDates <- prGetDates(x, endDate)
 	
-	startYears <- getYMD(startDates, 'y')
-	endYears <- getYMD(endDates, 'y')
+	startDates <- getYMD(startDates, 'y')
+	endDates <- getYMD(endDates, 'y')
 	
-	startEndDates <- data.frame(startDates=startYears, endDates=endYears)
+	startEndDates <- data.frame(startDates=startDates, endDates=endDates)
+	startEndDates <- startEndDates[!duplicated(startEndDates), ]
 
-	dateOrder <- order(endDates, startDates)
+	# sort by end date then start date
+	dateOrder <- order(startEndDates$endDates, startEndDates$startDates)
 	startEndDates <- startEndDates[dateOrder, ]
-
-	dups <- duplicated(startEndDates)
-	startEndDates <- startEndDates[!dups, ]
-
+	
+	firstStartDate <- startEndDates$startDate[1]
+	lastEndDate <- startEndDates$endDate[nrow(startEndDates)]
+	
 	### by VARIABLE
 	for (thisVar in vars) {
 	
@@ -362,67 +393,78 @@ prExtractAbsoluteAnnual <- function(
 			warning(paste0('There is no directory for ', thisVar, '.'))
 		} else {
 		
-			### get available years
+			### get available dates
 			yearsAvail <- list.dirs(paste0(prDir, '/', thisVar, '/', annualDir), full.names=FALSE, recursive=FALSE)
 			yearsAvail <- as.integer(yearsAvail)
 
-			earliestRasterDate <- min(yearsAvail)
-			latestRasterDate <- max(yearsAvail)
+			earliestRasterDate <- yearsAvail[1]
+			latestRasterDate <- tail(yearsAvail, 1)
 			
-			### range and number of dates needed
-			earliestStartDate <- min(startYears)
-			latestEndDate <- max(endYears)
-	
-			firstDate <- max(earliestRasterDate, earliestStartDate)
-			lastDate <- min(latestRasterDate, latestEndDate)
+			# get first date of extraction
+			firstExtractDate <- if (earliestRasterDate %<d% firstStartDate) {
+				firstStartDate
+			} else {
+				earliestRasterDate
+			}
 			
-			thisStartYears <- pmax(startYears, firstDate)
-			thisEndYears <- pmin(endYears, lastDate)
-
-			datesNeeded <- firstDate:lastDate
+			# get last date of extraction
+			lastExtractDate <- if (latestRasterDate %>d% lastEndDate) {
+				lastEndDate
+			} else {
+				latestRasterDate
+			}
 			
-			numDates <- length(datesNeeded)
-
-			thisOut <- matrix(NA, nrow=nrow(x), ncol=numDates)
+			# create temporary data object to store extraction
+			datesNeeded <- firstExtractDate:lastExtractDate
+			numNeeded <- length(datesNeeded)
+			
+			thisOut <- matrix(NA, nrow=nrow(x), ncol=numNeeded)
 			colnames(thisOut) <- paste0(thisVar, '_', datesNeeded)
 
-			### extract by date
+			### by date range
 			for (countDate in 1:nrow(startEndDates)) {
 			
 				thisStartDate <- startEndDates$startDate[countDate]
 				thisEndDate <- startEndDates$endDate[countDate]
-
-				if (verbose) cat(thisVar, thisStartDate, 'through', thisEndDate, '\n'); flush.console()
 				
-				if (thisStartDate < earliestRasterDate) thisStartDate <- earliestRasterDate
-				if (thisEndDate > latestRasterDate) thisEndDate <- latestRasterDate
+				if (verbose) cat(paste0(thisVar, ' ', thisStartDate, ' through ', thisEndDate, '\n')); flush.console()
+
+				# if desired date range is at least partially within available date range
+				if (!(thisStartDate %>d% latestRasterDate | thisEndDate %<d% thisStartDate)) {
+
+					# get start/end dates of extraction (determined by available rasters)
+					thisStartExtractDate <- thisStartDate
+					thisEndExtractDate <- thisEndDate
+					
+					if (thisStartExtractDate %<d% earliestRasterDate) thisStartExtractDate <- earliestRasterDate
+					if (thisEndExtractDate %>d% latestRasterDate) thisEndExtractDate <- latestRasterDate
+				
+					# rasters
+					rasts <- prStack(prDir=prDir, vars=thisVar, dates=c(thisStartExtractDate, thisEndExtractDate), by='year', span=TRUE, res=res, rastSuffix=rastSuffix, annualDir=annualDir)
+					
+					# extract to records with this date
+					index <- which(startDates == thisStartDate & endDates == thisEndDate)
+					locs <- getCoords(x=x, index=index, longLat=longLat)
+					ext <- terra::extract(rasts, locs, ...)
+					# ext <- terra::extract(rasts, locs)
+					ext <- as.matrix(ext)
+					
+					# remember
+					datesExtracted <- thisStartExtractDate:thisEndExtractDate
+					cols <- paste0(thisVar, '_', datesExtracted)
+					thisOut[index, cols] <- ext
+					
+				} # if desired date range is at least partially within available date range
+				
+			} # next date range
 			
-				# get rasters
-				rasts <- prStack(prDir=prDir, vars=thisVar, dates=c(thisStartDate, thisEndDate), by='year', span=TRUE, res=res, rastSuffix=rastSuffix, annualDir=annualDir)
-			
-				# extract to records with this date
-				index <- which(thisStartYears == thisStartDate & thisEndYears == thisEndDate)
-				locs <- getCoords(x=x, index=index, longLat=longLat)
-				ext <- terra::extract(rasts, locs, ...)
-				# ext <- terra::extract(rasts, locs)
-				ext <- as.matrix(ext)
-
-				# ext <- ext[ , 2:ncol(ext), drop=FALSE]
-
-				# remember
-				yearsNeeded <- thisStartDate:thisEndDate
-				cols <- paste0(thisVar, '_', yearsNeeded)
-				thisOut[index, cols] <- ext
-						
-			} # next date
-
 			out <- if (exists('out', inherits=FALSE)) {
 				cbind(out, thisOut)
 			} else {
 				thisOut
 			}
-			
-		} # directory for variable exists
+				
+		} # if variable exists
 		
 	} # next variable
 	

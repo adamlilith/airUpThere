@@ -1,8 +1,8 @@
 Package: airUpThere
 Type: Package
 Title: Download and process climate rasters from various sources
-Version: 0.0.9000
-Date: 2021-04-07
+Version: 0.0.9001
+Date: 2021-04-27
 Author: Adam B. Smith
 Maintainer: Adam B. Smith <adam.smith@mobot.org>
 Description: This package automates downloading, unpacking, and use

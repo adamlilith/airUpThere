@@ -6,11 +6,11 @@
 #' @examples
 #' formatYYYYMM(c('2015-10-24', '2017-02-26', '2021-04'))
 #' @export
-formatYYYYMM <- function(x) {
+formatYYYYMM <- compiler::cmpfun(function(x) {
 
 	y <- getYMD(x, 'y')
 	m <- getYMD(x, 'm')
 	out <- paste0(y, '-', ifelse(m < 10, '0', ''), m)
 	out
 	
-}
+})

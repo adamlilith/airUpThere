@@ -1,2 +1,2 @@
-airUpThere 0.0.9000
-Added some support for PRISM, WorldCLim, and TerraClimate
+airUpThere 0.0.9001
+Added some support for CHELSA, PRISM, WorldCLim, and TerraClimate

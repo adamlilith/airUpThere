@@ -5,6 +5,11 @@
 #' Create an issue on \href{https://github.com/adamlilith/airUpThere/issues}{GitHub}.
 #'
 #' @details
+#'
+#' @section airUpThere essentials:
+#'		\code{\link{air_update}}: Retrieve latest URLs \cr
+#' 		\code{\link{varNames}} "File/URL" and "standard" names of each variable available from each data source. \cr
+#'
 #' @section CHELSA:
 #' 		\code{\link{chDownload}} Download CHELSA climate rasters \cr
 #'
@@ -13,28 +18,35 @@
 #' 		\code{\link{prExtractRelative}} Extract values from PRISM climate rasters across a temporal window relative to series of dates (e.g., all values up to 10 days prior to set of dates) \cr
 #' 		\code{\link{prExtractAbsolute}} Extract values from PRISM climate rasters across a specified temporal window (e.g., all values between 1 January 1981 and 31 January 1981, inclusive) \cr
 #' 		\code{\link{prStack}} Create a stack of rasters representing particular dates or across a time series \cr
+#' 		\code{\link{prVars}} Names of available PRISM variables. \cr
 #'
 #' @section WorldClim:
 #' 		\code{\link{wcDownload}} Download WorldClim rasters (present/future of versions 1.4 and 2.1, elevation, decadal averages) \cr
 #' 		\code{\link{wcConvertVar}} Convert names of WorldClim variables from "file" to "standard" format \cr
-#' 		\code{\link{wcGetRes}} Name of WorldClim resolution as used in URLs and file names. \cr
-#' 		\code{\link{wcGetPeriod}} Name of WorldClim future climate period as used in URLs and file names. \cr
-#' 		\code{\link{wcNiceGhg}} Nice name for WorldClim future climate scenarios \cr
+#' 		\code{\link{wcConvertRes}} Name of WorldClim resolution as used in URLs and file names. \cr
+#' 		\code{\link{wcConvertPeriod}} Name of WorldClim future climate period as used in URLs and file names. \cr
+#' 		\code{\link{wcConvertGhg}} Nice name for WorldClim future climate scenarios \cr
 #' 		\code{\link{wcEsm}} Names and abbreviations of earth systems models represented in WorldClim \cr
+#' 		\code{\link{wcGet}} Quickly(?) obtain a set of WorldClim rasters \cr
+#' 		\code{\link{wcVars}} Names of available WorldClim variables. \cr
+#' 		\code{\link{wcRes}} Names of resolutions available for WorldClim. \cr
 #'
 #' @section TerraClimate:
 #' 		\code{\link{tcDownloadMonthly}} Download TerraClimate monthly climate rasters \cr
 #' 		\code{\link{tcDownloadElev}} Download TerraClimate elevation raster \cr
 #' 		\code{\link{tcStack}} Get a stack of TerraClimate rasters \cr
+#' 		\code{\link{tcVars}} Names of available TerraClimate variables. \cr
 #'
 #' @section Useful utilities:
+#'		\code{\link{compareDates}}, \code{\link{\%>d%\}}, \code{\link{\%>=d%\}}, \code{\link{\%==d%\}}, \code{\link{\%<d%\}}, \code{\link{\%<=d%\}}, and \code{\link{\%!=d%\}} Compare dates in YYYY, YYYY-MM, or YYYY-MM-DD formats. \cr
 #'		\code{\link{convertVar}} Convert between "file/URL" and "standard" names of variables. \cr
 #' 		\code{\link{formatYYYYMM}} Get YYYY-MM format from a date. \cr
+#'		\code{\link{ghgNames}} Names of Representative Concentration Pathways (RCPs) and Shared Socioeconomic Pathways (SSPs). \cr
 #'		\code{\link{getCoords}} Get coordinates from a data frame, SpatialPoints, or SpatVector object. \cr
 #' 		\code{\link{getYMD}} Get year, month, or day from a date. \cr
+#'		\code{\link{monthAsNum}} Convert month name to number. \cr
 #'		\code{\link{monthDiff}} Difference in months between two dates expressed as YYYY-MM. \cr
 #' 		\code{\link{seqMonths}} Generate a sequence of years and months from a starting and ending date. \cr
-#' 		\code{\link{varNames}} "File/URL" and "standard" names of each variable available from each data source. \cr
 #'
 #' @references
 #' @section CHELSA

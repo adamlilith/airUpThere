@@ -108,22 +108,22 @@
 #' @examples
 #' 
 #' \dontrun{
-dl <- 'C:/ecology/!Scratch/wc'
-
-# historical (near-present)
-wcDownloadHist(dl, ver=1.4, res=10, vars=c('tmin', 'tmax'))
-wcDownloadHist(dl, ver=2.1, res=10, vars=c('tmin', 'tmax'))
-
-# future: using BCC-CSM1-1 and BCC-CSM2-MR ESMs for RCP 6.0 and SSP 370
-wcDownloadFut(dl, ver=1.4, res=10, vars='tmin', esm='BC', ghg=60, period=2050)
-wcDownloadFut(dl, ver=2.1, res=10, vars='tmin', esm='BC', ghg=370, period=2050)
-
-# historical decadal: for 1960-1969
-wcDownloadDecadal(dl, vars='tmin', period=1960)
-
-# elevation
-wcDownloadElev(dl, res=10)
-
+#' dl1_4 <- 'C:/ecology/!Scratch/wc 1.4 zip'
+#' dl2_1 <- 'C:/ecology/!Scratch/wc 2.1 zip'
+#' 
+#' # historical (near-present)
+#' wcDownloadHist(dl1_4, ver=1.4, res=10, vars=c('tmin', 'tmax'))
+#' wcDownloadHist(dl2_1, ver=2.1, res=10, vars=c('tmin', 'tmax'))
+#' 
+#' # future: using BCC-CSM1-1 and BCC-CSM2-MR ESMs for RCP 6.0 and SSP 370
+#' wcDownloadFut(dl1_4, ver=1.4, res=10, vars='tmin', esm='BC', ghg=60, period=2050)
+#' wcDownloadFut(dl2_1, ver=2.1, res=10, vars='tmin', esm='BC', ghg=370, period=2050)
+#' 
+#' # historical decadal: for 1960-1969
+#' wcDownloadDecadal(dl2_1, vars='tmin', period=1960)
+#' 
+#' # elevation
+#' wcDownloadElev(dl2_1, res=10)
 #' 
 #' }
 #' @export
@@ -144,14 +144,17 @@ wcDownloadHist <- function(
 	wc1_4HistUrl <- 'http://biogeo.ucdavis.edu/data/climate/worldclim/1_4/grid/cur/'
 	wc2_1HistUrl <- 'http://biogeo.ucdavis.edu/data/worldclim/v2.1/base/'
 
-	ok <- wcCheckVer_internal(ver)
-
+	wcCheckVer_internal(ver)
+	wcCheckVars_internal(ver=ver, vars=vars, period='historical')
+	
 	success <- expand.grid(ver=ver, res=res, vars=vars, alreadyHave=NA, downloaded=NA)
 
 	for (thisRes in res) {
 
-		resUnit <- wcGetRes(ver, res, period='historical')
-		saveToAppended <- paste0(saveTo, '/', resUnit, '/historical')
+		resFile <- wcConvertRes(ver=ver, res=thisRes, period='historical', standardToFile=TRUE)
+		resWithUnit <- wcConvertRes(ver=ver, res=resFile, period='historical', standardToFile=FALSE)
+
+		saveToAppended <- paste0(saveTo, '/', resWithUnit, '/historical')
 		dir.create(saveToAppended, showWarnings=FALSE, recursive=TRUE)
 
 		for (thisVar in vars) {
@@ -163,12 +166,12 @@ wcDownloadHist <- function(
 
 			if (ver == 1.4) {
 
-				fileName <- paste0(fileVar, '_', resUnit, '_bil.zip')
+				fileName <- paste0(fileVar, '_', resFile, '_bil.zip')
 				url <- paste0(wc1_4HistUrl, fileName)
 				
 			} else if (ver == 2.1) {
 			
-				fileName <- paste0('wc2.1_', resUnit, '_', fileVar, '.zip')
+				fileName <- paste0('wc2.1_', resFile, '_', fileVar, '.zip')
 				url <- paste0(wc2_1HistUrl, fileName)
 			
 			}
@@ -209,9 +212,9 @@ wcDownloadHist <- function(
 
 			if (verbose) {
 				if (downloaded) {
-					cat(' | downloaded\n')
+					cat(' | success\n')
 				} else {
-					cat(' | not downloaded\n')
+					cat(' | not successful\n')
 				}
 				flush.console()
 			}
@@ -242,27 +245,29 @@ wcDownloadFut <- function(
 ) {
 
 	### hard-coded URLs
-	wc1_4FutUrl <- 'http://biogeo.ucdavis.edu/data/climate/cmip5/'
-	wc2_1FutUrl <- 'http://biogeo.ucdavis.edu/data/worldclim/v2.1/fut/'
+	wc1_4FutUrl <- 'https://biogeo.ucdavis.edu/data/climate/cmip5/'
+	wc2_1FutUrl <- 'https://biogeo.ucdavis.edu/data/worldclim/v2.1/fut/'
 
-	ok <- wcCheckVer_internal(ver)
+	wcCheckVer_internal(ver)
+	wcCheckVars_internal(ver=ver, vars=vars, period='future')
 
 	success <- expand.grid(ver=ver, res=res, esm=esm, period=period, ghg=ghg, vars=vars, alreadyHave=NA, downloaded=NA)
 		
 	for (thisRes in res) {
 
-		resUnit <- wcGetRes(ver, thisRes, period='future')
+		resFile <- wcConvertRes(ver=ver, res=thisRes, period='future', standardToFile=TRUE)
+		resWithUnit <- wcConvertRes(ver=ver, res=resFile, period='future', standardToFile=FALSE)
 
 		for (thisPeriod in period) {
 			
-			periodCode <- wcGetPeriod(ver, thisPeriod, type='future')
+			periodCode <- wcConvertPeriod(ver, thisPeriod, type='future')
 					
 			for (thisGhg in ghg) {
 
-				ok <- wcCheckGhg_internal(ver, thisGhg)
-				ghgNice <- wcNiceGhg(ver, thisGhg)
+				wcCheckGhg_internal(ver, thisGhg)
+				ghgNice <- wcConvertGhg(ver, thisGhg)
 				
-				saveToAppended <- paste0(saveTo, '/', resUnit, '/', thisPeriod, ' ', ghgNice)
+				saveToAppended <- paste0(saveTo, '/', resWithUnit, '/', thisPeriod, '_', ghgNice)
 				dir.create(saveToAppended, showWarnings=FALSE, recursive=TRUE)
 			
 				for (thisVar in vars) {
@@ -280,13 +285,13 @@ wcDownloadFut <- function(
 						if (ver == 1.4) {
 							
 							fileName <- paste0(esmCode, thisGhg, fileVar, periodCode, '.zip')
-							url <- paste0(wc1_4FutUrl, resUnit, '/', fileName)
+							url <- paste0(wc1_4FutUrl, resFile, '/', fileName)
 							filePath <- paste0(saveToAppended, '/', fileName)
 
 						} else if (ver == 2.1) {
 						
-							fileName <- paste0('wc2.1_', resUnit, '_', fileVar, '_', esmCode, '_ssp', thisGhg, '_', periodCode, '.zip')
-							url <- paste0(wc2_1FutUrl, resUnit, '/', fileName)
+							fileName <- paste0('wc2.1_', resFile, '_', fileVar, '_', esmCode, '_ssp', thisGhg, '_', periodCode, '.zip')
+							url <- paste0(wc2_1FutUrl, resFile, '/', fileName)
 							filePath <- paste0(saveToAppended, '/', fileName)
 							
 						}
@@ -296,9 +301,9 @@ wcDownloadFut <- function(
 						
 						if (verbose) {
 							if (alreadyHave) {
-								cat(' | file already exists')
+								cat(' | file already exists:', ifelse(overwrite, 'overwriting', 'skipping'))
 							} else {
-								cat(' | file does not exist')
+								cat(' | file does not exist: downloading')
 							}
 							flush.console()
 						}
@@ -325,9 +330,9 @@ wcDownloadFut <- function(
 
 						if (verbose) {
 							if (downloaded) {
-								cat(' | downloaded\n')
+								cat(' | successful\n')
 							} else {
-								cat(' | not downloaded\n')
+								cat(' | not successful\n')
 							}
 							flush.console()
 						}
@@ -369,32 +374,34 @@ wcDownloadDecadal <- function(
 	res <- 2.5
 	ver <- 2.1
 
-	ok <- wcCheckVer_internal(ver)
+	wcCheckVer_internal(ver)
+	wcCheckVars_internal(ver=ver, vars=vars, period='decadal')
 
 	success <- expand.grid(ver=ver, res=res, vars=vars, period=period, alreadyHave=NA, downloaded=NA)
 
+	resFile <- wcConvertRes(ver=ver, res=thisRes, period='historical', standardToFile=TRUE)
+	resWithUnit <- wcConvertRes(ver=ver, res=resFile, period='historical', standardToFile=FALSE)
 
-	resUnit <- wcGetRes(ver, res, period='decadal')
-	saveToAppended <- paste0(saveTo, '/', resUnit, '/decadal')
+	saveToAppended <- paste0(saveTo, '/', resWithUnit, '/decadal')
 	dir.create(saveToAppended, showWarnings=FALSE, recursive=TRUE)
 
 	for (thisPeriod in period) {
 	
-		periodCode <- wcGetPeriod(ver, thisPeriod, type='decadal')
+		periodCode <- wcConvertPeriod(ver, thisPeriod, type='decadal')
 
 		for (thisVar in vars) {
 		
 			if (verbose) cat('WC decadal | vars', thisVar); flush.console()
 
 			if (!(thisVar %in% c('tmin', 'tmax', 'ppt'))) {
-				warning('This variable is not available in the historical decadal set. Skipping download.')
+				warning('\nThis variable is not available in the historical decadal set. Skipping download.')
 			} else {
 
 				# fileVar <- wcConvertVar(ver=ver, period='historical', vars=thisVar, standardToFile=TRUE)
 				fileVar <- convertVar(src='wc', vars=thisVar, ver=ver, period='historical', standardToFile=TRUE)
 
 				# assuming version 2.1
-				fileName <- paste0('wc2.1_', resUnit, '_', fileVar, '_', periodCode, '.zip')
+				fileName <- paste0('wc2.1_', resFile, '_', fileVar, '_', periodCode, '.zip')
 				url <- paste0(wc2_1DecadalUrl, fileName)
 
 				filePath <- paste0(saveToAppended, '/', fileName)
@@ -416,8 +423,14 @@ wcDownloadDecadal <- function(
 					
 					while (tryNumber <= 10 & !downloaded) {
 						
+						print('')
+						print('https://biogeo.ucdavis.edu/data/worldclim/v2.1/hist/wc2.1_2.5m_tmin_1960-1969.zip')
+						print(url)
+						print(filePath)
+						
 						downloaded <- TRUE
 						tryCatch(
+							# httr::GET(url, httr::write_disk(filePath, quiet=TRUE)),
 							utils::download.file(url, destfile=filePath, mode='wb', quiet=TRUE),
 							error=function(e) { downloaded <<- FALSE }
 						)
@@ -433,9 +446,9 @@ wcDownloadDecadal <- function(
 
 				if (verbose) {
 					if (downloaded) {
-						cat(' | downloaded\n')
+						cat(' | successful\n')
 					} else {
-						cat(' | not downloaded\n')
+						cat(' | not successful\n')
 					}
 					flush.console()
 				}
@@ -459,7 +472,7 @@ wcDownloadDecadal <- function(
 wcDownloadElev <- function(
 	saveTo,
 	res,
-	overwrite = FALSE
+	overwrite = FALSE,
 	verbose = TRUE
 ) {
 
@@ -474,14 +487,15 @@ wcDownloadElev <- function(
 	
 		if (verbose) cat('WC elevation | res', thisRes, '| vars ', vars); flush.console()
 
-		resUnit <- wcGetRes(ver=ver, res, period='historical')
-		saveToAppended <- paste0(saveTo, '/', resUnit)
+		resFile <- wcConvertRes(ver=ver, res=thisRes, period='historical', standardToFile=TRUE)
+		resWithUnit <- wcConvertRes(ver=ver, res=resFile, period='historical', standardToFile=FALSE)
+		saveToAppended <- paste0(saveTo, '/', resWithUnit)
 		dir.create(saveToAppended, showWarnings=FALSE, recursive=TRUE)
 
 		# fileVar <- wcConvertVar(ver=ver, period='historical', vars=thisVar, standardToFile=TRUE)
 		fileVar <- convertVar(src='wc', vars='elev', ver=ver, period='historical', standardToFile=TRUE)
 
-		fileName <- paste0('wc2.1_', resUnit, '_', fileVar, '.zip')
+		fileName <- paste0('wc2.1_', resFile, '_', fileVar, '.zip')
 		url <- paste0(wc2_1ElevUrl, fileName)
 
 		filePath <- paste0(saveToAppended, '/', fileName)
@@ -520,9 +534,9 @@ wcDownloadElev <- function(
 
 		if (verbose) {
 			if (downloaded) {
-				cat(' | downloaded\n')
+				cat(' | successful\n')
 			} else {
-				cat(' | not downloaded\n')
+				cat(' | not successful\n')
 			}
 			flush.console()
 		}

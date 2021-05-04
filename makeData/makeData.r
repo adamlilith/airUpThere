@@ -1,18 +1,51 @@
+library(tibble)
 drive <- 'E:'
+
+############
+### URLs ###
+############
+
+	airUrls <- read.csv(paste0(drive, '/Ecology/Drive/R/airUpThere/makeData/airUrls.csv'))
+	save(airUrls, file=paste0(drive, '/Ecology/Drive/R/airUpThere/data/airUrls.rda'))
+	save(airUrls, file=paste0(drive, '/Ecology/Drive/R/airUpThere_updates/airUrls.rda'))
 
 ######################
 ### variable names ###
 ######################
+
 	varNames <- read.csv(paste0(drive, '/Ecology/Drive/R/airUpThere/makeData/varNames.csv'))
 	save(varNames, file=paste0(drive, '/Ecology/Drive/R/airUpThere/data/varNames.rda'))
+
+#####################
+### GHG scenarios ###
+#####################
+
+	ghgNames <- list(
+		cmip5 = data.frame(
+			rcp = c('2.6', '4.5', '6.0', '8.5')
+		),
+		cmip6 = data.frame(
+			ssp = c(126, 245, 370, 585)
+		)
+	)
+	
+	save(ghgNames, file=paste0(drive, '/Ecology/Drive/R/airUpThere/data/ghgNames.rda'))
+	
+
+#############################
+### WorldClim resolutions ###
+#############################
+
+	wcRes <- read.csv(paste0(drive, '/Ecology/Drive/R/airUpThere/makeData/wcRes.csv'))
+	save(wcRes, file=paste0(drive, '/Ecology/Drive/R/airUpThere/data/wcRes.rda'))
 
 ###########################
 ### WorldClim ESM names ###
 ###########################
 
 	wcEsm <- list(
-		cmip5 = list(
-			longNames = c(
+		cmip5 = data.frame(
+			long = c(
 				'ACCESS1-0',
 				'BCC-CSM1-1',
 				'CCSM4',
@@ -33,7 +66,7 @@ drive <- 'E:'
 				'MRI-CGCM3',
 				'NorESM1-M'
 			),
-			shortNames = c(
+			short = c(
 				'AC',
 				'BC',
 				'CC',
@@ -55,8 +88,8 @@ drive <- 'E:'
 				'NO'
 			)
 		),
-		cmip6 = list(
-			longNames=c(
+		cmip6 = data.frame(
+			long=c(
 				'BCC-CSM2-MR',
 				'CNRM-CM6-1',
 				'CNRM-ESM2-1',
@@ -67,7 +100,7 @@ drive <- 'E:'
 				'MIROC6',
 				'MRI-ESM2-0'
 			),
-			shortNames=c(
+			short=c(
 				'BC',
 				'CC',
 				'CE',

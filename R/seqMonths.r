@@ -4,15 +4,26 @@
 #' @param start,end Start and end dates. Objects of class \code{Date}, or of class \code{character} in either YYYY-MM-DD or YYYY-MO format (e.g., \code{2015-01-01} or \code{2015-01}; note the need for leading zeros for months <10).
 #' @return A character vector.
 #' @examples
-#' seqMonths('2015-10-24', '2017-02-26')
+#' seqMonths('2015-01-01', '2017-02-26')
+#' seqMonths('2017-02-26', '2015-01-01')
 #' seqMonths('2015-10', '2017-02')
+#' seqMonths('2015-10', '2015-02')
 #' @export
-seqMonths <- function(start, end) {
+seqMonths <- compiler::cmpfun(function(start, end) {
 
 	if (length(start) != 1L | length(end) != 1L) stop('More than one value supplied to "start" and/or "end".')
 
 	start <- as.character(start)
 	end <- as.character(end)
+
+	if (start %>d% end) {
+		reversed <- TRUE
+		tempStart <- start
+		start <- end
+		end <- tempStart
+	} else {
+		reversed <- FALSE
+	}
 
 	yr1 <- getYMD(start, 'y')
 	yr2 <- getYMD(end, 'y')
@@ -22,8 +33,6 @@ seqMonths <- function(start, end) {
 
 	if (yr2 < yr1 | (yr1 == yr2 & mo2 < mo1)) stop('Ending date occurs before starting date.')
 	if (mo1 < 1 | mo1 > 12 | mo2 < 1 | mo2 > 12) stop('Invalid months.')
-
-	yrs <- mos <- integer()
 
 	# this year
 	if (yr1 == yr2) {
@@ -37,8 +46,7 @@ seqMonths <- function(start, end) {
 	# full intervening years
 	if (yr2 > yr1 + 1) {
 		n <- yr2 - yr1 - 1
-		int <- yr2 - yr1 - 1
-		yrs <- c(yrs, rep(yr1 + 1:int, each=12 * n))
+		yrs <- c(yrs, rep(yr1 + 1:n, each=12))
 		mos <- c(mos, rep(1:12, n))
 	}
 	
@@ -49,6 +57,7 @@ seqMonths <- function(start, end) {
 	}
 
 	out <- paste0(yrs, '-', ifelse(mos < 10, '0', ''), mos)
+	if (reversed) out <- rev(out)
 	out
 	
-}
+})

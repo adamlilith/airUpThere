@@ -11,7 +11,7 @@
 #' monthDiff('2020-10', '2017-12')
 #' 
 #' @export
-monthDiff <- function(d1, d2) {
+monthDiff <- compiler::cmpfun(function(d1, d2) {
 
 	y1 <- getYMD(d1, 'y')
 	y2 <- getYMD(d2, 'y')
@@ -21,4 +21,4 @@ monthDiff <- function(d1, d2) {
 
 	m1 - m2
 
-}
+})
