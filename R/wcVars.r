@@ -5,9 +5,9 @@
 #' @param period Any of \code{'historical'}, \code{'future'}, or \code{'decadal'}  Partial matching is supported.
 #' @param standard If \code{TRUE} (default), the "standard" names are returned. If \code{FALSE}, the file/URL names are returned.
 #' @param defs If \code{TRUE}, return general definitions of each variable, too.
-#' @details You can see a full list of all variables using \code{data(varNames); varNames}.
+#' @details You can see a full list of all variables using \code{data(airVars); airVars}.
 #' @return A character vector.
-#' @seealso varNames
+#' @seealso airVars
 #' @examples
 #' wcVars(1.4, 'historical')
 #' wcVars(1.4, 'historical', FALSE)
@@ -28,7 +28,7 @@ wcVars <- function(ver, period, standard=TRUE, defs=FALSE) {
 
 	wcCheckVer_internal(ver)
 
-	data('varNames', envir = environment())
+	if (!exists('airVars', inherits=TRUE)) data('airVars', envir=.GlobalEnv)
 	
 	# period
 	choices <- c('historical', 'future', 'decadal')
@@ -36,15 +36,15 @@ wcVars <- function(ver, period, standard=TRUE, defs=FALSE) {
 	period <- choices[this]
 
 	colName <- paste0('worldclim_', ver, '_', period)
-	index <- which(!is.na(varNames[ , colName]))
+	index <- which(!is.na(airVars[ , colName]))
 	
 	out <- if (standard) {
-		varNames$standard[index]
+		airVars$standard[index]
 	} else {
-		varNames[index, colName]
+		airVars[index, colName]
 	}
 	
-	if (defs) out <- data.frame(var=out, definition=varNames$definition[index])
+	if (defs) out <- data.frame(var=out, definition=airVars$definition[index])
 	out
 	
 }

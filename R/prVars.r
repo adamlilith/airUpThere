@@ -4,9 +4,9 @@
 #' @param ver Version of PRISM. Either of \code{'public'} or \code{'subscription'}. Partial matching is used.
 #' @param standard If \code{TRUE} (default), the "standard" names are returned. If \code{FALSE}, the file/URL names are returned.
 #' @param defs If \code{TRUE}, return general definitions of each variable, too.
-#' @details You can see a full list of all variables using \code{data(varNames); varNames}.
+#' @details You can see a full list of all variables using \code{data(airVars); airVars}.
 #' @return A character vector.
-#' @seealso varNames
+#' @seealso airVars
 #' @examples
 #' prVars('p')
 #' prVars('s')
@@ -15,7 +15,7 @@
 
 prVars <- function(ver, standard=TRUE, defs=FALSE) {
 
-	data('varNames', envir = environment())
+	if (!exists('airVars', inherits=TRUE)) data('airVars', envir=.GlobalEnv)
 	
 	# period
 	choices <- c('public', 'subscription')
@@ -23,15 +23,15 @@ prVars <- function(ver, standard=TRUE, defs=FALSE) {
 	ver <- choices[this]
 
 	colName <- paste0('prism_', ver)
-	index <- which(!is.na(varNames[ , colName]))
+	index <- which(!is.na(airVars[ , colName]))
 	
 	out <- if (standard) {
-		varNames$standard[index]
+		airVars$standard[index]
 	} else {
-		varNames[index, colName]
+		airVars[index, colName]
 	}
 	
-	if (defs) out <- data.frame(var=out, definition=varNames$definition[index])
+	if (defs) out <- data.frame(var=out, definition=airVars$definition[index])
 	out
 	
 }

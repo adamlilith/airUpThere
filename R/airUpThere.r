@@ -7,11 +7,16 @@
 #' @details
 #'
 #' @section airUpThere essentials:
-#'		\code{\link{air_update}}: Retrieve latest URLs \cr
-#' 		\code{\link{varNames}} "File/URL" and "standard" names of each variable available from each data source. \cr
+#'		\code{\link{airUpdate}}: Retrieve latest URLs \cr
+#' 		\code{\link{airUrls}} URLs and file patterns for various climate data sources. \cr
+#' 		\code{\link{airVars}} "File/URL" and "standard" names of each variable available from each data source. \cr
 #'
 #' @section CHELSA:
-#' 		\code{\link{chDownload}} Download CHELSA climate rasters \cr
+#' 		\code{\link{chDownloadPaleoBio}}, \code{\link{chDownloadPaleoClim}}, \code{\link{chDownloadPaleoElev}} Download CHELSA paleo-climate and paleo-elevation/ice rasters \cr
+#' 		\code{\link{chDownloadFutureBio}}, \code{\link{chDownloadFutureClim}} Download CHELSA future climate \cr
+#' 		\code{\link{chEsm}} List earth system models available for CHELSA \cr
+#' 		\code{\link{chConvertPeriod}} Translate betweeen "short" and "long" version of future time periods \cr
+#' 		\code{\link{chPeriod}} Future time periods available for CHELSA \cr
 #'
 #' @section PRISM:
 #' 		\code{\link{prDownload}} Download PRISM climate rasters \cr

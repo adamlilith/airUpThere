@@ -22,7 +22,7 @@
 #' @export
 wcConvertRes <- function(ver, res, period, standardToFile=TRUE, incUnit=TRUE) {
 
-	data('wcRes', envir = environment())
+	# data('wcRes', envir = environment())
 
 	col <- paste0('worldclim_', ver, '_', period)
 	if (standardToFile) {
@@ -33,7 +33,7 @@ wcConvertRes <- function(ver, res, period, standardToFile=TRUE, incUnit=TRUE) {
 		index <- which(wcRes[ , col, drop=TRUE] == res)
 		if (length(index) == 0) stop('This is an invalid resolution for WorldClim ', ver, '.')
 		out <- wcRes$standard[index]
-		if (incUnit) out <- paste0(out, '_', wcRes$unit[index])
+		if (incUnit) out <- paste0(out, '', wcRes$unit[index])
 	}
 	
 	out

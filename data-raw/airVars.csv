@@ -1,0 +1,24 @@
+standard,definition,chelsa_1_trace21k,prism_public,prism_subscription,terraclimate,worldclim_1.4_future,worldclim_1.4_historical,worldclim_2.1_decadal,worldclim_2.1_future,worldclim_2.1_historical
+aet,actual evapotranspiration,NA,NA,NA,aet,NA,NA,NA,NA,NA
+awd,atmospheric water deficit,NA,NA,NA,def,NA,NA,NA,NA,NA
+bio,BIOCLIM variables,bio,NA,NA,NA,bi,bio,NA,bioc,bio
+elev,elevation,dem,NA,NA,elevation,NA,NA,NA,NA,elev
+iceMask,ice cover mask,gle,NA,NA,NA,NA,NA,NA,NA,NA
+iceElev,elevation of land plus ice cover,glz,NA,NA,NA,NA,NA,NA,NA,NA
+pdsi,Palmer drought severity index,NA,NA,NA,PDSI,NA,NA,NA,NA,NA
+pet,reference evapotranspiration,NA,NA,NA,pet,NA,NA,NA,NA,NA
+ppt,precipitation,pr,ppt,ppt,ppt,pr,prec,ppt,prec,prec
+q,current flow,NA,NA,NA,q,NA,NA,NA,NA,NA
+snowCoverDays,days of snow cover,NA,NA,NA,NA,NA,NA,NA,NA,NA
+soilWater,soil water content,NA,NA,NA,soil,NA,NA,NA,NA,NA
+srad,solar radiation,NA,NA,NA,srad,NA,NA,NA,NA,srad
+swe,snow water equivalent,NA,NA,NA,swe,NA,NA,NA,NA,NA
+tdmean,mean dewpoint temperature,NA,NA,tdmean,NA,NA,NA,NA,NA,NA
+tmax,maximum temerature,tasmax,tmax,tmax,tmax,tx,tmax,tmax,tmax,tmax
+tmean,mean temperature,NA,tmean,tmean,NA,NA,tmean,NA,NA,tavg
+tmin,minimum temperature,tasmin,tmin,tmin,tmin,tn,tmin,tmin,tmin,tmin
+vap,vapor pressure,NA,NA,NA,vap,NA,NA,NA,NA,vapr
+vpd,vapor pressure,NA,NA,NA,vpd,NA,NA,NA,NA,NA
+vpdmax,"vapor pressure deficit, maximum",NA,NA,vpdmax,NA,NA,NA,NA,NA,NA
+vpdmin,"vapor pressure deficit, minimum",NA,NA,vpdmin,NA,NA,NA,NA,NA,NA
+windSpeed,wind speed,NA,NA,NA,ws,NA,NA,NA,NA,wind

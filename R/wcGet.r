@@ -104,7 +104,7 @@
 #' }
 #' @export
 
-getWc <- function(
+wcGet <- function(
 	ver,
 	res,
 	var,
@@ -123,24 +123,21 @@ getWc <- function(
 	if (!is.null(ghg)) if (length(ghg) > 1) stop('Only one greenhouse gas emissions scenario can be specified at a time.')
 	if (!is.null(period)) if (length(period) > 1) stop('Only one period can be specified at a time.')
 
-	if (any(c(!is.null(esm), !is.null(ghg)))) stop('One or more of "esm" and "ghg" is NULL.')
+	set <- c(esm, ghg, period)
+	if (any(is.null(set) & any(!is.null(set)))) stop('It looks like you want to get future climate rasters.\nYou need to define each of "esm", "ghg", and "period".')
 
 	if (is.null(saveTo)) {
-
 		scratch <- tempdir()
 		saveTo <- paste0(scratch, '/zip', round(10^6 * runif(1)))
-		
 	}
 		
 	if (is.null(unpackTo)) {
-
 		scratch <- tempdir()
 		unpackTo <- paste0(scratch, '/unzip', round(10^6 * runif(1)))
-		
 	}
 		
-	dir.create(saveToZip, showWarnings=FALSE, recursive=TRUE)
-	dir.create(saveToUnzip, showWarnings=FALSE, recursive=TRUE)
+	dir.create(saveTo, showWarnings=FALSE, recursive=TRUE)
+	dir.create(unpackTo, showWarnings=FALSE, recursive=TRUE)
 
 	# elevation
 	if (var=='elev') {
@@ -170,14 +167,14 @@ getWc <- function(
 	} else if (!is.null(esm) & !is.null(ghg) & !is.null(period)) {	
 
 		ok <- wcDownloadFut(saveTo=saveTo, ver=ver, res=res, vars=var, esm=esm, ghg=ghg, period=period, verbose=FALSE)
-		ok <- wcUnpackFut(upackFrom=saveTo, unpackTo=unpackTo, ver=ver, res=res, vars=var, esm=esm, ghg=ghg, period=period, verbose=FALSE)
+		ok <- wcUnpackFut(unpackFrom=saveTo, unpackTo=unpackTo, ver=ver, res=res, vars=var, esm=esm, ghg=ghg, period=period, verbose=FALSE)
 
 	}
 	
 	rastNames <- if (ver == 1.4) {
-		list.files(saveToUnzip, pattern='.bil', full.names=TRUE)
+		list.files(unpackTo, pattern='.bil', full.names=TRUE)
 	} else if (ver == 2.1) {
-		list.files(saveToUnzip, pattern='.tif', full.names=TRUE)
+		list.files(ok$file, pattern='.tif', full.names=TRUE)
 	}
 
 	rasts <- terra::rast(rastNames)

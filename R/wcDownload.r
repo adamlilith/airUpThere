@@ -140,9 +140,9 @@ wcDownloadHist <- function(
 	verbose = TRUE
 ) {
 
-	### hard-coded URLs
-	wc1_4HistUrl <- 'http://biogeo.ucdavis.edu/data/climate/worldclim/1_4/grid/cur/'
-	wc2_1HistUrl <- 'http://biogeo.ucdavis.edu/data/worldclim/v2.1/base/'
+	### update URLs
+	airUpdate(verbose)
+	baseUrl <- getFileOrURL_internal(what='rastUrl', src='wc', ver=ver, period='historical', elevation=FALSE)
 
 	wcCheckVer_internal(ver)
 	wcCheckVars_internal(ver=ver, vars=vars, period='historical')
@@ -154,36 +154,29 @@ wcDownloadHist <- function(
 		resFile <- wcConvertRes(ver=ver, res=thisRes, period='historical', standardToFile=TRUE)
 		resWithUnit <- wcConvertRes(ver=ver, res=resFile, period='historical', standardToFile=FALSE)
 
-		saveToAppended <- paste0(saveTo, '/', resWithUnit, '/historical')
+		saveToAppended <- paste0(saveTo, '/worldclim_', ver, '_archive_', resWithUnit, '_historical')
 		dir.create(saveToAppended, showWarnings=FALSE, recursive=TRUE)
 
 		for (thisVar in vars) {
 
 			if (verbose) cat('WC historical | ver', ver, '| res', thisRes, '| vars', thisVar); flush.console()
 
-			# fileVar <- wcConvertVar(ver=ver, period='historical', vars=thisVar, standardToFile=TRUE)
-			fileVar <- convertVar(src='wc', vars=thisVar, ver=ver, period='historical', standardToFile=TRUE)
+			varFile <- convertVar(src='wc', vars=thisVar, ver=ver, period='historical', standardToFile=TRUE)
 
-			if (ver == 1.4) {
+			fileName <- getFileOrURL_internal(what='rastFilePattern', src='wc', ver=ver, period='historical', elevation=FALSE)
+			fileName <- fillPattern_internal(fileName)
 
-				fileName <- paste0(fileVar, '_', resFile, '_bil.zip')
-				url <- paste0(wc1_4HistUrl, fileName)
-				
-			} else if (ver == 2.1) {
+			thisUrl <- paste0(baseUrl, fileName)
+			thisUrl <- fillPattern_internal(thisUrl)
 			
-				fileName <- paste0('wc2.1_', resFile, '_', fileVar, '.zip')
-				url <- paste0(wc2_1HistUrl, fileName)
-			
-			}
-
 			filePath <- paste0(saveToAppended, '/', fileName)
 			alreadyHave <- file.exists(filePath)
 			
 			if (verbose) {
 				if (alreadyHave) {
-					cat(paste0(' | file already on disk', ifelse(overwrite, ': overwriting', ': skipping')))
+					cat(paste0(' | already exists: ', ifelse(overwrite, 'overwriting', 'skipping')))
 				} else if (verbose) {
-					cat(' | file not on disk: downloading')
+					cat(' | downloading')
 				}
 				flush.console()
 			}
@@ -197,7 +190,7 @@ wcDownloadHist <- function(
 					
 					downloaded <- TRUE
 					tryCatch(
-						utils::download.file(url, destfile=filePath, mode='wb', quiet=TRUE),
+						utils::download.file(thisUrl, destfile=filePath, mode='wb', quiet=TRUE),
 						error=function(e) { downloaded <<- FALSE }
 					)
 
@@ -219,8 +212,8 @@ wcDownloadHist <- function(
 				flush.console()
 			}
 
-			success$alreadyHave[success$res==thisRes & success$vars==thisVar] <- alreadyHave
-			success$downloaded[success$res==thisRes & success$vars==thisVar] <- downloaded
+			success$alreadyHave[success$res==thisRes & success$var==thisVar] <- alreadyHave
+			success$downloaded[success$res==thisRes & success$var==thisVar] <- downloaded
 
 		} # next variable
 		
@@ -244,12 +237,14 @@ wcDownloadFut <- function(
 	verbose = TRUE
 ) {
 
-	### hard-coded URLs
-	wc1_4FutUrl <- 'https://biogeo.ucdavis.edu/data/climate/cmip5/'
-	wc2_1FutUrl <- 'https://biogeo.ucdavis.edu/data/worldclim/v2.1/fut/'
+	airUpdate(verbose)
+	baseUrl <- getFileOrURL_internal(what='rastUrl', src='wc', ver=ver, period='future', elevation=FALSE)
 
 	wcCheckVer_internal(ver)
 	wcCheckVars_internal(ver=ver, vars=vars, period='future')
+	wcCheckEsm_internal(ver=ver, esm=esm)
+	wcCheckGhg_internal(ver, ghg)
+	wcCheckPeriod_internal(ver=ver, period, type='future')
 
 	success <- expand.grid(ver=ver, res=res, esm=esm, period=period, ghg=ghg, vars=vars, alreadyHave=NA, downloaded=NA)
 		
@@ -260,50 +255,41 @@ wcDownloadFut <- function(
 
 		for (thisPeriod in period) {
 			
-			periodCode <- wcConvertPeriod(ver, thisPeriod, type='future')
+			periodFile <- wcConvertPeriod(ver, thisPeriod, type='future')
 					
-			for (thisGhg in ghg) {
+			for (ghgFile in ghg) {
 
-				wcCheckGhg_internal(ver, thisGhg)
-				ghgNice <- wcConvertGhg(ver, thisGhg)
+				ghgNice <- wcConvertGhg(ver, ghgFile)
 				
-				saveToAppended <- paste0(saveTo, '/', resWithUnit, '/', thisPeriod, '_', ghgNice)
+				saveToAppended <- paste0(saveTo, '/worldclim_', ver, '_archive_', resWithUnit, '_', ghgNice, '_', periodFile)
 				dir.create(saveToAppended, showWarnings=FALSE, recursive=TRUE)
 			
 				for (thisVar in vars) {
 
-					# fileVar <- wcConvertVar(ver=ver, period='future', vars=thisVar, standardToFile=TRUE)
-					fileVar <- convertVar(src='wc', vars=thisVar, ver=ver, period='future', standardToFile=TRUE)
+					varFile <- convertVar(src='wc', vars=thisVar, ver=ver, period='future', standardToFile=TRUE)
 				
 					for (thisEsm in esm) {
 
-						if (verbose) cat('WC future | ver', ver, '| res', thisRes, '| period', thisPeriod, '| ghg', thisGhg, '| vars', thisVar, '| esm', thisEsm); flush.console()
+						if (verbose) cat('WC future | ver', ver, '| res', thisRes, '| period', thisPeriod, '| ghg', ghgFile, '| vars', thisVar, '| esm', thisEsm); flush.console()
 						
-						esmCode <- wcGetEsm_internal(ver, thisEsm)
+						esmFile <- wcConvertEsm_internal(ver, thisEsm)
 						
-						# URL
-						if (ver == 1.4) {
-							
-							fileName <- paste0(esmCode, thisGhg, fileVar, periodCode, '.zip')
-							url <- paste0(wc1_4FutUrl, resFile, '/', fileName)
-							filePath <- paste0(saveToAppended, '/', fileName)
+						fileName <- getFileOrURL_internal(what='rastFilePattern', src='wc', ver=ver, period='future', elevation=FALSE)
+						fileName <- fillPattern_internal(fileName)
+						
+						thisUrl <- paste0(baseUrl, fileName)
+						thisUrl <- fillPattern_internal(thisUrl)
 
-						} else if (ver == 2.1) {
-						
-							fileName <- paste0('wc2.1_', resFile, '_', fileVar, '_', esmCode, '_ssp', thisGhg, '_', periodCode, '.zip')
-							url <- paste0(wc2_1FutUrl, resFile, '/', fileName)
-							filePath <- paste0(saveToAppended, '/', fileName)
-							
-						}
+						filePath <- paste0(saveToAppended, '/', fileName)
 
 						# download
 						alreadyHave <- file.exists(filePath)
 						
 						if (verbose) {
 							if (alreadyHave) {
-								cat(' | file already exists:', ifelse(overwrite, 'overwriting', 'skipping'))
-							} else {
-								cat(' | file does not exist: downloading')
+								cat(paste0(' | already exists: ', ifelse(overwrite, 'overwriting', 'skipping')))
+							} else if (verbose) {
+								cat(' | downloading')
 							}
 							flush.console()
 						}
@@ -317,15 +303,14 @@ wcDownloadFut <- function(
 								
 								downloaded <- TRUE
 								tryCatch(
-									utils::download.file(url, destfile=filePath, mode='wb', quiet=TRUE),
+									utils::download.file(thisUrl, destfile=filePath, mode='wb', quiet=TRUE),
 									error=function(e) { downloaded <<- FALSE }
 								)
 								
 								tryNumber <- tryNumber + 1
+								if (!downloaded) Sys.sleep(1)
 							}
 
-							if (nrow(success) > 1) Sys.sleep(1)
-							
 						} # if new download or overwriting
 
 						if (verbose) {
@@ -337,8 +322,8 @@ wcDownloadFut <- function(
 							flush.console()
 						}
 
-						success$alreadyHave[success$res==thisRes & success$esm==thisEsm & success$period==thisPeriod & success$ghg==thisGhg & success$vars==thisVar] <- alreadyHave
-						success$downloaded[success$res==thisRes & success$esm==thisEsm & success$period==thisPeriod & success$ghg==thisGhg & success$vars==thisVar] <- downloaded
+						success$alreadyHave[success$res==thisRes & success$esm==thisEsm & success$period==thisPeriod & success$ghg==ghgFile & success$var==thisVar] <- alreadyHave
+						success$downloaded[success$res==thisRes & success$esm==thisEsm & success$period==thisPeriod & success$ghg==ghgFile & success$var==thisVar] <- downloaded
 						
 					} # next ESM
 					
@@ -369,96 +354,89 @@ wcDownloadDecadal <- function(
 	verbose = TRUE
 ) {
 
-	### hard-coded URLs
-	wc2_1DecadalUrl <- 'https://biogeo.ucdavis.edu/data/worldclim/v2.1/hist/' # wc2.1_2.5m_tmin_1960-1969.zip'
+	airUpdate(verbose)
+	baseUrl <- getFileOrURL_internal(what='rastUrl', src='wc', ver=ver, period='decadal', elevation=FALSE)
+
 	res <- 2.5
 	ver <- 2.1
 
 	wcCheckVer_internal(ver)
 	wcCheckVars_internal(ver=ver, vars=vars, period='decadal')
+	wcCheckPeriod_internal(ver=ver, period, type='decadal')
 
+	# example: 'https://biogeo.ucdavis.edu/data/worldclim/v2.1/hist/wc2.1_2.5m_tmin_1960-1969.zip
+	
 	success <- expand.grid(ver=ver, res=res, vars=vars, period=period, alreadyHave=NA, downloaded=NA)
 
-	resFile <- wcConvertRes(ver=ver, res=thisRes, period='historical', standardToFile=TRUE)
-	resWithUnit <- wcConvertRes(ver=ver, res=resFile, period='historical', standardToFile=FALSE)
-
-	saveToAppended <- paste0(saveTo, '/', resWithUnit, '/decadal')
-	dir.create(saveToAppended, showWarnings=FALSE, recursive=TRUE)
+	resFile <- wcConvertRes(ver=ver, res=res, period='decadal', standardToFile=TRUE)
+	resWithUnit <- wcConvertRes(ver=ver, res=resFile, period='decadal', standardToFile=FALSE)
 
 	for (thisPeriod in period) {
 	
-		periodCode <- wcConvertPeriod(ver, thisPeriod, type='decadal')
+		periodFile <- wcConvertPeriod(ver, thisPeriod, type='decadal', standardToFile=FALSE)
+
+		saveToAppended <- paste0(saveTo, '/worldclim_', ver, '_archive_', resWithUnit, '_decadal_', periodFile)
+		dir.create(saveToAppended, showWarnings=FALSE, recursive=TRUE)
 
 		for (thisVar in vars) {
 		
 			if (verbose) cat('WC decadal | vars', thisVar); flush.console()
 
-			if (!(thisVar %in% c('tmin', 'tmax', 'ppt'))) {
-				warning('\nThis variable is not available in the historical decadal set. Skipping download.')
-			} else {
+			varFile <- convertVar(src='wc', vars=thisVar, ver=ver, period='decadal', standardToFile=TRUE)
 
-				# fileVar <- wcConvertVar(ver=ver, period='historical', vars=thisVar, standardToFile=TRUE)
-				fileVar <- convertVar(src='wc', vars=thisVar, ver=ver, period='historical', standardToFile=TRUE)
+			fileName <- getFileOrURL_internal(what='rastFilePattern', src='wc', ver=ver, period='decadal', elevation=FALSE)
+			fileName <- fillPattern_internal(fileName)
+			
+			thisUrl <- paste0(baseUrl, fileName)
+			thisUrl <- fillPattern_internal(thisUrl)
 
-				# assuming version 2.1
-				fileName <- paste0('wc2.1_', resFile, '_', fileVar, '_', periodCode, '.zip')
-				url <- paste0(wc2_1DecadalUrl, fileName)
+			filePath <- paste0(saveToAppended, '/', fileName)
+			alreadyHave <- file.exists(filePath)
+			
+			if (verbose) {
+				if (alreadyHave) {
+					cat(paste0(' | already exists: ', ifelse(overwrite, 'overwriting', 'skipping')))
+				} else {
+					cat(' | downloading')
+				}
+				flush.console()
+			}
 
-				filePath <- paste0(saveToAppended, '/', fileName)
-				alreadyHave <- file.exists(filePath)
+			downloaded <- FALSE
+			if (!alreadyHave | overwrite) {
+
+				tryNumber <- 1
 				
-				if (verbose) {
-					if (alreadyHave) {
-						cat(paste0(' | file already on disk', ifelse(overwrite, ': overwriting', ': skipping')))
-					} else {
-						cat(' | file not on disk: downloading')
-					}
-					flush.console()
+				while (tryNumber <= 10 & !downloaded) {
+					
+					downloaded <- TRUE
+					tryCatch(
+						utils::download.file(baseUrl, destfile=filePath, mode='wb', quiet=TRUE),
+						error=function(e) { downloaded <<- FALSE }
+					)
+
+					Sys.sleep(1)
+					
+					tryNumber <- tryNumber + 1
 				}
 
-				downloaded <- FALSE
-				if (!alreadyHave | overwrite) {
-
-					tryNumber <- 1
-					
-					while (tryNumber <= 10 & !downloaded) {
-						
-						print('')
-						print('https://biogeo.ucdavis.edu/data/worldclim/v2.1/hist/wc2.1_2.5m_tmin_1960-1969.zip')
-						print(url)
-						print(filePath)
-						
-						downloaded <- TRUE
-						tryCatch(
-							# httr::GET(url, httr::write_disk(filePath, quiet=TRUE)),
-							utils::download.file(url, destfile=filePath, mode='wb', quiet=TRUE),
-							error=function(e) { downloaded <<- FALSE }
-						)
-
-						Sys.sleep(1)
-						
-						tryNumber <- tryNumber + 1
-					}
-
-					if (nrow(success) > 1) Sys.sleep(1)
-					
-				} # if new download or overwriting
-
-				if (verbose) {
-					if (downloaded) {
-						cat(' | successful\n')
-					} else {
-						cat(' | not successful\n')
-					}
-					flush.console()
-				}
-
-				this <- which(success$vars==thisVar & success$thisPeriod==period)
-				success$alreadyHave[this] <- alreadyHave
-				success$downloaded[this] <- downloaded
+				if (nrow(success) > 1) Sys.sleep(1)
 				
-			} # variable is available in the decadal set
+			} # if new download or overwriting
 
+			if (verbose) {
+				if (downloaded) {
+					cat(' | successful\n')
+				} else {
+					cat(' | not successful\n')
+				}
+				flush.console()
+			}
+
+			this <- which(success$var==thisVar & success$thisPeriod==period)
+			success$alreadyHave[this] <- alreadyHave
+			success$downloaded[this] <- downloaded
+			
 		} # next variable
 		
 	} # next decade
@@ -476,10 +454,14 @@ wcDownloadElev <- function(
 	verbose = TRUE
 ) {
 
-	### hard-coded URLs
-	wc2_1ElevUrl <- 'https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/'
-	vars <- 'elev'
+	airUpdate(verbose)
+	baseUrl <- getFileOrURL_internal(what='rastUrl', src='wc', ver=ver, period=NULL, elevation=TRUE)
+
 	ver <- 2.1
+	vars <- thisVar <- 'elev'
+
+	wcCheckVer_internal(ver)
+	wcCheckVars_internal(ver=ver, vars=vars, period='historical')
 
 	success <- expand.grid(ver=ver, res=res, vars=vars, alreadyHave=NA, downloaded=NA)
 
@@ -489,23 +471,26 @@ wcDownloadElev <- function(
 
 		resFile <- wcConvertRes(ver=ver, res=thisRes, period='historical', standardToFile=TRUE)
 		resWithUnit <- wcConvertRes(ver=ver, res=resFile, period='historical', standardToFile=FALSE)
-		saveToAppended <- paste0(saveTo, '/', resWithUnit)
+		saveToAppended <- paste0(saveTo, '/worldclim_', ver, '_archive_', resWithUnit, '_elevation')
 		dir.create(saveToAppended, showWarnings=FALSE, recursive=TRUE)
 
-		# fileVar <- wcConvertVar(ver=ver, period='historical', vars=thisVar, standardToFile=TRUE)
-		fileVar <- convertVar(src='wc', vars='elev', ver=ver, period='historical', standardToFile=TRUE)
+		# varFile <- wcConvertVar(ver=ver, period='historical', vars=thisVar, standardToFile=TRUE)
+		varFile <- convertVar(src='wc', vars='elev', ver=ver, period='historical', standardToFile=TRUE)
 
-		fileName <- paste0('wc2.1_', resFile, '_', fileVar, '.zip')
-		url <- paste0(wc2_1ElevUrl, fileName)
+		fileName <- getFileOrURL_internal(what='rastFilePattern', src='wc', ver=ver, period=NULL, elevation=TRUE)
+		fileName <- fillPattern_internal(fileName)
+		
+		thisUrl <- paste0(baseUrl, fileName)
+		thisUrl <- fillPattern_internal(thisUrl)
 
 		filePath <- paste0(saveToAppended, '/', fileName)
 		alreadyHave <- file.exists(filePath)
 		
 		if (verbose) {
 			if (alreadyHave) {
-				cat(paste0(' | file already on disk', ifelse(overwrite, ': overwriting', ': skipping')))
+				cat(paste0(' | already exists: ', ifelse(overwrite, 'overwriting', 'skipping')))
 			} else {
-				cat(' | file not on disk: downloading')
+				cat(' | downloading')
 			}
 			flush.console()
 		}
@@ -519,7 +504,7 @@ wcDownloadElev <- function(
 				
 				downloaded <- TRUE
 				tryCatch(
-					utils::download.file(url, destfile=filePath, mode='wb', quiet=TRUE),
+					utils::download.file(thisUrl, destfile=filePath, mode='wb', quiet=TRUE),
 					error=function(e) { downloaded <<- FALSE }
 				)
 
@@ -541,8 +526,8 @@ wcDownloadElev <- function(
 			flush.console()
 		}
 
-		success$alreadyHave[success$res==thisRes & success$vars==thisVar] <- alreadyHave
-		success$downloaded[success$res==thisRes & success$vars==thisVar] <- downloaded
+		success$alreadyHave[success$res==thisRes & success$var==thisVar] <- alreadyHave
+		success$downloaded[success$res==thisRes & success$var==thisVar] <- downloaded
 		
 	} # next resolution
 	

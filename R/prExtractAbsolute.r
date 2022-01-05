@@ -2,7 +2,7 @@
 #' @rdname prExtractAbsolute
 #' @title Extract values from PRISM across specified time periods
 
-#' @description These functions extract values from interpolated weather rasters from the Parameter Regression on Independent Slopes (PRISM) data product across a range of dates. For example, it could extract all values from 2014-04-22 to 2014-04-29. If you wish to extract values across a set date range (e.g., up to 10 days prior to a set of dates, then see \code{\link{prExtractWindow}}. If you wish to extract values across a specified date range (e.g., from 2014-04-22 to 2014-04-29, then see \code{\link{prExtractRelative}}. Extractions are done at points (versus polygons or lines, for example). \cr\cr
+#' @description These functions extract values from interpolated weather rasters from the Parameter Regression on Independent Slopes (PRISM) data product across a range of dates. For example, it could extract all values from 2014-04-22 to 2014-04-29 across all points. If you wish to extract values across a specified date range that varies by point (e.g., the 100 days prior to sampling at each point, then see \code{\link{prExtractRelative}}. Extractions are done at points (versus polygons or lines, for example). \cr\cr
 
 #' The basic input is an object of class \code{spatVector}, \code{SpatialPoints}, \code{SpatialPointsDataFrame}, \code{data.frame}, or \code{matrix}, with each row representing a point location. The function also needs to be pointed toward a folder with PRISM data. The folder with PRISM data must be structured as:
 #' \itemize{
@@ -211,6 +211,8 @@ prExtractAbsoluteDaily <- function(
 					ext <- terra::extract(rasts, locs, ...)
 					# ext <- terra::extract(rasts, locs)
 					ext <- as.matrix(ext)
+					idCol <- which(colnames(ext) == 'ID')
+					if (length(idCol) > 0) ext <- ext[ , -idCol, drop=FALSE]
 					
 					# remember
 					datesExtracted <- seq(thisStartExtractDate, thisEndExtractDate, by='1 day')
@@ -329,6 +331,8 @@ prExtractAbsoluteMonthly <- function(
 					ext <- terra::extract(rasts, locs, ...)
 					# ext <- terra::extract(rasts, locs)
 					ext <- as.matrix(ext)
+					idCol <- which(colnames(ext) == 'ID')
+					if (length(idCol) > 0) ext <- ext[ , -idCol, drop=FALSE]
 					
 					# remember
 					datesExtracted <- seqMonths(thisStartExtractDate, thisEndExtractDate)
@@ -448,6 +452,8 @@ prExtractAbsoluteAnnual <- function(
 					ext <- terra::extract(rasts, locs, ...)
 					# ext <- terra::extract(rasts, locs)
 					ext <- as.matrix(ext)
+					idCol <- which(colnames(ext) == 'ID')
+					if (length(idCol) > 0) ext <- ext[ , -idCol, drop=FALSE]
 					
 					# remember
 					datesExtracted <- thisStartExtractDate:thisEndExtractDate

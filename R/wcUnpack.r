@@ -155,27 +155,25 @@ wcUnpackHist <- function(
 		resFile <- wcConvertRes(ver=ver, res=thisRes, period='historical', standardToFile=TRUE)
 		resWithUnit <- wcConvertRes(ver=ver, res=resFile, period='historical', standardToFile=FALSE)
 		
-		unpackFromAppended <- paste0(unpackFrom, '/', resWithUnit, '/historical')
-		unpackToAppended <- paste0(unpackTo, '/', resWithUnit, '/historical')
+		unpackFromAppended <- paste0(unpackFrom, '/worldclim_', ver, '_archive_', resWithUnit, '_historical')
+		unpackToAppended <- paste0(unpackTo, '/worldclim_', ver, '_', resWithUnit, '_historical')
 		dir.create(unpackToAppended, showWarnings=FALSE, recursive=TRUE)
 
 		for (thisVar in vars) {
 
-			if (verbose) cat('WC historical | ver', ver, '| res', thisRes, '| vars', thisVar); flush.console()
+			if (verbose) cat('WC historical | ver', ver, '| res', thisRes, '| var', thisVar); flush.console()
 
-			fileVar <- convertVar(src='wc', vars=thisVar, ver=ver, period='historical', standardToFile=TRUE)
+			varFile <- convertVar(src='wc', vars=thisVar, ver=ver, period='historical', standardToFile=TRUE)
 
 			# unpack from file path and name
-			unpackFromFile <- if (ver == 1.4) {
-				paste0(fileVar, '_', resFile, '_bil.zip')
-			} else if (ver == 2.1) {
-				paste0('wc2.1_', resFile, '_', fileVar, '.zip')
-			}
+			packedFileName <- getFileOrURL_internal(what='rastFilePattern', src='wc', ver=ver, period='historical', elevation=FALSE)
+			packedFileName <- gsub(packedFileName, pattern='<<varFile>>', replacement=varFile)
+			packedFileName <- gsub(packedFileName, pattern='<<resFile>>', replacement=resFile)
 
-			unpackFromPathFile <- paste0(unpackFromAppended, '/', unpackFromFile)
+			unpackFromPathFile <- paste0(unpackFromAppended, '/', packedFileName)
 			haveZipFile <- file.exists(unpackFromPathFile)
 			
-			haveUnzippedFiles <- successfulUnzip <- FALSE
+			haveUnzippedFiles <- successfulUnpack <- FALSE
 			if (!haveZipFile & fail) {
 				
 				msg <- paste0('\nNo zip file for ', thisVar, ' at ', thisRes, ' resolution for WorldClim ', ver, ' exists.')
@@ -191,13 +189,13 @@ wcUnpackHist <- function(
 				haveUnzippedFiles <- any(file.exists(paste0(unpackToAppended, '/', unzippedFileNames)))
 			
 				unzip(unpackFromPathFile, exdir=unpackToAppended, junkpaths=TRUE, overwrite=overwrite)
-				successfulUnzip <- all(file.exists(paste0(unpackToAppended, '/', unzippedFileNames)))
+				successfulUnpack <- all(file.exists(paste0(unpackToAppended, '/', unzippedFileNames)))
 				
 			}
 
 			overwritten <- (overwrite & haveUnzippedFiles)
 
-			thisSuccess <- data.frame(ver=ver, var=thisVar, res=thisRes, file=unzippedFileNames, haveZipped=haveZipFile, unpacked=successfulUnzip, overwritten=overwritten)
+			thisSuccess <- data.frame(ver=ver, var=thisVar, res=thisRes, packedFileName=packedFileName, unpackedFile=unzippedFileNames, unpacked=successfulUnpack, overwritten=overwritten)
 
 			success <- if (exists('success', inherits=FALSE)) {
 				rbind(success, thisSuccess)
@@ -206,10 +204,10 @@ wcUnpackHist <- function(
 			}
 			
 			if (verbose) {
-				if (successfulUnzip) {
+				if (successfulUnpack) {
 					cat(' | succesful\n')
 				} else {
-					cat(' | not successful\n')
+					cat(' | unsuccessful\n')
 				}
 				flush.console()
 			}
@@ -248,15 +246,15 @@ wcUnpackFut <- function(
 
 		for (thisPeriod in period) {
 			
-			periodCode <- wcConvertPeriod(ver, thisPeriod, type='future')
+			periodFile <- wcConvertPeriod(ver, thisPeriod, type='future')
 					
 			for (thisGhg in ghg) {
 
 				wcCheckGhg_internal(ver, thisGhg)
 				ghgNice <- wcConvertGhg(ver, thisGhg)
 				
-				unpackFromAppended <- paste0(unpackFrom, '/', resWithUnit, '/', thisPeriod, '_', ghgNice)
-				unpackToAppended <- paste0(unpackTo, '/', resWithUnit, '/', thisPeriod, '_', ghgNice)
+				unpackFromAppended <- paste0(unpackFrom, '/worldclim_', ver, '_archive_', resWithUnit, '_', ghgNice, '_', periodFile)
+				unpackToAppended <- paste0(unpackTo, '/worldclim_', ver, '_', resWithUnit, '_', ghgNice, '_', periodFile)
 				dir.create(unpackToAppended, showWarnings=FALSE, recursive=TRUE)
 			
 				for (thisVar in vars) {
@@ -267,19 +265,19 @@ wcUnpackFut <- function(
 
 						if (verbose) cat('WC future | ver', ver, '| res', thisRes, '| period', thisPeriod, '| ghg', thisGhg, '| vars', thisVar, '| esm', thisEsm); flush.console()
 						
-						esmCode <- wcGetEsm_internal(ver, thisEsm)
+						esmCode <- wcConvertEsm_internal(ver, thisEsm)
 						
 						# unpack from file path and name
 						unpackFromFile <- if (ver == 1.4) {
-							paste0(esmCode, thisGhg, fileVar, periodCode, '.zip')
+							paste0(esmCode, thisGhg, fileVar, periodFile, '.zip')
 						} else if (ver == 2.1) {
-							paste0('wc2.1_', resFile, '_', fileVar, '_', esmCode, '_ssp', thisGhg, '_', periodCode, '.zip')
+							paste0('wc2.1_', resFile, '_', fileVar, '_', esmCode, '_ssp', thisGhg, '_', periodFile, '.zip')
 						}
 
 						unpackFromPathFile <- paste0(unpackFromAppended, '/', unpackFromFile)
 						haveZipFile <- file.exists(unpackFromPathFile)
 						
-						haveUnzippedFiles <- successfulUnzip <- FALSE
+						haveUnzippedFiles <- successfulUnpack <- FALSE
 						if (!haveZipFile & fail) {
 							
 							msg <- paste0('\nNo zip file for ', thisEsm, ' for ', thisGhg, ' for ', thisPeriod, ' for ', thisVar, ' at ', thisRes, ' resolution for WorldClim ', ver, ' exists.')
@@ -291,17 +289,17 @@ wcUnpackFut <- function(
 
 						} else {
 						
-							unzippedFileNames <- unzip(unpackFromPathFile, list=TRUE)$Name
+							unzippedFileNames <- basename(unzip(unpackFromPathFile, list=TRUE)$Name)
 							haveUnzippedFiles <- any(file.exists(paste0(unpackToAppended, '/', unzippedFileNames)))
 							unzip(unpackFromPathFile, exdir=unpackToAppended, junkpaths=TRUE, overwrite=overwrite)
 							
-							successfulUnzip <- all(file.exists(paste0(unpackToAppended, '/', unzippedFileNames)))
+							successfulUnpack <- all(file.exists(paste0(unpackToAppended, '/', unzippedFileNames)))
 							
 						}
 
 						overwritten <- (overwrite & haveUnzippedFiles)
 
-						thisSuccess <- data.frame(ver=ver, var=thisVar, res=thisRes, esm=thisEsm, ghg=thisGhg, period=thisPeriod, file=unzippedFileNames, haveZipped=haveZipFile, unpacked=successfulUnzip, overwritten=overwritten)
+						thisSuccess <- data.frame(ver=ver, var=thisVar, res=thisRes, esm=thisEsm, ghg=thisGhg, period=thisPeriod, file=unzippedFileNames, havePacked=haveZipFile, unpacked=successfulUnpack, overwritten=overwritten)
 
 						success <- if (exists('success', inherits=FALSE)) {
 							rbind(success, thisSuccess)
@@ -310,10 +308,10 @@ wcUnpackFut <- function(
 						}
 						
 						if (verbose) {
-							if (successfulUnzip) {
+							if (successfulUnpack) {
 								cat(' | succesful\n')
 							} else {
-								cat(' | not successful\n')
+								cat(' | unsuccessful\n')
 							}
 							flush.console()
 						}
@@ -364,7 +362,7 @@ wcUnpackDecadal <- function(
 
 	for (thisPeriod in period) {
 	
-		periodCode <- wcConvertPeriod(ver, thisPeriod, type='decadal')
+		periodFile <- wcConvertPeriod(ver, thisPeriod, type='decadal')
 
 		for (thisVar in vars) {
 		
@@ -378,7 +376,7 @@ wcUnpackDecadal <- function(
 				fileVar <- convertVar(src='wc', vars=thisVar, ver=ver, period='historical', standardToFile=TRUE)
 
 				# assuming version 2.1
-				fileName <- paste0('wc2.1_', resFile, '_', fileVar, '_', periodCode, '.zip')
+				fileName <- paste0('wc2.1_', resFile, '_', fileVar, '_', periodFile, '.zip')
 
 				unpackFromPathFile <- paste0(unpackFromAppended, '/', fileName)
 				haveZipFile <- file.exists(unpackFromPathFile)
@@ -392,7 +390,7 @@ wcUnpackDecadal <- function(
 					flush.console()
 				}
 
-				successfulUnzip <- haveUnzippedFiles <- FALSE
+				successfulUnpack <- haveUnzippedFiles <- FALSE
 				if (!haveZipFile & fail) {
 					
 					msg <- paste0('\nNo zip file for ', thisVar, ' for ', thisPeriod, ' exists.')
@@ -409,13 +407,13 @@ wcUnpackDecadal <- function(
 				
 					unzip(unpackFromPathFile, exdir=unpackToAppended, junkpaths=TRUE, overwrite=overwrite)
 					
-					successfulUnzip <- all(file.exists(paste0(unpackToAppended, '/', unzippedFileNames)))
+					successfulUnpack <- all(file.exists(paste0(unpackToAppended, '/', unzippedFileNames)))
 					
 				}
 
 				overwritten <- (overwrite & haveUnzippedFiles)
 
-				thisSuccess <- data.frame(ver=ver, var=thisVar, period=thisPeriod, file=unzippedFileNames, haveZipped=haveZipFile, unpacked=successfulUnzip, overwritten=overwritten)
+				thisSuccess <- data.frame(ver=ver, var=thisVar, period=thisPeriod, file=unzippedFileNames, havePacked=haveZipFile, unpacked=successfulUnpack, overwritten=overwritten)
 
 				success <- if (exists('success', inherits=FALSE)) {
 					rbind(success, thisSuccess)
@@ -424,15 +422,15 @@ wcUnpackDecadal <- function(
 				}
 
 				if (verbose) {
-					if (successfulUnzip) {
+					if (successfulUnpack) {
 						cat(' | successful\n')
 					} else {
-						cat(' | not successful\n')
+						cat(' | unsuccessful\n')
 					}
 					flush.console()
 				}
 
-				this <- which(success$vars==thisVar & success$thisPeriod==period)
+				this <- which(success$var==thisVar & success$thisPeriod==period)
 				success$alreadyHave[this] <- alreadyHave
 				success$downloaded[this] <- downloaded
 				
@@ -488,7 +486,7 @@ wcUnpackElev <- function(
 					flush.console()
 				}
 
-				successfulUnzip <- haveUnzippedFiles <- FALSE
+				successfulUnpack <- haveUnzippedFiles <- FALSE
 				if (!haveZipFile & fail) {
 					
 					msg <- paste0('\nNo zip file for elevation for ', thisRes, ' resolution for WorldClim 2.1 exists.')
@@ -505,13 +503,13 @@ wcUnpackElev <- function(
 				
 					unzip(unpackFromPathFile, exdir=unpackToAppended, junkpaths=TRUE, overwrite=overwrite)
 					
-					successfulUnzip <- all(file.exists(paste0(unpackToAppended, '/', unzippedFileNames)))
+					successfulUnpack <- all(file.exists(paste0(unpackToAppended, '/', unzippedFileNames)))
 					
 				}
 
 				overwritten <- (overwrite & haveUnzippedFiles)
 
-				thisSuccess <- data.frame(ver=ver, var=thisVar, file=unzippedFileNames, haveZipped=haveZipFile, unpacked=successfulUnzip, overwritten=overwritten)
+				thisSuccess <- data.frame(ver=ver, var=thisVar, file=unzippedFileNames, havePacked=haveZipFile, unpacked=successfulUnpack, overwritten=overwritten)
 
 				success <- if (exists('success', inherits=FALSE)) {
 					rbind(success, thisSuccess)
@@ -520,10 +518,10 @@ wcUnpackElev <- function(
 				}
 
 				if (verbose) {
-					if (successfulUnzip) {
+					if (successfulUnpack) {
 						cat(' | successful\n')
 					} else {
-						cat(' | not successful\n')
+						cat(' | unsuccessful\n')
 					}
 					flush.console()
 				}

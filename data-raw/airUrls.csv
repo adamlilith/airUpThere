@@ -1,0 +1,15 @@
+src,source,version,period,elevation,rastUrl,timestampUrl,rastFilePattern,timestampFilePattern,lastUpdated,notes
+ch,chelsa_trace21k,1,,FALSE,https://os.zhdk.cloud.switch.ch/envicloud/chelsa/chelsa_V1/chelsa_trace/bio/CHELSA_TraCE21k_bio01_<<century>>_V<<ver>>.tif,,,,,
+ch,chelsa_trace21k,1,,TRUE,https://os.zhdk.cloud.switch.ch/envicloud/chelsa/chelsa_V1/chelsa_trace/orog/CHELSA_TraCE21k_dem_<<century>>_V<<ver>>.tif,,,,,
+dm,daymet,,,FALSE,,,,,,
+pr,prism,public,NA,FALSE,,,,,,
+pr,prism,subscription,NA,FALSE,,,,,,
+pr,prism,NA,NA,TRUE,,,,,,
+tc,terraclimate,NA,NA,FALSE,http://thredds.northwestknowledge.net:8080/thredds/fileServer/TERRACLIMATE_ALL/data/,http://thredds.northwestknowledge.net:8080/thredds/catalog/TERRACLIMATE_ALL/data/catalog.html,,,5/4/2021,
+tc,terraclimate,NA,NA,TRUE,https://climate.northwestknowledge.net/METDATA/data/,,metdata_elevationdata.nc,,5/4/2021,
+wc,worldclim,1.4,historical,FALSE,http://biogeo.ucdavis.edu/data/climate/worldclim/1_4/grid/cur/,NA,<<varFile>>_<<resFile>>_bil.zip,,5/4/2021,
+wc,worldclim,1.4,future,FALSE,https://biogeo.ucdavis.edu/data/climate/cmip5/<<resFile>>/,NA,<<esmFile>><<ghgFile>><<varFile>><<periodFile>>.zip,,5/4/2021,
+wc,worldclim,2.1,historical,FALSE,http://biogeo.ucdavis.edu/data/worldclim/v2.1/base/,NA,wc2.1_<<resFile>>_<<varFile>>.zip,,5/4/2021,
+wc,worldclim,2.1,future,FALSE,https://biogeo.ucdavis.edu/data/worldclim/v2.1/fut/<<resFile>>/,NA,wc2.1_<<resFile>>_<<varFile>>_<<esmFile>>_ssp<<ghgFile>>_<<periodFile>>.zip,,10/18/2021,https://biogeo.ucdavis.edu/data/worldclim/v2.1/fut/10m/wc2.1_10m_bioc_BCC-CSM2-MR_ssp585_2061-2080.zip
+wc,worldclim,2.1,NA,TRUE,https://biogeo.ucdavis.edu/data/worldclim/v2.1/base/,NA,wc2.1_<<resFile>>_<<varFile>>.zip,,5/4/2021,
+wc,worldclim,2.1,decadal,FALSE,https://biogeo.ucdavis.edu/data/worldclim/v2.1/hist/,NA,wc2.1_<<resFile>>_<<varFile>>_<<periodFile>>.zip,,5/4/2021,https://biogeo.ucdavis.edu/data/worldclim/v2.1/hist/wc2.1_2.5m_tmin_1960-1969.zip

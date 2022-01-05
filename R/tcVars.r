@@ -3,9 +3,9 @@
 #' Get standard or file/URL versions of TerraClimate variables.
 #' @param standard If \code{TRUE} (default), the "standard" names are returned. If \code{FALSE}, the file/URL names are returned.
 #' @param defs If \code{TRUE}, return general definitions of each variable, too.
-#' @details You can see a full list of all variables using \code{data(varNames); varNames}.
+#' @details You can see a full list of all variables using \code{data(airVars); airVars}.
 #' @return A character vector.
-#' @seealso varNames
+#' @seealso airVars
 #' @examples
 #' tcVars(TRUE)
 #' tcVars(TRUE, defs=TRUE)
@@ -14,18 +14,18 @@
 
 tcVars <- function(standard=TRUE, defs=FALSE) {
 
-	data('varNames', envir = environment())
+	if (!exists('airVars', inherits=TRUE)) data('airVars', envir=.GlobalEnv)
 	
 	colName <- 'terraclimate'
-	index <- which(!is.na(varNames[ , colName]))
+	index <- which(!is.na(airVars[ , colName]))
 	
 	out <- if (standard) {
-		varNames$standard[index]
+		airVars$standard[index]
 	} else {
-		varNames[index, colName]
+		airVars[index, colName]
 	}
 	
-	if (defs) out <- data.frame(var=out, definition=varNames$definition[index])
+	if (defs) out <- data.frame(var=out, definition=airVars$definition[index])
 	out
 	
 }

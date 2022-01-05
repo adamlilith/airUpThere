@@ -18,9 +18,9 @@ wcConvertGhg <- function(ver, ghg) {
 		ghg <- paste0(substr(ghg, 1, 1), '.', substr(ghg, 2, 2))
 	}
 	ghgNice <- if (ver == 1.4) {
-		paste0('rcp_', ghg)
+		paste0('rcp', ghg)
 	} else if (ver == 2.1) {
-		paste0('ssp_', ghg)
+		paste0('ssp', ghg)
 	} else {
 		stop('This is an invalid version greenhouse gas emissions scenario.')
 	}

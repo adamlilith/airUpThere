@@ -5,19 +5,19 @@
 #' @keywords internal
 prGetDates <- function(x, date) {
 	
-	if (class(date) == 'Date') {
+	if (inherits(date, 'Date')) {
 		dates <- if (length(date) == 1L) {
 			rep(date, nrow(x))
 		} else if (length(date) != nrow(x)) {
 			stop('Argument "date" must have either a single value or one value per record.')
 		}
-	} else if (length(date) == 3 & 'character' %in% class(date)) {
+	} else if (length(date) == 3 & inherits(date, 'character')) {
 		dates <- lubridate::make_date(
 			year=x[ , date[1], drop=TRUE],
 			month=x[ , date[2], drop=TRUE],
 			day=x[ , date[3]]
 		)
-	} else if (length(date) == 1 & 'character' %in% class(date)) {
+	} else if (length(date) == 1 & inherits(date, 'character')) {
 		if (class(x[ , date]) != 'Date') {
 			dates <- lubridate::ymd(x[ , date, drop=TRUE])
 		} else {

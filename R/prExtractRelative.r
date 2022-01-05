@@ -133,7 +133,7 @@ prExtractRelativeDaily <- function(
 	dates <- prGetDates(x, date)
 	
 	recordDates <- dates
-	dates <- unique(sort(dates))
+	uniqueDates <- unique(sort(uniqueDates))
 
 	### by VARIABLE
 	for (thisVar in vars) {
@@ -155,9 +155,9 @@ prExtractRelativeDaily <- function(
 			colnames(thisOut) <- paste0(thisVar, '_', daysNeeded:0, 'daysPrior')
 
 			### extract by date
-			for (countDate in seq_along(dates)) {
+			for (countDate in seq_along(uniqueDates)) {
 			
-				thisDate <- dates[countDate]
+				thisDate <- uniqueDates[countDate]
 				if (verbose) print(paste0(thisVar, ' ', thisDate)); flush.console()
 			
 				# get date of window start/end
@@ -179,6 +179,7 @@ prExtractRelativeDaily <- function(
 					index <- which(recordDates == thisDate)
 					locs <- getCoords(x=x, index=index, longLat=longLat)
 					ext <- terra::extract(rasts, locs, ...)
+					ext$ID <- NULL
 					# ext <- terra::extract(rasts, locs)
 					ext <- as.matrix(ext)
 
@@ -256,7 +257,7 @@ prExtractRelativeMonthly <- function(
 			colnames(thisOut) <- paste0(thisVar, '_', monthsNeeded:0, 'monthsPrior')
 
 			### extract by date
-			for (countDate in seq_along(dates)) {
+			for (countDate in seq_along(uniqueDates)) {
 			
 				thisDate <- uniqueDates[countDate]
 				if (verbose) cat(paste0(thisVar, ' ', thisDate, '\n')); flush.console()
@@ -274,12 +275,12 @@ prExtractRelativeMonthly <- function(
 				}
 				
 				windowStartDate <- paste0(windowStartDate[1], '-', ifelse(windowStartDate[2] < 10, '0', ''), windowStartDate[2])
-				desiredWindowStartDate <- windowStartDate
+				# desiredWindowStartDate <- windowStartDate
 				if (windowStartDate < earliestRasterDate) windowStartDate <- earliestRasterDate
 				
 				# get date of window end
 				windowEndDate <- thisDate
-				desiredWindowEndDate <- windowStartDate
+				# desiredWindowEndDate <- windowStartDate
 				if (windowEndDate > latestRasterDate) windowEndDate <- latestRasterDate
 
 				if (windowStartDate <= latestRasterDate & windowEndDate >= earliestRasterDate) {
@@ -291,6 +292,7 @@ prExtractRelativeMonthly <- function(
 					index <- which(recordDates == thisDate)
 					locs <- getCoords(x=x, index=index, longLat=longLat)
 					ext <- terra::extract(rasts, locs, ...)
+					ext$ID <- NULL
 					# ext <- terra::extract(rasts, locs)
 					ext <- as.matrix(ext)
 
@@ -385,6 +387,7 @@ prExtractRelativeAnnual <- function(
 					locs <- getCoords(x=x, index=index, longLat=longLat)
 					ext <- terra::extract(rasts, locs, ...)
 					# ext <- terra::extract(rasts, locs)
+					ext$ID <- NULL					
 					ext <- as.matrix(ext)
 
 					# ext <- ext[ , 2:ncol(ext), drop=FALSE]

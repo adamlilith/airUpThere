@@ -5,7 +5,7 @@
 #' @description These functions download \href{http://www.climatologylab.org/terraclimate.html}{TerraClimate} climate rasters and elevation.
 #'
 #' @param saveTo Name of the base path to which to save the download. Subfolders will be created within this folder.
-#' @param vars Name(s) of variable(s) to download. Valid values include:depend on the version of WorldClim and whether near-present day or future rasters are fetched. Different versions and time periods of WorldClim use different names for the same variable (e.g., "prec" versus "ppt" versus "pr" for precipitation). To reduce confusion, variable names have been standardized (in this package) to be the same across versions and times. Valid values are:
+#' @param vars Name(s) of variable(s) to download. Valid values include:
 #' \itemize{
 #' 	\item \code{elev}: elevation
 #' 	\item \code{tmin}: minimum temperature
@@ -26,7 +26,7 @@
 #' @param year Year(s) of the period from which to download monthly climate rasters. Valid years include 1958 through the present (often one or two years prior to the current year). This can be \code{NULL} only if the variable being downloaded is \code{elevation}.
 #' @param update If \code{TRUE} (default), only rasters that have been generated after the one(s) on disk will be downloaded. The rasters being updated will be overwritten. If \code{FALSE}, only rasters that are missing will be downloaded (existing rasters will not be overwritten).
 #' @param forceUpdate If \code{FALSE} (default), then all existing rasters will be overwritten, regardless of whether or not the existing ones are up-to-date or not.
-#' @param verbose If \coed{TRUE} (default), display progress.
+#' @param verbose If \code{TRUE} (default), display progress.
 #' @return NetCDF rasters are saved to disk. The function also returns a data frame indicating if the desired file(s) were already on the disk and if they were downloaded.
 #' @references
 #' Abatzoglou, J.T., Dobrowski, S.Z., Parks, S.A., and Hegewisch, K.C. 2018. TerraClimate, a high-resolution global dataset of monthly climate and climatic water balance from 1958-2015. \emph{Scientific Data} 5:170191. doi: \href{https://dx.doi.org/10.1038/sdata.2017.191}{10.1038/sdata.2017.191}.
@@ -139,7 +139,7 @@ tcDownloadMonthly <- function(
 				write.csv(info, infoPath, row.names=FALSE)
 			}
 
-			this <- which(success$vars==thisVarStand & success$year == thisYear)
+			this <- which(success$var==thisVarStand & success$year == thisYear)
 			success$versionOnServer[this] <- versionOnServer
 			success$versionOnDisk[this] <- versionOnDisk
 			success$updated[this] <- downloaded

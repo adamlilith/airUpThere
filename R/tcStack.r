@@ -11,8 +11,8 @@
 #' @examples
 #' 
 #' \dontrun{
-#' 
-#' tmins <- tcStack(rastDir, 'tmin', years=1971:1972)
+#' tcDir <- 'F:/ecology/Climate/TerraClimate/ORIGINALS'
+#' tmins <- tcStack(tcDir, 'tmin', years=1971:1972)
 #' tmins
 #' 
 #' }
