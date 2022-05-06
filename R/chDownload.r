@@ -21,16 +21,16 @@
 #' }
 #' @param vars Name(s) of variable(s) to download. Valid values depend on the version of WorldClim and whether near-present day or future rasters are fetched. Different versions and time periods of WorldClim use different names for the same variable (e.g., "prec" versus "ppt" versus "pr" for precipitation). To reduce confusion, variable names have been standardized (in this package) to be the same across versions and times. Valid values are:
 #' \itemize{
-#' 	\item \code{elev}: elevation
-#' 	\item \code{iceMask}: mask for ice cover (\code{1} for ice or \code{NA} for none)
-#' 	\item \code{iceElev}: elevation of ice (plus land)
-#' 	\item \code{snowCoverDays}: days of snow cover
-#' 	\item \code{swe}: snow water equivalent
-#' 	\item \code{tmin}: minimum temperature
-#' 	\item \code{tmax}: maximum temperature
-#' 	\item \code{ppt}: accumulated precipitation
+#' 	\item \code{elev}: elevation (function \code{chDownloadPaleoElev})
+#' 	\item \code{iceMask}: mask for ice cover (\code{1} for ice or \code{NA} for none) (function \code{chDownloadPaleoElev})
+#' 	\item \code{iceElev}: elevation of ice (plus land) (function \code{chDownloadPaleoElev})
+#' 	\item \code{snowCoverDays}: days of snow cover (function \code{chDownloadPaleoClim})
+#' 	\item \code{swe}: snow water equivalent (function \code{chDownloadPaleoClim})
+#' 	\item \code{tmin}: minimum temperature (function \code{chDownloadPaleoClim})
+#' 	\item \code{tmax}: maximum temperature (function \code{chDownloadPaleoClim})
+#' 	\item \code{ppt}: accumulated precipitation (function \code{chDownloadPaleoClim})
 #' }
-#' @param cmip Number the Coupled Model Intercomparison Project (CMIP) future ratsers to download. Valid values are either \code{5} or \code{6}.
+#' @param cmip Number the Coupled Model Intercomparison Project (CMIP) future rasters to download. Valid values are either \code{5} or \code{6}.
 #' @param esm Abbreviations of available earth system models, depending on whether CMIP5 or CMIP6 is desired. A list of valid options can be obtained using \code{\link{chEsm}}.
 #' @param ghg Name of the emissions scenario of future rasters. Valid values depend on \code{cmip} (CMIP). For CMIP5 These are:
 #' \itemize{
@@ -42,8 +42,8 @@
 #' For CMIP6 these are:
 #' \itemize{
 #' 		\item	\code{126}: SSP126
-#' 		\item	\code{126}: SSP370
-#' 		\item	\code{126}: SSP585
+#' 		\item	\code{370}: SSP370
+#' 		\item	\code{585}: SSP585
 #' }
 #' @param period Period from which to earth system model climate predictions (which includes some "historic" predictions). The first year of the respective time period is used. Depending on \code{cmip} (CMIP), different values are valid. A list of valid values can be see using \code{\link{chPeriod}}.
 #' @param centuries Century or centuries from which to download the paleo-climate/elevation/ice rasters. This can be a value from -200 (the -200th century, or 21000 to 20001 ybp) to 20 (i.e., the 20th century, 1900-1999 CE).
