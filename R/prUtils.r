@@ -10,6 +10,8 @@ prGetDates <- function(x, date) {
 			rep(date, nrow(x))
 		} else if (length(date) != nrow(x)) {
 			stop('Argument "date" must have either a single value or one value per record.')
+		} else {
+			date
 		}
 	} else if (length(date) == 3 & inherits(date, 'character')) {
 		dates <- lubridate::make_date(
