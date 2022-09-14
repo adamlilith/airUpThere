@@ -1,6 +1,8 @@
 # airUpThere
 Download, process, and use WorldClim, CHELSA, TerraClimate, and PRISM climate raster coverages
 
+<img align="right" src="airUpThere.png" height="250"/>
+
 NB This package is in progress, but many of the functions already work:
 
 * CHELSA functions (functions named ch*): In progress
