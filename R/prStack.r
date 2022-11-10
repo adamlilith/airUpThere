@@ -41,9 +41,9 @@
 #' y <- prStack(
 #'  	prDir = prDir,
 #'  	vars = c('tmin', 'tmax'),
-#' 	dates = c('2015-01-01', '2015-01-05'),
-#' 	by = 'day',
-#' 	res = 30,
+#' 		dates = c('2015-01-01', '2015-01-05'),
+#' 		by = 'day',
+#' 		res = 30,
 #'  	rastSuffix = 'tif'
  #' )
 #' 
