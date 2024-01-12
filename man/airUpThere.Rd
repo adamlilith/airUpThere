@@ -14,70 +14,77 @@ Create an issue on \href{https://github.com/adamlilith/airUpThere/issues}{GitHub
 \details{
 Create an issue on \href{https://github.com/adamlilith/airUpThere/issues}{GitHub}.
 
-\code{\link{prismExtractDaily}}: Extract values of daily weather variables. \cr
-		\code{\link{prismExtractMonthly}}: Extract values of monthly weather variables. \cr
-		\code{\link{prismExtractYearly}}: Extract values of annual weather variables. \cr
+\if{html}{\out{<div class="sourceCode">}}\preformatted{	\code{\link{prismExtractDaily}}: Extract values of daily weather variables. \\cr
+	\code{\link{prismExtractMonthly}}: Extract values of monthly weather variables. \\cr
+	\code{\link{prismExtractYearly}}: Extract values of annual weather variables. \\cr
+}\if{html}{\out{</div>}}
 }
 \section{airUpThere essentials}{
 
-	\code{\link{airUpdate}}: Retrieve latest URLs \cr
-		\code{\link{airUrls}} URLs and file patterns for various climate data sources. \cr
-		\code{\link{airVars}} "File/URL" and "standard" names of each variable available from each data source. \cr
+\code{\link{airUpdate}}: Retrieve latest URLs \cr
+\code{\link{airUrls}} URLs and file patterns for various climate data sources. \cr
+\code{\link{airVars}} "File/URL" and "standard" names of each variable available from each data source. \cr
 }
 
 \section{CHELSA}{
 
-		\code{\link{chDownload}} Download CHELSA climate rasters \cr
+\code{\link{chDownloadPaleoBio}}, \code{\link{chDownloadPaleoClim}}, \code{\link{chDownloadPaleoElev}} Download CHELSA paleo-climate and paleo-elevation/ice rasters \cr
+\code{\link{chDownloadFutureBio}}, \code{\link{chDownloadFutureClim}} Download CHELSA future climate \cr
+\code{\link{chEsm}} List earth system models available for CHELSA \cr
+\code{\link{chConvertPeriod}} Translate betweeen "short" and "long" version of future time periods \cr
+\code{\link{chPeriod}} Future time periods available for CHELSA \cr
 }
 
 \section{PRISM}{
 
-		\code{\link{prDownload}} Download PRISM climate rasters \cr
-		\code{\link{prExtractRelative}} Extract values from PRISM climate rasters across a temporal window relative to series of dates (e.g., all values up to 10 days prior to set of dates) \cr
-		\code{\link{prExtractAbsolute}} Extract values from PRISM climate rasters across a specified temporal window (e.g., all values between 1 January 1981 and 31 January 1981, inclusive) \cr
-		\code{\link{prStack}} Create a stack of rasters representing particular dates or across a time series \cr
-		\code{\link{prVars}} Names of available PRISM variables. \cr
+\code{\link{prDownload}} Download PRISM climate rasters \cr
+\code{\link{prExtractRelative}} Extract values from PRISM climate rasters across a temporal window relative to series of dates (e.g., all values up to 10 days prior to set of dates) \cr
+\code{\link{prExtractAbsolute}} Extract values from PRISM climate rasters across a specified temporal window (e.g., all values between 1 January 1981 and 31 January 1981, inclusive) \cr
+\code{\link{prStack}} Create a stack of rasters representing particular dates or across a time series \cr
+\code{\link{prVars}} Names of available PRISM variables. \cr
 }
 
 \section{WorldClim}{
 
-		\code{\link{wcDownload}} Download WorldClim rasters (present/future of versions 1.4 and 2.1, elevation, decadal averages) \cr
-		\code{\link{wcConvertVar}} Convert names of WorldClim variables from "file" to "standard" format \cr
-		\code{\link{wcConvertRes}} Name of WorldClim resolution as used in URLs and file names. \cr
-		\code{\link{wcConvertPeriod}} Name of WorldClim future climate period as used in URLs and file names. \cr
-		\code{\link{wcConvertGhg}} Nice name for WorldClim future climate scenarios \cr
-		\code{\link{wcEsm}} Names and abbreviations of earth systems models represented in WorldClim \cr
-		\code{\link{wcGet}} Quickly(?) obtain a set of WorldClim rasters \cr
-		\code{\link{wcVars}} Names of available WorldClim variables. \cr
-		\code{\link{wcRes}} Names of resolutions available for WorldClim. \cr
+\code{\link{wcDownload}} Download WorldClim rasters (present/future of versions 1.4 and 2.1, elevation, decadal averages) \cr
+\code{\link{wcConvertVar}} Convert names of WorldClim variables from "file" to "standard" format \cr
+\code{\link{wcConvertRes}} Name of WorldClim resolution as used in URLs and file names. \cr
+\code{\link{wcConvertPeriod}} Name of WorldClim future climate period as used in URLs and file names. \cr
+\code{\link{wcConvertGhg}} Nice name for WorldClim future climate scenarios \cr
+\code{\link{wcEsm}} Names and abbreviations of earth systems models represented in WorldClim \cr
+\code{\link{wcGet}} Quickly(?) obtain a set of WorldClim rasters \cr
+\code{\link{wcVars}} Names of available WorldClim variables. \cr
+\code{\link{wcRes}} Names of resolutions available for WorldClim. \cr
 }
 
 \section{TerraClimate}{
 
-		\code{\link{tcDownloadMonthly}} Download TerraClimate monthly climate rasters \cr
-		\code{\link{tcDownloadElev}} Download TerraClimate elevation raster \cr
-		\code{\link{tcStack}} Get a stack of TerraClimate rasters \cr
-		\code{\link{tcVars}} Names of available TerraClimate variables. \cr
+\code{\link{tcDownloadMonthly}} Download TerraClimate monthly climate rasters \cr
+\code{\link{tcDownloadElev}} Download TerraClimate elevation raster \cr
+\code{\link{tcStack}} Get a stack of TerraClimate rasters \cr
+\code{\link{tcVars}} Names of available TerraClimate variables. \cr
 }
 
-\section{NA}{
+\section{Useful utilities}{
 
-	\code{\link{airUpdate}}: Retrieve latest URLs \cr
-		\code{\link{airUrls}} URLs and file patterns for various climate data sources. \cr
-		\code{\link{airVars}} "File/URL" and "standard" names of each variable available from each data source. \cr
+\code{\link{compareDates}}, \code{\link{\\%>d\%\}}, \code{\link{\\%>=d\%\}}, \code{\link{\\%==d\%\}}, \code{\link{\\%<d\%\}}, \code{\link{\\%<=d\%\}}, and \code{\link{\\%!=d\%\}} Compare dates in YYYY, YYYY-MM, or YYYY-MM-DD formats. \cr
+\code{\link{convertVar}} Convert between "file/URL" and "standard" names of variables. \cr
+\code{\link{formatYYYYMM}} Get YYYY-MM format from a date. \cr
+\code{\link{ghgNames}} Names of Representative Concentration Pathways (RCPs) and Shared Socioeconomic Pathways (SSPs). \cr
+\code{\link{getCoords}} Get coordinates from a data frame, SpatialPoints, or SpatVector object. \cr
+\code{\link{getYMD}} Get year, month, or day from a date. \cr
+\code{\link{monthAsNum}} Convert month name to number. \cr
+\code{\link{monthDiff}} Difference in months between two dates expressed as YYYY-MM. \cr
+\code{\link{seqMonths}} Generate a sequence of years and months from a starting and ending date. \cr
 }
 
 \references{
-
-
 Daly, C., Halbleib, M., Smith, J.I., Gibson, W.P., Doggett, M.K., Taylor, G.H., Curtis, J., and Pasteris, P.A. 2008. Physiographically-sensitive mapping of temperature and precipitation across the conterminous United States. International Journal of Climatology, 28: 2031-2064 \href{https://doi.org/10.1002/joc.1688}{DOI: 10.1002/joc.1688} \cr
 Daly, C., J.I. Smith, and K.V. Olson. 2015. Mapping atmospheric moisture climatologies across the conterminous United States. PloS ONE 10:e0141140. \href{https://doi.org/10.1371/journal.pone.0141140}{DOI: 10.1371/journal.pone.0141140}. \cr
 Fick, S.E. and Hijmans, R.J. 2017. WorldClim 2: New 1-km spatial resolution climate surfaces for global land areas. \emph{International Journal of Climatology} 37:4302-4315. \href{https://doi.org/10.1002/joc.5086}{DOI: https://doi.org/10.1002/joc.5086} \cr
 Hijmans, R.J., Cameron, S.E., Parra, J.L., Jones, P.G., and Jarvis, A. 2005. Very high resolution interpolated climate surfaces for global land areas. \emph{International Journal of Climatology} 25:1965-1978. \href{https://doi.org/10.1002/joc.1276}{DOI: https://doi.org/10.1002/joc.1276}
 }
 \author{
-Adam B. Smith
-
 Adam B. Smith
 }
 \keyword{internal}

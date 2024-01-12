@@ -13,7 +13,7 @@ wcConvertPeriod(ver, period, type = NULL, standardToFile = TRUE)
 
 \item{type}{Either of \code{future} or \code{decadal}. Only needed for WC 2.1.}
 
-\item{standardToFile}{If \coed{TRUE} (default), then convert from "standard" to "file/URL" version. If \code{FALSE}, then from "file/URL" version to "standard."}
+\item{standardToFile}{If \code{TRUE} (default), then convert from "standard" to "file/URL" version. If \code{FALSE}, then from "file/URL" version to "standard."}
 }
 \value{
 Character

@@ -18,7 +18,7 @@ getCoords <- function(x, index=NULL, longLat=NULL) {
 		locs <- x[ , longLat]
 	} else if (inherits(x, 'SpatVector')) {
 		if (is.null(index)) index <- seq_along(x)
-		locs <- terra::coords(x)[ , c('x', 'y')]
+		locs <- terra::crds(x)[ , c('x', 'y')]
 	} else if (inherits(x, 'sf')) {
 		if (is.null(index)) index <- seq_along(x)
 		locs <- sf::st_coordinates(x)

@@ -7,7 +7,7 @@
 getCoords(x, index = NULL, longLat = NULL)
 }
 \arguments{
-\item{x}{Object of class \code{data.frame}, \coed{SpatialPoints}, \code{SpatialPointsDataFrame}, or \code{SpatVector}.}
+\item{x}{Object of class \code{data.frame}, \code{sf}, \code{SpatialPoints}, \code{SpatialPointsDataFrame}, or \code{SpatVector}.}
 
 \item{index}{Either \code{NULL} (default) or an index of which coordinates to get. If \code{NULL}, all coordinates are obtained.}
 

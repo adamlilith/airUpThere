@@ -20,10 +20,10 @@ prGetDates <- function(x, date) {
 			day=x[ , date[3]]
 		)
 	} else if (length(date) == 1 & inherits(date, 'character')) {
-		if (class(x[ , date]) != 'Date') {
-			dates <- lubridate::ymd(x[ , date, drop=TRUE])
+		if (sapply(x, class)[names(x) == date] != 'Date') {
+			dates <- lubridate::ymd(as.data.frame(x)[ , date, drop = TRUE])
 		} else {
-			dates <- x[ , date, drop=TRUE]
+			dates <- as.data.frame(x)[ , date, drop=TRUE]
 		}
 	} else {
 		stop('Argument "date" must be an object of class "Date", or a character vector with one or three elements.')

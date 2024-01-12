@@ -2,52 +2,51 @@
 #' @rdname prExtractAbsolute
 #' @title Extract values from PRISM across specified time periods
 
-#' @description These functions extract values from interpolated weather rasters from the Parameter Regression on Independent Slopes (PRISM) data product across a range of dates. For example, it could extract all values from 2014-04-22 to 2014-04-29 across all points. If you wish to extract values across a specified date range that varies by point (e.g., the 100 days prior to sampling at each point, then see \code{\link{prExtractRelative}}. Extractions are done at points (versus polygons or lines, for example). \cr\cr
-
-#' The basic input is an object of class \code{spatVector}, \code{SpatialPoints}, \code{SpatialPointsDataFrame}, \code{data.frame}, or \code{matrix}, with each row representing a point location. The function also needs to be pointed toward a folder with PRISM data. The folder with PRISM data must be structured as:
-#' \itemize{
-#'		\item Base folder (e.g., \code{'C:/PRISM/an81'} or \code{'C:/PRISM/lt81'}), which contains:
-#'		\item A folder named either \code{daily}, \code{monthly}, \code{annual}, which contains:
-#'		\item One folder per variable (e.g., \code{tmin}, \code{tmax}, \code{vpdmax}), each of which contain:
-#'		\item One folder per year (e.g., \code{1981}, code{1982}, etc.), each of which rasters like:
-#'		\itemize{
-#'			\item One raster per day named like \code{prism_tmin_us_30s_19810101.bil}, \code{prism_tdmean_us_30s_19810102.bil}, etc.
-#'			\item One raster per month named like \code{prism_tmin_us_30s_198101.bil}, \code{prism_tdmean_us_30s_198101.bil}, etc.
-#'			\item One raster representing the annual value named like \code{prism_tmin_us_30s_1981.bil}.
-#' 		}
-#' }
-#' \cr
-
-#' The function can extract values corresponding to the day/month/year of each record, plus (optionally) a user-specified window of time prior to the day/month/year of each record. For example, you could use this to extract daily climate data for a site collected on April 22, 2014, and all days prior up to 10 years (April 23, 2004). This function is really a fancy wrapper for \code{\link[terra]{extract}}, but it does the tough job of getting the directory structures right, pulling all needed rasters, and efficiently grouping records to speed extraction. \cr\cr
-
-#' The function does not assume that data for all PRISM years are available, but it does assume that all relevant rasters for a particular year are available within each yearly folder. If rasters preceding a date only partially cover the window, then values for the part covered will be extracted. For example if you try to extract annual values for a window spanning 2010 to 2020 but only have available rasters for 1981 to 2018, then values for 2010 to 2018 will be extracted. Values that cannot be extracted are represented by \code{NA} in the output.
-
-#' @param x "Points" object of class \code{SpatVector}, \code{SpatialPoints}, \code{SpatialPointsDataFrame}, \code{data.frame}, or \code{matrix}.
+#' @description These functions extract values from interpolated weather rasters from the Parameter Regression on Independent Slopes (PRISM) data product across a range of dates. For example, it could extract all values from 2014-04-22 to 2014-04-29from point, line or polygon locations. If you wish to extract values across a specified date range that varies by point (e.g., the 100 days prior to sampling at each point, then see [prExtractRelative()]. Extractions are done at points (versus polygons or lines, for example).
+#'
+#' The basic input is an object of class `SpatVector`, or a `data.frame` or `matrix`, with each row representing a point location. The function also needs to be pointed toward a folder with PRISM data. The folder with PRISM data must be structured as:
+#' * Base folder (e.g., `'C:/PRISM/an81'` or `'C:/PRISM/lt81'`), which contains:
+#' * A folder named either `daily`, `monthly`, `annual`, which contains:
+#' * One folder per variable (e.g., `tmin`, `tmax`, `vpdmax`), each of which contain:
+#' * One folder per year (e.g., `1981`, code`1982`, etc.), each of which rasters like:
+#'      * One raster per day named like `prism_tmin_us_30s_19810101.bil`, `prism_tdmean_us_30s_19810102.bil`, etc.
+#'      * One raster per month named like `prism_tmin_us_30s_198101.bil`, `prism_tdmean_us_30s_198101.bil`, etc.
+#'      * One raster representing the annual value named like `prism_tmin_us_30s_1981.bil`.
+#'
+#' The function can extract values corresponding to the day/month/year of each record, plus (optionally) a user-specified window of time prior to the day/month/year of each record. For example, you could use this to extract daily climate data for a site collected on April 22, 2014, and all days prior up to 10 years (April 23, 2004). This function is really a fancy wrapper for [terra::extract()], but it does the tough job of getting the directory structures right, pulling all needed rasters, and efficiently grouping records to speed extraction.
+#'
+#' The function does not assume that data for all PRISM years are available, but it does assume that all relevant rasters for a particular year are available within each yearly folder. If rasters preceding a date only partially cover the window, then values for the part covered will be extracted. For example if you try to extract annual values for a window spanning 2010 to 2020 but only have available rasters for 1981 to 2018, then values for 2010 to 2018 will be extracted. Values that cannot be extracted are represented by `NA` in the output.
+#'
+#' @param x "Points" object of class `SpatVector`, `data.frame`, or `matrix`.
 #' @param startDate,endDate These define the beginning/ending date across which values are to be extracted. Either:
-#' \itemize{
-#'		\item 	Object of class \code{Date}. You can name a single date, in which case this date will be used for all records, or a vector of dates, one per point in \code{x}.
-#'		\item 	Name of column in \code{x} with date of each record. Values must be of in YYYY-MM-DD (year-month-day of month) format \emph{or} already of class \code{\link{Date}}. See \code{\link[lubridate]{ymd}} or related functions for more help.
-#'		\item   Names of columns in \code{x} with year, month, and day of month of each record (in that order). Months must be numeric (i.e., 10, not "October").
-#' }
+#' * Object of class `Date`. You can name a single date, in which case this date will be used for all records, or a vector of dates, one per point in `x`.
+#' * Name of column in `x` with date of each record. Values must be of in YYYY-MM-DD (year-month-day of month) format *or* already of class [Date()]. See [lubridate::ymd()] or related functions for more help.
+#' * Names of columns in `x` with year, month, and day of month of each record (in that order). Months must be numeric (i.e., 10, not "October").
+#'
 #' @param prDir Character. Path of the base directory in which the rasters are stored. It must have a structure with subfolders as described above.
 #' @param vars Name of variable(s) to extract. Valid values are:
-#' \itemize{
-#'		\item	\code{ppt}: Precipitation.
-#'		\item	\code{tmax}: Maximum temperature.
-#'		\item	\code{tmin}: Minimum temperature.
-#'		\item	\code{tmean}: Mean temperature.
-#'		\item	\code{tdmean}: Dew-point temperature.
-#'		\item	\code{vpdmax}: Maximum vapor-pressure.
-#'		\item	\code{vpdmin}: Minimum vapor-pressure.
-#' }
-#' @param res Resolution of the rasters. Valid values are either \code{30} or \code{800} (these are treated as the same: 30-arcsecond also known as the "800-m" resolution version of PRISM), \emph{or} code{1} or \code{4} (these are also treated as the same: the 1-arcminute also known as the "4-km" resolution version of PRISM).
-#' @param rastSuffix Character. The "suffix" at the end of each weather raster. PRISM rasters are usually shipped in 'BIL' format, so normally this should be \code{bil}. However, any other suffix corresponding to a raster type that can be opened by the \code{\link[terra]{rast}} function can be used if the rasters have been converted to another format.
-#' @param annualDir Name of the highest-level folder in which annual rasters are stored. If you use the \code{prDownloadAnnual} function to download PRISM rasters, this will be \code{'annual'} (default). However, if you are extracting values from a purchased version of PRISM (i.e., that the PRISM staff sent you on a hard drive), the annual rasters are typically stored in the folder called \code{'monthly'}.
-#' @param longLat Character vector with two elements. If \code{x} is an object of class \code{data.frame}, this is the name of the columns in \code{x} with longitude and latitude (in that order). Coordinates will be assumed to be in the same coordinate reference system as the PRISM rasters. This argument is ignored if \code{x} is not a data frame.
-#' @param verbose Logical. If \code{TRUE} (default), show progress.
-#' @param ... Argument(s) to pass to \code{\link[terra]{extract}}.
+#' * `ppt`: Precipitation.
+#' * `tmax`: Maximum temperature.
+#' * `tmin`: Minimum temperature.
+#' * `tmean`: Mean temperature.
+#' * `tdmean`: Dew-point temperature.
+#' * `vpdmax`: Maximum vapor-pressure.
+#' * `vpdmin`: Minimum vapor-pressure.
 #'
-#' @return Matrix with one row per row in \code{x}. \code{NA} values represent days/months/years that did not fall within the specified window or for which rasters were unavailable. 
+#' @param res Resolution of the rasters. Valid values are either `30` or `800` (these are treated as the same: 30-arcsecond also known as the "800-m" resolution version of PRISM), *or* `1` or `4` (these are also treated as the same: the 1-arcminute also known as the "4-km" resolution version of PRISM).
+#'
+#' @param rastSuffix Character. The "suffix" at the end of each weather raster. PRISM rasters are usually shipped in 'BIL' format, so normally this should be `bil`. However, any other suffix corresponding to a raster type that can be opened by the [terra:rast()] function can be used if the rasters have been converted to another format.
+#'
+#' @param annualDir Name of the highest-level folder in which annual rasters are stored. If you use the `prDownloadAnnual()` function to download PRISM rasters, this will be `'annual'` (default). However, if you are extracting values from a purchased version of PRISM (i.e., that the PRISM staff sent you on a hard drive), the annual rasters are typically stored in the folder called `'monthly'`.
+#'
+#' @param longLat Character vector with two elements. If `x` is an object of class `data.frame`, this is the name of the columns in `x` with longitude and latitude (in that order). Coordinates will be assumed to be in the same coordinate reference system as the PRISM rasters. This argument is ignored if `x` is not a data frame.
+#'
+#' @param verbose Logical. If `TRUE` (default), show progress.
+#'
+#' @param ... Argument(s) to pass to [terra::extract()].
+#'
+#' @return Matrix with one row per row in `x`. `NA` values represent days/months/years that did not fall within the specified window or for which rasters were unavailable. 
+#'
 #' @examples
 #' \dontrun{
 # daily

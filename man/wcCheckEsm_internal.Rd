@@ -9,7 +9,7 @@ wcCheckEsm_internal(ver, esm)
 \arguments{
 \item{ver}{Version number (e.g., 1.4, 2.1)}
 
-\item{Character, }{either short (2-letter) or long ESM names (case will not matter). Types cannot be mixed (i.e., all names must be 2-characters in length or long names).}
+\item{esm}{Character, either short (2-letter) or long ESM names (case will not matter). Types cannot be mixed (i.e., all names must be 2-characters in length or long names).}
 }
 \value{
 \code{TRUE} (invisible) or an error will be called.

@@ -20,23 +20,23 @@ tcDownloadElev(saveTo, update = TRUE, forceUpdate = FALSE, verbose = TRUE)
 \arguments{
 \item{saveTo}{Name of the base path to which to save the download. Subfolders will be created within this folder.}
 
-\item{vars}{Name(s) of variable(s) to download. Valid values include:depend on the version of WorldClim and whether near-present day or future rasters are fetched. Different versions and time periods of WorldClim use different names for the same variable (e.g., "prec" versus "ppt" versus "pr" for precipitation). To reduce confusion, variable names have been standardized (in this package) to be the same across versions and times. Valid values are:
+\item{vars}{Name(s) of variable(s) to download. Valid values include:
 \itemize{
-    \item \code{elev}: elevation
-    \item \code{tmin}: minimum temperature
-    \item \code{tmax}: maximum temperature
-    \item \code{ppt}: accumulated precipitation
-    \item \code{swe}: snow water equivalent
-    \item \code{aet}: actual evapotranspiration
-    \item \code{pet}: reference (potential) evapotranspiration (ET0)
-    \item \code{def}: climate water deficit
-    \item \code{pdsi}: Palmer Drought Severity Index
-    \item \code{soilWater}: extractable soil moisture
-    \item \code{srad}: downward shortwave flux at the surface (solar radiation)
-    \item \code{windSpeed}: average wind speed
-    \item \code{q}: cumulative streamflow
-    \item \code{vap}: vapor pressure
-    \item \code{vpd}: vapor pressure deficit
+\item \code{elev}: elevation
+\item \code{tmin}: minimum temperature
+\item \code{tmax}: maximum temperature
+\item \code{ppt}: accumulated precipitation
+\item \code{swe}: snow water equivalent
+\item \code{aet}: actual evapotranspiration
+\item \code{pet}: reference (potential) evapotranspiration (ET0)
+\item \code{def}: climate water deficit
+\item \code{pdsi}: Palmer Drought Severity Index
+\item \code{soilWater}: extractable soil moisture
+\item \code{srad}: downward shortwave flux at the surface (solar radiation)
+\item \code{windSpeed}: average wind speed
+\item \code{q}: cumulative streamflow
+\item \code{vap}: vapor pressure
+\item \code{vpd}: vapor pressure deficit
 }}
 
 \item{year}{Year(s) of the period from which to download monthly climate rasters. Valid years include 1958 through the present (often one or two years prior to the current year). This can be \code{NULL} only if the variable being downloaded is \code{elevation}.}
@@ -45,7 +45,7 @@ tcDownloadElev(saveTo, update = TRUE, forceUpdate = FALSE, verbose = TRUE)
 
 \item{forceUpdate}{If \code{FALSE} (default), then all existing rasters will be overwritten, regardless of whether or not the existing ones are up-to-date or not.}
 
-\item{verbose}{If \coed{TRUE} (default), display progress.}
+\item{verbose}{If \code{TRUE} (default), display progress.}
 }
 \value{
 NetCDF rasters are saved to disk. The function also returns a data frame indicating if the desired file(s) were already on the disk and if they were downloaded.
@@ -55,9 +55,9 @@ These functions download \href{http://www.climatologylab.org/terraclimate.html}{
 }
 \section{Functions}{
 \itemize{
-\item \code{tcDownloadElev}: Download TerraClimate elevation raster
-}}
+\item \code{tcDownloadElev()}: Download TerraClimate elevation raster
 
+}}
 \examples{
 
 \dontrun{

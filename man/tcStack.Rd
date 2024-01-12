@@ -14,7 +14,7 @@ tcStack(rastDir, vars, years)
 \item{years}{Year(s) of the period from which to apply the function.}
 }
 \value{
-Object of class \code{SpatRaster}. Each raster in the stack will be named as per <variable>_<year>_<month>. For example, \code{tmin_1958_1} for the raster with minimum temperature for January of 1958. Standard variable names will be used (see \code{\link[airUpThere]{tcVars}}).
+Object of class \code{SpatRaster}. Each raster in the stack will be named as per \if{html}{\out{<variable>}}\emph{\if{html}{\out{<year>}}}\if{html}{\out{<month>}}. For example, \code{tmin_1958_1} for the raster with minimum temperature for January of 1958. Standard variable names will be used (see \code{\link[airUpThere]{tcVars}}).
 }
 \description{
 This function returns a stack of TerraClimate rasters for one or more variables for one or more years.

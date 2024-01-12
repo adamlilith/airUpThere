@@ -37,19 +37,19 @@ Compare dates in YYYY-MM format
 }
 \section{Functions}{
 \itemize{
-\item \code{\%>d\%}: Compare dates of YYYY, YYYY-MM, or YYYY-MM-DD format using >
+\item \code{d1 \%>d\% d2}: Compare dates of YYYY, YYYY-MM, or YYYY-MM-DD format using >
 
-\item \code{\%>=d\%}: Compare dates of YYYY, YYYY-MM, or YYYY-MM-DD format using >=
+\item \code{d1 \%>=d\% d2}: Compare dates of YYYY, YYYY-MM, or YYYY-MM-DD format using >=
 
-\item \code{\%==d\%}: Compare dates of YYYY, YYYY-MM, or YYYY-MM-DD format using ==
+\item \code{d1 \%==d\% d2}: Compare dates of YYYY, YYYY-MM, or YYYY-MM-DD format using ==
 
-\item \code{\%<d\%}: Compare dates of YYYY, YYYY-MM, or YYYY-MM-DD format using <
+\item \code{d1 \%<d\% d2}: Compare dates of YYYY, YYYY-MM, or YYYY-MM-DD format using <
 
-\item \code{\%<=d\%}: Compare dates of YYYY, YYYY-MM, or YYYY-MM-DD format using <=
+\item \code{d1 \%<=d\% d2}: Compare dates of YYYY, YYYY-MM, or YYYY-MM-DD format using <=
 
-\item \code{\%!=d\%}: Compare dates of YYYY, YYYY-MM, or YYYY-MM-DD format using !=
+\item \code{d1 \%!=d\% d2}: Compare dates of YYYY, YYYY-MM, or YYYY-MM-DD format using !=
+
 }}
-
 \examples{
 compareDates('2021-04-27', '2021-05-27', '>')
 compareDates('2021-05-27', '2021-04-27', '>')

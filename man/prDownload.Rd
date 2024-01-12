@@ -25,20 +25,20 @@ prDownload(
 
 \item{vars}{Name(s) of variable(s) to download:
 \itemize{
-    \item \code{tmin}: minimum temperature (available for all)
-    \item \code{tmax}: maximum temperature (available for all)
-    \item \code{tmean}: mean temperature (available for all)
-    \item \code{ppt}: precipitation (available for all)
-    \item \code{tdmean}: Dew-point temperature (available for PRISM subscription service only).
-    \item \code{vpdmin}: Minimum vapor pressure deficit (available for PRISM subscription service only).
-    \item \code{vpdmax}: Maximum vapor pressure deficit (available for PRISM subscription service only).
+\item \code{tmin}: minimum temperature (available for all)
+\item \code{tmax}: maximum temperature (available for all)
+\item \code{tmean}: mean temperature (available for all)
+\item \code{ppt}: precipitation (available for all)
+\item \code{tdmean}: Dew-point temperature (available for PRISM subscription service only).
+\item \code{vpdmin}: Minimum vapor pressure deficit (available for PRISM subscription service only).
+\item \code{vpdmax}: Maximum vapor pressure deficit (available for PRISM subscription service only).
 }}
 
 \item{startDate, endDate}{Dates that encompasses the time period desired. This must be in YYYY-MM-DD format (e.g., \code{1981-01-08} or objects of class \code{Date}. Note that even if the monthly or annual rasters are desired, the dates must still be specified as YYYY-MM-DD. The day or day and month will be ignored, in this case. For example, \code{startDate = '1981-01-01'} and \code{endDate = '1982-01-01'} will fetch 13 months of monthly climate rasters, or 2 years of annual rasters. Valid values of dates depend on the version of PRISM:
-    \itemize{
-        \item Annual and monthly: 1895 to present (free "4-km" version and LT81 version)
-        \item Annual and monthly: 1981 to present (AN81d and AN81m versions)
-        \item Daily (subscription only): 1981 to present
+\itemize{
+\item Annual and monthly: 1895 to present (free "4-km" version and LT81 version)
+\item Annual and monthly: 1981 to present (AN81d and AN81m versions)
+\item Daily (subscription only): 1981 to present
 }}
 
 \item{unzipTo}{Optional. If \code{NULL}, then only}
