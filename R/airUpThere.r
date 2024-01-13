@@ -8,8 +8,6 @@
 #'
 #' @section airUpThere essentials:
 #'		\code{\link{airUpdate}}: Retrieve latest URLs \cr
-#' 		\code{\link{airUrls}} URLs and file patterns for various climate data sources. \cr
-#' 		\code{\link{airVars}} "File/URL" and "standard" names of each variable available from each data source. \cr
 #'
 #' @section CHELSA:
 #' 		\code{\link{chDownloadPaleoBio}}, \code{\link{chDownloadPaleoClim}}, \code{\link{chDownloadPaleoElev}} Download CHELSA paleo-climate and paleo-elevation/ice rasters \cr
@@ -55,10 +53,13 @@
 #'
 #'
 #' ## Example data
+#' [airData][airData]: Meta-data on each of the climate/weather products managed by **airUpThere**\cr
 #' [airExample()]: Easily load example data\cr
-#' [stl]: Outline of the City of Saint Louis, Missouri, USA\cr
-#' [parks]: Outline of two parks in Saint Louis\cr
-#' [trees]: Location of trees in Saint Louis\cr
+#' [nad83][nad83]: North American Datum 1983 (NAD83)\cr
+#' [stl][stl]: Outline of the City of Saint Louis, Missouri, USA\cr
+#' [parks][parks]: Outline of two parks in Saint Louis\cr
+#' [trees][trees]: Location of trees in Saint Louis\cr
+#' [wgs84][wgs84]: World Geodetic System 1984 (WGS84)\cr
 #'
 #' @references
 #' @section CHELSA
