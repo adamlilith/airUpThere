@@ -1,51 +1,61 @@
-x <- data.frame(
- 	long=rep(-97.66, 5),
- 	lat=rep(38.37, 5),
- 	date=c('2015-12-31', '1981-01-05', '2020-12-01',
- 	'2019-01-05', '1895-05-01')
-)
-  
-# daily
+library(terra)
+
+data(nad83)
+
+# Base folder with PRISM rasters
 prDir <- 'F:/ecology/PRISM/working/an81'
-y <- prExtractRelativeDaily(
-    x,
+
+# Example data (polygons)
+parks <- airExample('parks')
+crs(parks) <- nad83 # NB: More accurate than projecting from WGS84 to NAD83
+parks$date <- c('2011-09-01', '1859-09-01', '2022-09-01', '2055-09-01')
+
+# Template raster only required for extracting to lines or polygons
+template <- rast('F:/ecology/PRISM/PRISM_us_dem_800m.tif')
+
+# daily
+dy <- prExtractRelativeDaily(
+    x = parks,
     date = 'date',
-    longLat = c('long', 'lat'),
     prDir = prDir,
     vars = 'tmin',
     res = 30,
     rastSuffix = 'tif',
     windowYears = 0,
     windowDays = 7,
-    verbose = TRUE
+	template = template,
+    verbose = TRUE,
+	ID = TRUE, cells = TRUE, xy = TRUE, weights = TRUE
 )
  
 # monthly
-prDir <- 'F:/ecology/PRISM/working/an81'
-y <- prExtractRelativeMonthly(
- 	x,
- 	date = 'date',
- 	longLat = c('long', 'lat'),
- 	prDir = prDir,
- 	vars = 'tmin',
-		res = 30,
- 	rastSuffix = 'tif',
- 	windowYears = 0,
- 	windowMonths = 5,
- 	verbose = TRUE
+mo <- prExtractRelativeMonthly(
+    x = parks,
+    date = 'date',
+    prDir = prDir,
+    vars = 'tmin',
+    res = 30,
+    rastSuffix = 'tif',
+    windowYears = 0,
+    windowMonths = 5,
+	template = template,
+    verbose = TRUE,
+	ID = TRUE, cells = TRUE, xy = TRUE, weights = TRUE
 )
  
 # annual
-prDir <- 'F:/ecology/PRISM/working/an81'
-y <- prExtractRelativeAnnual(
- 	x,
- 	date = 'date',
-		longLat = c('long', 'lat'),
-		prDir = prDir,
-		vars = 'tmin',
-		res = 30,
-		rastSuffix = 'tif',
-		annualDir = 'monthly',
-		windowYears = 3,
-		verbose = TRUE
+source('C:/Ecology/Drive/R/airUpThere/R/prExtractRelative.r')
+
+yr <- prExtractRelativeAnnual(
+    x = parks,
+    date = 'date',
+    prDir = prDir,
+    vars = 'tmin',
+    res = 30,
+    rastSuffix = 'tif',
+    annualDir = 'annual',
+    windowYears = 3,
+	template = template,
+    verbose = TRUE,
+	ID = TRUE, cells = TRUE, xy = TRUE, weights = TRUE
 )
