@@ -53,6 +53,13 @@
 #'		\code{\link{monthDiff}} Difference in months between two dates expressed as YYYY-MM. \cr
 #' 		\code{\link{seqMonths}} Generate a sequence of years and months from a starting and ending date. \cr
 #'
+#'
+#' ## Example data
+#' [airExample()]: Easily load example data\cr
+#' [stl]: Outline of the City of Saint Louis, Missouri, USA\cr
+#' [parks]: Outline of two parks in Saint Louis\cr
+#' [trees]: Location of trees in Saint Louis\cr
+#'
 #' @references
 #' @section CHELSA
 #' Karger, D.N., Conrad, O., Böhner, J., Kawohl, T., Kreft, H., Soria-Auza, R.W., Zimmermann, N.E., Linder, P., Kessler, M. (2017). Climatologies at high resolution for the Earth land surface areas. Scientific Data. 4 170122. \href{https://doi.org/10.1038/sdata.2017.122}{DOI: 10.1038/sdata.2017.122}
