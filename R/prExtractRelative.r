@@ -333,7 +333,7 @@ prExtractRelativeMonthly <- function(
 	
 	if (any(c(!idTRUE, !weightsTRUE, !cellsTRUE, !xyTRUE))) {
 	
-		bads <- c('ID', 'weight', 'cells', 'x', 'y')[c(!idTRUE, !weightsTRUE, !cellsTRUE, !xyTRUE, !xyTRUE)]
+		bads <- c('ID', 'weight', 'cell', 'x', 'y')[c(!idTRUE, !weightsTRUE, !cellsTRUE, !xyTRUE, !xyTRUE)]
 		keeps <- which(omnibus::notIn(colnames(meta), bads))
 		meta <- meta[ , keeps, drop = FALSE]
 		
