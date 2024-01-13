@@ -3,9 +3,9 @@
 #' @description This function makes retrieving example data that comes with **airUpThere** easy.
 #'
 #' @param x Character: The name of a data set:
-#' * [parks]: Outline of two parks in the City of Saint Louis, Missouri, USA ("polygons" `SpatVector`)
-#' * [stl]: Outline of the City of Saint Louis
-#' * [trees]: Randomly sampled locations of trees managed by the City of Saint Louis ("points", `SpatVector`)
+#' * [parks][parks]: Outline of two parks in the City of Saint Louis, Missouri, USA ("polygons" `SpatVector`)
+#' * [stl][stl]: Outline of the City of Saint Louis
+#' * [trees][trees]: Randomly sampled locations of trees managed by the City of Saint Louis ("points", `SpatVector`)
 #'
 #' @returns A `SpatVector` or `SpatRaster`.
 #'
