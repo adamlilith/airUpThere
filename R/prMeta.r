@@ -42,6 +42,8 @@
 	
 	} else {
 	
+		nrowOut <- nrow(x)
+	
 		meta <- data.frame(
 			ID = seq_len(nrowOut),
 			weight = rep(1, nrowOut),
