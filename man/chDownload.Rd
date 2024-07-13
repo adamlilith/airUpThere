@@ -15,9 +15,9 @@ chDownloadPaleoBio(
 )
 }
 \arguments{
-\item{saveTo}{Name of the base path to which to save the download. Subfolders will be created within this folder.}
+\item{saveTo}{Name of the base path to which to save the download. Sub-folders will be created within this folder.}
 
-\item{ver}{Version number. Valid version numbers deped on whether paleo, historical, or future coverages are desired:
+\item{ver}{Version number. Valid version numbers depend on whether paleo, historical, or future coverages are desired:
 \itemize{
 \item    Paleo (TraCE2K): 1.0
 \item    Historical: XYZ

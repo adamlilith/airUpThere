@@ -23,8 +23,8 @@ Names/abbreviations, URLs for raster files, URLs for timestamp files, and file p
 \examples{
 data(airData)
 airData
+
 }
 \seealso{
 \code{\link[=airUpdate]{airUpdate()}}
 }
-\keyword{datasets}

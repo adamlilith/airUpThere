@@ -39,7 +39,7 @@ convertVar(src, vars, ver = NULL, period = NULL, standardToFile = TRUE)
 Character.
 }
 \description{
-This function converts "standard" and "file/URL" names of variables. Being able to do this assists with analyses that use the same variables from different data sets. Names can even vary within a data source. For example, WorldClim 2.1 uses "bio" to refer to BIOCLIM variables in files representing historical climate, but "bioc" in files representing future climate. This function provides a crosswalk between the source/version names used in filenames and URLs and a "standard" name. You can obtain a table of standard and file-name versions of variables using \code{data(airVars)}.
+This function converts "standard" names of variables to/from "file/URL" names of variables. Being able to do this assists with analyses that use the same variables from different data sets. Names can even vary within a data source. For example, WorldClim 2.1 uses "bio" to refer to BIOCLIM variables in files representing historical climate, but "bioc" in files representing future climate. This function provides a crosswalk between the source/version names used in filenames and URLs and a "standard" name. You can obtain a table of standard and file-name versions of variables using \code{data(airVars)}.
 }
 \examples{
 

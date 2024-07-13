@@ -12,7 +12,6 @@
 #' trees
 #' plot(trees)
 #' 
-#' @docType data
 #' @format `SpatVector`
-#' @export
-'trees'
+#' @name trees
+NULL

@@ -1,30 +1,27 @@
 #' Convert between "standard" and "file/URL" names of variables
 #'
-#' This function converts "standard" and "file/URL" names of variables. Being able to do this assists with analyses that use the same variables from different data sets. Names can even vary within a data source. For example, WorldClim 2.1 uses "bio" to refer to BIOCLIM variables in files representing historical climate, but "bioc" in files representing future climate. This function provides a crosswalk between the source/version names used in filenames and URLs and a "standard" name. You can obtain a table of standard and file-name versions of variables using \code{data(airVars)}.
+#' This function converts "standard" names of variables to/from "file/URL" names of variables. Being able to do this assists with analyses that use the same variables from different data sets. Names can even vary within a data source. For example, WorldClim 2.1 uses "bio" to refer to BIOCLIM variables in files representing historical climate, but "bioc" in files representing future climate. This function provides a crosswalk between the source/version names used in filenames and URLs and a "standard" name. You can obtain a table of standard and file-name versions of variables using `data(airVars)`.
 #'
 #' @param src Name of the source of the climate data. Case is ignored. Valid names include:
-#' \itemize{
-#'		\item \code{CHELSA}: CHELSA
-#'		\item \code{PRISM}: PRISM
-#'		\item \code{tc}: TerraClimate
-#'		\item \code{wc}: WorldClim
-#' }
-#' @param vars Name(s) of the variable to convert in "standard" or "file/URL" format. See \code{data(airVars)} for valid values.
+#'	* `CHELSA`: CHELSA
+#'  * `PRISM`: PRISM
+#'	* `tc`: TerraClimate
+#'  * `wc`: WorldClim
+#'
+#' @param vars Name(s) of the variable to convert in "standard" or "file/URL" format. See `data(airVars)` for valid values.
 #' @param ver Version number of the climate source. Valid values depend on the data source:
-#' \itemize{
-#'		\item CHELSA: \code{1.0}
-#'		\item PRISM: \code{NULL} (no version required)
-#'		\item TerraClimate: \code{NULL} (no version required)
-#'		\item WorldClim: \code{1.4} or \code{2.1}
-#' }
+#'	* CHELSA: `1.0`
+#'	* PRISM: `NULL` (no version required)
+#'	* TerraClimate: `NULL` (no version required)
+#'	* WorldClim: `1.4` or `2.1`
+#' 
 #' @param period Time period of the data source. Valid values depend on the data source, and values are case-insensitive:
-#' \itemize{
-#'		\item CHELSA: \code{TraCE21K} paleoclimate (0 to 21 Kybp)
-#'		\item PRISM: \code{NULL} (no period period required)
-#'		\item TerraClimate: \code{NULL} (no period period required)
-#'		\item WorldClim: \code{historical} or \code{future} (partial matching is supported)
-#' }
-#' @param standardToFile If \code{TRUE}, then convert the file format of the variable name to standard format. If \code{FALSE}, the convert the standard format to the file format.
+#'	* CHELSA: `TraCE21K` paleoclimate (0 to 21 Kybp)
+#'	* PRISM: `NULL` (no period period required)
+#'	* TerraClimate: `NULL` (no period period required)
+#'	* WorldClim: `historical` or `future` (partial matching is supported)
+#' 
+#' @param standardToFile If `TRUE`, then convert the file format of the variable name to standard format. If `FALSE`, the convert the standard format to the file format.
 #'
 #' @return Character.
 #' @examples
@@ -69,7 +66,6 @@
 #' 	period='future', standardToFile=FALSE)
 #' 
 #' @export
-
 convertVar <- function(
 	src,
 	vars,

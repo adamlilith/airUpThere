@@ -42,9 +42,8 @@ wcStackFut(dir, ver, res, vars, esm, ghg, period, warn = TRUE, fail = FALSE)
 \item \code{'MPI-ESM-LR'} or \code{'MP'}
 \item \code{'MRI-CGCM3'} or \code{'MG'}
 \item \code{'NorESM1-M'} or \code{'NO'}
-}
+`
 \item WorldClim 2.1 (CMIP6):
-\itemize{
 \item \code{'BCC-CSM2-MR'} or \code{'BC'}
 \item \code{'CNRM-CM6-1'} or \code{'CC'}
 \item \code{'CNRM-ESM2-1'} or \code{'CE'}
@@ -58,53 +57,47 @@ wcStackFut(dir, ver, res, vars, esm, ghg, period, warn = TRUE, fail = FALSE)
 }}
 
 \item{ghg}{Greenhouse gas emissions scenario for future rasters. Valid values depend on the version of WorldClim. One or more of a valid set can be specified. This argument is ignored if near present-day rasters are being downloaded.
+* WorldClim 1.4 (CMIP5): These are representative concentration pathways (RCPs), and valid values are are one or more of 26, 45, 60, and/or 85.
 \itemize{
-\item WorldClim 1.4 (CMIP5): These are representative concentration pathways (RCPs), and valid values are are one or more of 26, 45, 60, and/or 85.
 \item WorldClim 2.1 (CMIP6): These are shared socioeconomic pathways (SSPs), and valid values are one or more of 126, 245, 370, and/or 585.
+`
 }}
 
 \item{period}{Year(s) of the time period from which to download climate rasters. Valid values depend on the version of WorldClim and whether future or historical decadal averages are being downloaded:
 \itemize{
 \item WC 1.4 future scenario normals:
-\itemize{
-\item \code{2050} (average across 2041-2060)
-\item \code{2070} (average across 2061-2080)
-}
+* \code{2050} (average across 2041-2060)
+* \code{2070} (average across 2061-2080)
 \item WC 2.1 future scenario normals:
-\itemize{
-\item \code{2030} (average across 2021-2040)
-\item \code{2050} (average across 2041-2060)
-\item \code{2070} (average across 2061-2080)
-\item \code{2090} (average across 2081-2100)
-}
+* \code{2030} (average across 2021-2040)
+* \code{2050} (average across 2041-2060)
+* \code{2070} (average across 2061-2080)
+* \code{2090} (average across 2081-2100)
 \item WC 2.1 decadal monthly averages:
-\itemize{
-\item \code{1960} (average across 1960-1969)
-\item \code{1970} (average across 1970-1979)
-\item \code{1980} (average across 1980-1989)
-\item \code{1990} (average across 1990-1999)
-\item \code{2000} (average across 2000-2000)
-\item \code{2010} (average across 2010-2018)
-}
+* \code{1960} (average across 1960-1969)
+* \code{1970} (average across 1970-1979)
+* \code{1980} (average across 1980-1989)
+* \code{1990} (average across 1990-1999)
+* \code{2000} (average across 2000-2000)
+* \code{2010} (average across 2010-2018)
 }}
 
 \item{warn}{If \code{TRUE} (default), warn if a raster is missing.}
 
 \item{fail}{If \code{FALSE} (default), do not throw an error if a raster is missing.}
 
-\item{Name}{of variable(s) to stack \emph{plus} the month/BIOCLIM number. Typically you would just want to stack a single variable (e.g., all rasters representing minimum temperature in January, or \code{tmin1}).  Valid values are:
+\item{Name}{of variable(s) to stack *plus\verb{the month/BIOCLIM number. Typically you would just want to stack a single variable (e.g., all rasters representing minimum temperature in January, or}tmin1`).  Valid values are:
 \itemize{
-\item \code{'tmin'}\emph{X}: minimum temperature of month \emph{X} (available for WC 2.1 decadal)
-\item \code{'tmax'}\emph{X}: maximum temperature of month \emph{X} (available for 2.1 decadal)
-\item \code{'ppt'}\emph{X}: precipitation of month \emph{X} (available for WC 1.4 and 2.1 future, and WC 2.1 decadal)
-\item \code{'bio'}\emph{X}: BIOCLIM variables number \emph{X} (available for WC 1.4 and 2.1 future)
+\item \code{'tmin'}\emph{X}\verb{: minimum temperature of month }\emph{X}` (available for WC 2.1 decadal)
+\item \code{'tmax'}\emph{X}\verb{: maximum temperature of month }\emph{X}` (available for 2.1 decadal)
+\item \code{'ppt'}\emph{X}\verb{: precipitation of month }\emph{X}` (available for WC 1.4 and 2.1 future, and WC 2.1 decadal)
+\item \code{'bio'}\emph{X}\verb{: BIOCLIM variables number }\emph{X}` (available for WC 1.4 and 2.1 future)
 }}
 }
 \description{
-These functions create a raster "stack" of similar rasters from WorldClim. For example, you can create a stack that has all \code{tmin} rasters for several greenhouse gas emissions scenarios and time periods. All rasters much be the same resolution. The rasters must be "unpacked" first using \code{\link[airUpThere]{wcUnpack}}.
+These functions create a raster "stack" of similar rasters from WorldClim. For example, you can create a stack that has all \code{tmin} rasters for several greenhouse gas emissions scenarios and time periods. All rasters much be the same resolution. The rasters must be "unpacked" first using \code{\link[=wcUnpack]{wcUnpack()}}.
 }
-\section{Functions}{
-\itemize{
-\item \code{wcStackFut()}: Stack WorldClim future rasters
+\examples{
+NULL
 
-}}
+}

@@ -9,7 +9,7 @@
 #' @param elevation \code{TRUE} or \code{FALSE}.
 #'
 #' @return URL or file name pattern
-#' @examples
+#' @noRd
 getFileOrURL_internal <- function(
 	what,
 	src,

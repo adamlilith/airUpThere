@@ -13,7 +13,5 @@
 #' plot(parks)
 #' 
 #' @format `SpatVector`
-#' @rdname parks
-#' @docType data
-#' @export
-'parks'
+#' @name parks
+NULL

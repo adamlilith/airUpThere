@@ -90,3 +90,6 @@ wcEnsemble(dir, ver, res, vars, esm, ghg, period, fun = mean, ...)
 \description{
 This function creates a raster that is the average of two or more future WorldClim rasters from the same resolution, period, greenhouse gas emissions scenario, and variable.
 }
+\examples{
+NULL
+}

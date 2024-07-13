@@ -11,5 +11,5 @@
 #' cat(nad83)
 #' 
 #' @format `character`
-#' @export
-'nad83'
+#' @name nad83
+NULL

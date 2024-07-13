@@ -74,6 +74,7 @@
 #' @param fun Function to apply to create an ensemble. The default is \code{mean}.
 #' @param ... Arguments to send to \code{\link[airUpThere]{wcStack}}, \code{\link[terra]{app}}, and \code{fun}.
 #' @examples
+#' NULL
 #' @export
 
 wcEnsemble <- function(

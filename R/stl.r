@@ -12,7 +12,6 @@
 #' stl
 #' plot(stl)
 #' 
-#' @docType data
 #' @format `SpatVector`
-#' @export
-'stl'
+#' @name stl
+NULL

@@ -2,7 +2,7 @@
 #' 
 #' Create a nice name for a WorldClim future climate scenario.
 #' @param ver Version number: 1.4 or 2.1
-#' @param ghg Greenhouse gas emissions scenario as a \coed{numeric} value. This is the RCP or SSP number (without a decimal point, for RCPs).
+#' @param ghg Greenhouse gas emissions scenario as a `numeric` value. This is the RCP or SSP number (without a decimal point, for RCPs).
 #' @return Character
 #' @examples
 #' wcConvertGhg(1.4, 4.5)

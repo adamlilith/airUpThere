@@ -12,7 +12,6 @@
 #' Daly, C., J.I. Smith, and K.V. Olson. 2015. Mapping atmospheric moisture climatologies across the conterminous United States. PloS ONE 10:e0141140. \href{https://doi.org/10.1371/journal.pone.0141140}{DOI: 10.1371/journal.pone.0141140}. \cr
 #' Fick, S.E. and Hijmans, R.J. 2017. WorldClim 2: New 1-km spatial resolution climate surfaces for global land areas. \emph{International Journal of Climatology} 37:4302-4315. \href{https://doi.org/10.1002/joc.5086}{DOI: https://doi.org/10.1002/joc.5086} \cr
 #' Hijmans, R.J., Cameron, S.E., Parra, J.L., Jones, P.G., and Jarvis, A. 2005. Very high resolution interpolated climate surfaces for global land areas. \emph{International Journal of Climatology} 25:1965-1978. \href{https://doi.org/10.1002/joc.1276}{DOI: https://doi.org/10.1002/joc.1276}
-#' @docType package
 #' @author Adam B. Smith
 #' @name airUpThere
-NULL
+"_PACKAGE" 

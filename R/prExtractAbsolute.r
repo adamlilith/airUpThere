@@ -1,7 +1,7 @@
 #' @name prExtractAbsolute
 #' @rdname prExtractAbsolute
 #' @title Extract values from PRISM across specified time periods
-
+#'
 #' @description These functions extract values from interpolated weather rasters from the Parameter Regression on Independent Slopes (PRISM) data product across a range of dates, and the range can vary for each geometry (point, line, or polygon). For example, it could extract all values from 2000-04-22 to 2022-04-22 for one point, and from 2019-01-01 to 2021-12-31 for another. If you wish to extract values across a fixed length of time relative to a specific date (e.g., the 100 days prior to sampling at each point), then see [prExtractRelative()]. Extractions are done at points (versus polygons or lines, for example).
 #'
 #' The basic input is an object of class `SpatVector`, or a `data.frame` or `matrix`, with each row representing a point location. The function also needs to be pointed toward a folder with PRISM data. The folder with PRISM data must be structured as:

@@ -11,6 +11,5 @@
 #' cat(wgs84)
 #' 
 #' @format `character`
-#' @docType data
-#' @export
-'wgs84'
+#' @name wgs84
+NULL

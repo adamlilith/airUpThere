@@ -22,8 +22,6 @@ Create an issue on \href{https://github.com/adamlilith/airUpThere/issues}{GitHub
 \section{airUpThere essentials}{
 
 \code{\link{airUpdate}}: Retrieve latest URLs \cr
-\code{\link{airUrls}} URLs and file patterns for various climate data sources. \cr
-\code{\link{airVars}} "File/URL" and "standard" names of each variable available from each data source. \cr
 }
 
 \section{CHELSA}{
@@ -76,9 +74,37 @@ Create an issue on \href{https://github.com/adamlilith/airUpThere/issues}{GitHub
 \code{\link{monthAsNum}} Convert month name to number. \cr
 \code{\link{monthDiff}} Difference in months between two dates expressed as YYYY-MM. \cr
 \code{\link{seqMonths}} Generate a sequence of years and months from a starting and ending date. \cr
+\subsection{Example data}{
+
+\link{airData}: Meta-data on each of the climate/weather products managed by \strong{airUpThere}\cr
+\code{\link[=airExample]{airExample()}}: Easily load example data\cr
+\link{nad83}: North American Datum 1983 (NAD83)\cr
+\link{stl}: Outline of the City of Saint Louis, Missouri, USA\cr
+\link{parks}: Outline of two parks in Saint Louis\cr
+\link{trees}: Location of trees in Saint Louis\cr
+\link{wgs84}: World Geodetic System 1984 (WGS84)\cr
+}
 }
 
 \references{
+\strong{CHELSA}
+Karger, D.N., Conrad, O., Böhner, J., Kawohl, T., Kreft, H., Soria-Auza, R.W., Zimmermann, N.E., Linder, P., Kessler, M. (2017). Climatologies at high resolution for the Earth land surface areas. Scientific Data. 4 170122. \href{https://doi.org/10.1038/sdata.2017.122}{DOI: 10.1038/sdata.2017.122}
+
+Karger D.N., Conrad, O., Böhner, J., Kawohl, T., Kreft, H., Soria-Auza, R.W., Zimmermann, N.E,, Linder, H.P., Kessler, M.. Data from: Climatologies at high resolution for the earth’s land surface areas. Dryad Digital Repository. \href{http://dx.doi.org/doi:10.5061/dryad.kd1d4}{10.5061/dryad.kd1d4}
+
+\strong{PRISM}
+Daly, C., Halbleib, M., Smith, J.I., Gibson, W.P., Doggett, M.K., Taylor, G.H., Curtis, J., and Pasteris, P.A. 2008. Physiographically-sensitive mapping of temperature and precipitation across the conterminous United States. International Journal of Climatology, 28: 2031-2064 \href{https://doi.org/10.1002/joc.1688}{DOI: 10.1002/joc.1688} \cr
+
+Daly, C., J.I. Smith, and K.V. Olson. 2015. Mapping atmospheric moisture climatologies across the conterminous United States. PloS ONE 10:e0141140. \href{https://doi.org/10.1371/journal.pone.0141140}{DOI: 10.1371/journal.pone.0141140}. \cr
+
+\strong{TerraClimate}
+Abatzoglou, J.T., Dobrowski, S.Z., Parks, S.A., and Hegewisch, K.C. 2018. TerraClimate, a high-resolution global dataset of monthly climate and climatic water balance from 1958-2015. \emph{Scientific Data} 5:170191. doi: \href{https://dx.doi.org/10.1038/sdata.2017.191}{10.1038/sdata.2017.191}. \cr
+
+\strong{WorldClim}
+Fick, S.E. and Hijmans, R.J. 2017. WorldClim 2: New 1-km spatial resolution climate surfaces for global land areas. \emph{International Journal of Climatology} 37:4302-4315. doi: \href{https://doi.org/10.1002/joc.5086}{10.1002/joc.5086} \cr
+
+Hijmans, R.J., Cameron, S.E., Parra, J.L., Jones, P.G., and Jarvis, A. 2005. Very high resolution interpolated climate surfaces for global land areas. \emph{International Journal of Climatology} 25:1965-1978. doi: \href{https://doi.org/10.1002/joc.1276}{10.1002/joc.1276}.
+
 Daly, C., Halbleib, M., Smith, J.I., Gibson, W.P., Doggett, M.K., Taylor, G.H., Curtis, J., and Pasteris, P.A. 2008. Physiographically-sensitive mapping of temperature and precipitation across the conterminous United States. International Journal of Climatology, 28: 2031-2064 \href{https://doi.org/10.1002/joc.1688}{DOI: 10.1002/joc.1688} \cr
 Daly, C., J.I. Smith, and K.V. Olson. 2015. Mapping atmospheric moisture climatologies across the conterminous United States. PloS ONE 10:e0141140. \href{https://doi.org/10.1371/journal.pone.0141140}{DOI: 10.1371/journal.pone.0141140}. \cr
 Fick, S.E. and Hijmans, R.J. 2017. WorldClim 2: New 1-km spatial resolution climate surfaces for global land areas. \emph{International Journal of Climatology} 37:4302-4315. \href{https://doi.org/10.1002/joc.5086}{DOI: https://doi.org/10.1002/joc.5086} \cr

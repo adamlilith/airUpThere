@@ -7,13 +7,13 @@
 wcConvertRes(ver, res, period, standardToFile = TRUE, incUnit = TRUE)
 }
 \arguments{
-\item{ver}{Either \code{1.4} or \coed{2.1}.}
+\item{ver}{Either \code{1.4} or \code{2.1}.}
 
 \item{res}{Either "nice" names of resolutions (any of \code{10}, \code{5}, \code{2.5}, or \code{30}), or "file/URL" names:
 \itemize{
-\item WorldClim Version 1.4, historical: \code{10m}, \code{5m}, \code{2-5m}, or \code{30s}
-\item WorldClim Version 1.3, future: \code{10m}, \code{5m}, \code{2_5m}, or \code{30s}
-\item WorldClim Version 2.1: \code{10m}, \code{5m}, \code{2.5m}, or \code{30s}
+\item WorldClim Version 1.4, historical: \verb{10m}, \verb{5m}, \verb{2-5m}, or \verb{30s}
+\item WorldClim Version 1.3, future: \verb{10m}, \verb{5m}, \verb{2_5m}, or \verb{30s}
+\item WorldClim Version 2.1: \verb{10m}, \verb{5m}, \verb{2.5m}, or \verb{30s}
 }}
 
 \item{period}{Either \code{'historical'}, \code{'future'}, or \code{'decadal'}.}

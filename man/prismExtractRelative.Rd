@@ -14,9 +14,9 @@ prExtractRelativeDaily(
   date,
   res = 4,
   rastSuffix = "bil",
-  longLat = NULL,
   windowYears = 0,
   windowDays = 0,
+  template = NULL,
   verbose = TRUE,
   ...
 )
@@ -28,9 +28,9 @@ prExtractRelativeMonthly(
   date,
   res = 4,
   rastSuffix = "bil",
-  longLat = NULL,
   windowYears = 0,
   windowMonths = 0,
+  template = NULL,
   verbose = TRUE,
   ...
 )
@@ -43,7 +43,6 @@ prExtractRelativeAnnual(
   res = 4,
   rastSuffix = "bil",
   annualDir = "annual",
-  longLat = NULL,
   windowYears = 0,
   verbose = TRUE,
   ...
@@ -52,7 +51,7 @@ prExtractRelativeAnnual(
 \arguments{
 \item{prDir}{Character. Path of the base folder in which the rasters are stored. It must have a structure with subfolders as described above.}
 
-\item{x}{A \code{SpatVector}, or a \code{data.frame} or \code{matrix}.}
+\item{x}{A \code{SpatVector}.}
 
 \item{vars}{Name of variable(s) to extract. Valid values are:
 \itemize{
@@ -76,8 +75,6 @@ prExtractRelativeAnnual(
 
 \item{rastSuffix}{Character. The "suffix" at the end of each weather raster. PRISM rasters are usually shipped in 'BIL' format, so normally this should be \code{bil}. However, any other suffix corresponding to a raster type that can be opened by the \code{\link[terra:rast]{terra::rast()}} function can be used if the rasters have been converted to another format.}
 
-\item{longLat}{Character vector with two elements. If \code{x} is an object of class \code{data.frame}, this is the name of the columns in \code{x} with longitude and latitude (in that order). Coordinates will be assumed to be in the same coordinate reference system as the PRISM rasters. This argument is ignored if \code{x} is not a data frame.}
-
 \item{windowYears, windowMonths, windowDays}{Integers >= 0. Extract data for this many years, months, and/or days before the day of each observation, \emph{plus} the day of observation. Note:
 \itemize{
 \item For daily data, only \code{windowYears} and \code{windowDays} are used. Note that the difference between using, say, \code{windowYears = 1} and \code{windowDays = 365} is that the former can accommodate leap days whereas the latter just extracts the 365 days prior (which may be less than a full calendar year if the time span encompasses a leap day).
@@ -87,6 +84,8 @@ prExtractRelativeAnnual(
 
 To get only data for the day/month/year of each record, set all of the respective \code{window} arguments to 0 (default).}
 
+\item{template}{Either \code{NULL} (default), or \code{SpatRaster} or path and filename of a PRISM raster. This argument is used to set the dimensions of the output data frame. If \code{x} is a "points" \code{SpatVector}, then \code{template} can be \code{NULL}, but cell number and coordinate cannot be returned (i.e., setting \code{cells = TRUE} and \code{xy = TRUE} in the \code{...} part of the function call). If \code{x} is a "lines" or "polygons" vector, then this \emph{must} be supplied so that the function can ascertain how many rows will be in the output table.}
+
 \item{verbose}{Logical. If \code{TRUE} (default), show progress.}
 
 \item{...}{Argument(s) to pass to \code{\link[terra:extract]{terra::extract()}}.}
@@ -94,12 +93,12 @@ To get only data for the day/month/year of each record, set all of the respectiv
 \item{annualDir}{Name of the highest-level folder in which annual rasters are stored. If you use the \code{\link[=prDownloadAnnual]{prDownloadAnnual()}} function to download PRISM rasters, this will be \code{'annual'} (default). However, if you are extracting values from a purchased version of PRISM (i.e., that the PRISM staff sent you on a hard drive), the annual rasters are typically stored in the folder called \code{'monthly'}.}
 }
 \value{
-Matrix with one row per row in \code{x}. \code{NA} values represent days/months/years that did not fall within the specified window or for which rasters were unavailable.
+Matrix. \code{NA} values represent days/months/years that did not fall within the specified window or for which rasters were unavailable.
 }
 \description{
-These functions extract values from interpolated weather rasters from the Parameter Regression on Independent Slopes (PRISM) data product across a window of time relative to a given date. For example, it could extract all values starting 10 days prior to a given date, with the date varying by point. If you wish to extract values across a specified date range (e.g., from 2014-04-22 to 2014-04-29, then see \code{\link[=prExtractAbsolute]{prExtractAbsolute()}}. Extractions are done at points (versus polygons or lines, for example).
+These functions extract values at point, line, or polygon locations from interpolated weather rasters from the Parameter Regression on Independent Slopes (PRISM) data product across a window of time relative to a given date. For example, it could extract all values starting 10 days prior to a given date, with the date varying by point, line, or polygon. If you wish to extract values across a specified date range that can vary by point, line, or plane, then see \code{\link[=prExtractAbsolute]{prExtractAbsolute()}}.
 
-The basic input is a \code{SpatVector}, or a \code{data.frame} or \code{matrix}, with each row representing a point location. The function also needs to be pointed toward a folder with PRISM data. The folder with PRISM data must be structured as:
+The basic input is a \code{SpatVector} representing points, lines, or polygons. The function also needs to be pointed toward a folder with PRISM data. The folder with PRISM data must be structured as:
 \itemize{
 \item Base folder (e.g., \code{'C:/PRISM/an81'} or \code{'C:/PRISM/lt81'}), which contains:
 \item A folder named either \code{daily}, \code{monthly}, \code{annual}, which contains:
@@ -110,7 +109,7 @@ The basic input is a \code{SpatVector}, or a \code{data.frame} or \code{matrix},
 * One raster representing the annual value named like \code{prism_tmin_us_30s_1981.bil}.
 }
 
-The function can extract values corresponding to the day/month/year of each record, plus (optionally) a user-specified window of time prior to the day/month/year of each record. For example, you could use this to extract daily climate data for a site collected on April 22, 2014, and all days prior up to 10 years (April 23, 2004). This function is really a fancy wrapper for \code{\link[terra:extract]{terra::extract()}}, but it does the tough job of getting the folder structures right, pulling all needed rasters, and efficiently grouping records to speed extraction.
+The function can extract values corresponding to the day/month/year of each record, plus a user-specified window of time prior to the day/month/year of each record. For example, you could use this to extract daily climate data for a site collected on April 22, 2014, and all days prior up to 10 years (April 23, 2004). This function is really a fancy wrapper for \code{\link[terra:extract]{terra::extract()}}, but it does the tough job of getting the folder structures right, pulling all needed rasters, and efficiently grouping records to speed extraction.
 
 The function does not assume that data for all PRISM years are available, but it does assume that all relevant rasters for a particular year are available within each yearly folder. If rasters preceding a date only partially cover the window, then values for the part covered will be extracted. For example if you try to extract annual values for a window spanning 2010 to 2020 but only have available rasters for 1981 to 2018, then values for 2010 to 2018 will be extracted. Values that cannot be extracted are represented by \code{NA} in the output.
 }
@@ -123,3 +122,66 @@ The function does not assume that data for all PRISM years are available, but it
 \item \code{prExtractRelativeAnnual()}: Extract annual values from PRISM across a temporal window
 
 }}
+\examples{
+library(terra)
+
+data(nad83)
+
+# Base folder with PRISM rasters
+prDir <- 'F:/ecology/PRISM/working/an81'
+
+# Example data (polygons)
+parks <- airExample('parks')
+crs(parks) <- nad83 # NB: More accurate than projecting from WGS84 to NAD83
+parks$date <- c('2011-09-01', '1859-09-01', '2022-09-01', '2055-09-01')
+
+# Template raster only required for extracting to lines or polygons
+template <- rast('F:/ecology/PRISM/PRISM_us_dem_800m.tif')
+
+# daily
+dy <- prExtractRelativeDaily(
+    x = parks,
+    date = 'date',
+    prDir = prDir,
+    vars = 'tmin',
+    res = 30,
+    rastSuffix = 'tif',
+    windowYears = 0,
+    windowDays = 7,
+	template = template,
+    verbose = TRUE,
+	ID = TRUE, cells = TRUE, xy = TRUE, weights = TRUE
+)
+ 
+# monthly
+mo <- prExtractRelativeMonthly(
+    x = parks,
+    date = 'date',
+    prDir = prDir,
+    vars = 'tmin',
+    res = 30,
+    rastSuffix = 'tif',
+    windowYears = 0,
+    windowMonths = 5,
+	template = template,
+    verbose = TRUE,
+	ID = TRUE, cells = TRUE, xy = TRUE, weights = TRUE
+)
+ 
+# annual
+source('C:/Ecology/Drive/R/airUpThere/R/prExtractRelative.r')
+
+yr <- prExtractRelativeAnnual(
+    x = parks,
+    date = 'date',
+    prDir = prDir,
+    vars = 'tmin',
+    res = 30,
+    rastSuffix = 'tif',
+    annualDir = 'annual',
+    windowYears = 3,
+	template = template,
+    verbose = TRUE,
+	ID = TRUE, cells = TRUE, xy = TRUE, weights = TRUE
+)
+}

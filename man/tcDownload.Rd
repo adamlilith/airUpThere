@@ -10,6 +10,7 @@ tcDownloadMonthly(
   saveTo,
   vars,
   year = NULL,
+  elevation = FALSE,
   update = TRUE,
   forceUpdate = FALSE,
   verbose = TRUE
@@ -21,25 +22,26 @@ tcDownloadElev(saveTo, update = TRUE, forceUpdate = FALSE, verbose = TRUE)
 \item{saveTo}{Name of the base path to which to save the download. Subfolders will be created within this folder.}
 
 \item{vars}{Name(s) of variable(s) to download. Valid values include:
-\itemize{
-\item \code{elev}: elevation
-\item \code{tmin}: minimum temperature
-\item \code{tmax}: maximum temperature
-\item \code{ppt}: accumulated precipitation
-\item \code{swe}: snow water equivalent
-\item \code{aet}: actual evapotranspiration
-\item \code{pet}: reference (potential) evapotranspiration (ET0)
-\item \code{def}: climate water deficit
-\item \code{pdsi}: Palmer Drought Severity Index
-\item \code{soilWater}: extractable soil moisture
-\item \code{srad}: downward shortwave flux at the surface (solar radiation)
-\item \code{windSpeed}: average wind speed
-\item \code{q}: cumulative streamflow
-\item \code{vap}: vapor pressure
-\item \code{vpd}: vapor pressure deficit
-}}
+* \code{elev}: elevation
+* \code{tmin}: minimum temperature
+* \code{tmax}: maximum temperature
+* \code{ppt}: accumulated precipitation
+* \code{swe}: snow water equivalent
+* \code{aet}: actual evapotranspiration
+* \code{pet}: reference (potential) evapotranspiration (ET0)
+* \code{def}: climate water deficit
+* \code{pdsi}: Palmer Drought Severity Index
+* \code{soilWater}: extractable soil moisture
+* \code{srad}: downward shortwave flux at the surface (solar radiation)
+* \code{windSpeed}: average wind speed
+* \code{q}: cumulative streamflow
+* \code{vap}: vapor pressure
+* \code{vpd}: vapor pressure deficit
+`}
 
 \item{year}{Year(s) of the period from which to download monthly climate rasters. Valid years include 1958 through the present (often one or two years prior to the current year). This can be \code{NULL} only if the variable being downloaded is \code{elevation}.}
+
+\item{elevation}{Logical: If \code{TRUE}, download elevation, too.}
 
 \item{update}{If \code{TRUE} (default), only rasters that have been generated after the one(s) on disk will be downloaded. The rasters being updated will be overwritten. If \code{FALSE}, only rasters that are missing will be downloaded (existing rasters will not be overwritten).}
 
@@ -68,5 +70,5 @@ tcDownloadElev(dl, 'elev')
 }
 }
 \references{
-Abatzoglou, J.T., Dobrowski, S.Z., Parks, S.A., and Hegewisch, K.C. 2018. TerraClimate, a high-resolution global dataset of monthly climate and climatic water balance from 1958-2015. \emph{Scientific Data} 5:170191. doi: \href{https://dx.doi.org/10.1038/sdata.2017.191}{10.1038/sdata.2017.191}.
+Abatzoglou, J.T., Dobrowski, S.Z., Parks, S.A., and Hegewisch, K.C. 2018. TerraClimate, a high-resolution global dataset of monthly climate and climatic water balance from 1958-2015. \emph{Scientific Data} 5:170191. \doi{10.1038/sdata.2017.191}.
 }

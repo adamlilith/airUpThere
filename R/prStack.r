@@ -18,7 +18,7 @@
 #'      * If `by` is `day`, then daily rasters will be obtained.
 #'      * If `by` is `month`, then monthly rasters will be obtained (i.e., the "day" portion of the dates is ignored).
 #'      * If `by` is `year`, the annual rasters will be obtained (the "day" and "month" portion of the dates will be ignored).
-#'		}
+#'		
 #' * If `span` is `TRUE`, then two dates must be specified, and rasters will represent the period bracketed by these dates. For example, `dates = c('2014-04-22', '2015-04-22')` will return all daily, monthly, or annual rasters including and spanning those dates.
 #'      * If `by` is `day`, then all days across the period `dates[1]` and `dates[2]`, inclusive, will be stacked.
 #'      * If `by` is `month`, then all months starting in the month of `dates[1]` and extending to the month of `dates[2]` will be stacked.

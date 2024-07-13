@@ -9,7 +9,7 @@ wcConvertGhg(ver, ghg)
 \arguments{
 \item{ver}{Version number: 1.4 or 2.1}
 
-\item{ghg}{Greenhouse gas emissions scenario as a \coed{numeric} value. This is the RCP or SSP number (without a decimal point, for RCPs).}
+\item{ghg}{Greenhouse gas emissions scenario as a \code{numeric} value. This is the RCP or SSP number (without a decimal point, for RCPs).}
 }
 \value{
 Character

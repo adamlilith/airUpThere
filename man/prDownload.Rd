@@ -35,11 +35,9 @@ prDownload(
 }}
 
 \item{startDate, endDate}{Dates that encompasses the time period desired. This must be in YYYY-MM-DD format (e.g., \code{1981-01-08} or objects of class \code{Date}. Note that even if the monthly or annual rasters are desired, the dates must still be specified as YYYY-MM-DD. The day or day and month will be ignored, in this case. For example, \code{startDate = '1981-01-01'} and \code{endDate = '1982-01-01'} will fetch 13 months of monthly climate rasters, or 2 years of annual rasters. Valid values of dates depend on the version of PRISM:
-\itemize{
-\item Annual and monthly: 1895 to present (free "4-km" version and LT81 version)
-\item Annual and monthly: 1981 to present (AN81d and AN81m versions)
-\item Daily (subscription only): 1981 to present
-}}
+* Annual and monthly: 1895 to present (free "4-km" version and LT81 version)
+* Annual and monthly: 1981 to present (AN81d and AN81m versions)
+* Daily (subscription only): 1981 to present}
 
 \item{unzipTo}{Optional. If \code{NULL}, then only}
 
@@ -49,15 +47,15 @@ prDownload(
 
 \item{public}{If \code{TRUE} (default), download the free, public ("4-km") raster set. If \code{FALSE}, download from the subscription service. If \code{NULL}, then use the URL specified in \code{service}.}
 
-\item{service}{This is the base URL for downloading PRISM rasters. It is actually hard-coded into the script and thus usually ignored unless \code{public = NULL}. In that case, one can specify the URL of the PRISM download service being called. The default (\coed{public = TRUE}) is to get the free ("4-km") version from \code{service://services.nacse.org/prism/data/public/4km}. The subscription version (\code{public = FALSE}) is from \code{service://services.nacse.org/prism/data/subscription/800m}. To use the subscription option, you must using a IP addresses registered with PRISM staff.}
+\item{service}{This is the base URL for downloading PRISM rasters. It is actually hard-coded into the script and thus usually ignored unless \code{public = NULL}. In that case, one can specify the URL of the PRISM download service being called. The default (\code{public = TRUE}) is to get the free ("4-km") version from \verb{service://services.nacse.org/prism/data/public/4km}. The subscription version (\code{public = FALSE}) is from \verb{service://services.nacse.org/prism/data/subscription/800m}. To use the subscription option, you must using a IP addresses registered with PRISM staff.}
 
-\item{res}{Character, name of the resolution being downloaded. Normally, users do not need to worry about this unless they specify the \code{service} from which rasters are being downloaded. Typical values are either \code{'4km'} or \coed{'30s'}. This is used in the file names.}
+\item{res}{Character, name of the resolution being downloaded. Normally, users do not need to worry about this unless they specify the \code{service} from which rasters are being downloaded. Typical values are either \code{'4km'} or \code{'30s'}. This is used in the file names.}
 }
 \value{
 One or more zipped raster sets are saved to disk. The function also returns a data frame indicating if the desired file(s) were already on the disk and if they were downloaded.
 }
 \description{
-This function downloads PRISM climate rasters. It duplicate functionality of the \pkg{prism} package.
+This function downloads PRISM climate rasters. It duplicates functionality of the \strong{prism} package.
 }
 \details{
 Note that downloading from the public version has its limits... Specifically, if you try to download the same raster in the same day, the repeated attempts will instead fetch a text file that reads like, "You have tried to download the file PRISM_tmin_stable_4kmM3_1981_bil.zip more than twice in one day (Pacific local time).  Note that repeated offenses may result in your IP address being blocked."
@@ -75,7 +73,7 @@ prDownload(dl, 'monthly', 'tmin', startDate, endDate)
 }
 }
 \references{
-Daly, C., Halbleib, M., Smith, J.I., Gibson, W.P., Doggett, M.K., Taylor, G.H., Curtis, J., and Pasteris, P.A. 2008. Physiographically-sensitive mapping of temperature and precipitation across the conterminous United States. International Journal of Climatology, 28: 2031-2064 \href{https://doi.org/10.1002/joc.1688}{DOI: 10.1002/joc.1688} \cr
+Daly, C., Halbleib, M., Smith, J.I., Gibson, W.P., Doggett, M.K., Taylor, G.H., Curtis, J., and Pasteris, P.A. 2008. Physiographically-sensitive mapping of temperature and precipitation across the conterminous United States. \emph{International Journal of Climatology} 28:2031-2064 \doi{10.1002/joc.1688}.
 
-Daly, C., J.I. Smith, and K.V. Olson. 2015. Mapping atmospheric moisture climatologies across the conterminous United States. PloS ONE 10:e0141140. \href{https://doi.org/10.1371/journal.pone.0141140}{DOI: 10.1371/journal.pone.0141140}. \cr
+Daly, C., J.I. Smith, and K.V. Olson. 2015. Mapping atmospheric moisture climatologies across the conterminous United States. \emph{PloS ONE} 10:e0141140. \doi{10.1371/journal.pone.0141140}.
 }

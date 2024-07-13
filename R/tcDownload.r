@@ -6,30 +6,38 @@
 #'
 #' @param saveTo Name of the base path to which to save the download. Subfolders will be created within this folder.
 #' @param vars Name(s) of variable(s) to download. Valid values include:
-#' \itemize{
-#' 	\item \code{elev}: elevation
-#' 	\item \code{tmin}: minimum temperature
-#' 	\item \code{tmax}: maximum temperature
-#' 	\item \code{ppt}: accumulated precipitation
-#' 	\item \code{swe}: snow water equivalent
-#' 	\item \code{aet}: actual evapotranspiration
-#' 	\item \code{pet}: reference (potential) evapotranspiration (ET0)
-#' 	\item \code{def}: climate water deficit
-#' 	\item \code{pdsi}: Palmer Drought Severity Index
-#' 	\item \code{soilWater}: extractable soil moisture
-#' 	\item \code{srad}: downward shortwave flux at the surface (solar radiation)
-#' 	\item \code{windSpeed}: average wind speed
-#' 	\item \code{q}: cumulative streamflow
-#' 	\item \code{vap}: vapor pressure
-#' 	\item \code{vpd}: vapor pressure deficit
-#' }
-#' @param year Year(s) of the period from which to download monthly climate rasters. Valid years include 1958 through the present (often one or two years prior to the current year). This can be \code{NULL} only if the variable being downloaded is \code{elevation}.
-#' @param update If \code{TRUE} (default), only rasters that have been generated after the one(s) on disk will be downloaded. The rasters being updated will be overwritten. If \code{FALSE}, only rasters that are missing will be downloaded (existing rasters will not be overwritten).
-#' @param forceUpdate If \code{FALSE} (default), then all existing rasters will be overwritten, regardless of whether or not the existing ones are up-to-date or not.
-#' @param verbose If \code{TRUE} (default), display progress.
-#' @return NetCDF rasters are saved to disk. The function also returns a data frame indicating if the desired file(s) were already on the disk and if they were downloaded.
+#'
+#' 	* `elev`: elevation
+#' 	* `tmin`: minimum temperature
+#' 	* `tmax`: maximum temperature
+#' 	* `ppt`: accumulated precipitation
+#' 	* `swe`: snow water equivalent
+#' 	* `aet`: actual evapotranspiration
+#' 	* `pet`: reference (potential) evapotranspiration (ET0)
+#' 	* `def`: climate water deficit
+#' 	* `pdsi`: Palmer Drought Severity Index
+#' 	* `soilWater`: extractable soil moisture
+#' 	* `srad`: downward shortwave flux at the surface (solar radiation)
+#' 	* `windSpeed`: average wind speed
+#' 	* `q`: cumulative streamflow
+#' 	* `vap`: vapor pressure
+#' 	* `vpd`: vapor pressure deficit
+#' `
+#' @param year Year(s) of the period from which to download monthly climate rasters. Valid years include 1958 through the present (often one or two years prior to the current year). This can be `NULL` only if the variable being downloaded is `elevation`.
+#'
+#' @param elevation Logical: If `TRUE`, download elevation, too.
+#'
+#' @param update If `TRUE` (default), only rasters that have been generated after the one(s) on disk will be downloaded. The rasters being updated will be overwritten. If `FALSE`, only rasters that are missing will be downloaded (existing rasters will not be overwritten).
+#'
+#' @param forceUpdate If `FALSE` (default), then all existing rasters will be overwritten, regardless of whether or not the existing ones are up-to-date or not.
+#'
+#' @param verbose If `TRUE` (default), display progress.
+#'
+#' @returns NetCDF rasters are saved to disk. The function also returns a data frame indicating if the desired file(s) were already on the disk and if they were downloaded.
+#'
 #' @references
-#' Abatzoglou, J.T., Dobrowski, S.Z., Parks, S.A., and Hegewisch, K.C. 2018. TerraClimate, a high-resolution global dataset of monthly climate and climatic water balance from 1958-2015. \emph{Scientific Data} 5:170191. doi: \href{https://dx.doi.org/10.1038/sdata.2017.191}{10.1038/sdata.2017.191}.
+#' Abatzoglou, J.T., Dobrowski, S.Z., Parks, S.A., and Hegewisch, K.C. 2018. TerraClimate, a high-resolution global dataset of monthly climate and climatic water balance from 1958-2015. *Scientific Data* 5:170191. \doi{10.1038/sdata.2017.191}.
+#'
 #' @examples
 #' 
 #' \dontrun{
@@ -39,11 +47,11 @@
 #' 
 #' }
 #' @export
-
 tcDownloadMonthly <- function(
 	saveTo,
 	vars,
 	year = NULL,
+	elevation = FALSE,
 	update = TRUE,
 	forceUpdate = FALSE,
 	verbose = TRUE
@@ -56,8 +64,17 @@ tcDownloadMonthly <- function(
 	if (is.null(year)) year <- NA
 
 	standVar <- convertVar('tc', vars, standardToFile=FALSE)
-	fileVar <- convertVar('tc', vars, standardToFile=TRUE)
+	# fileVar <- convertVar('tc', vars, standardToFile=TRUE)
+	fileVar <- vars
 	
+	if (!elevation) {
+		monthlyVarFile <- fileVar[-which(fileVar %in% 'elevation')]
+		monthlyVarStand <- standVar[-which(standVar %in% 'elev')]
+	} else {
+		monthlyVarFile <- fileVar
+		monthlyVarStand <- standVar
+	}
+
 	# get date each file was last modified
 	catalog <- xml2::read_html(metaService)
 	catalog <- xml2::xml_find_all(catalog, './/table')
@@ -66,15 +83,7 @@ tcDownloadMonthly <- function(
 	catalog <- catalog[-1, ]
 	catalog$lastModified <- as.Date(catalog$lastModified)
 
-	if (wantElev) {
-		monthlyVarFile <- fileVar[-which(fileVar %in% 'elevation')]
-		monthlyVarStand <- standVar[-which(standVar %in% 'elev')]
-	} else {
-		monthlyVarFile <- fileVar
-		monthlyVarStand <- standVar
-	}
-
-	success <- expand.grid(vars=monthlyVarStand, year=year, versionOnServer=NA, versionOnDisk=NA, updated=NA)
+	success <- expand.grid(vars = monthlyVarStand, year = year, versionOnServer = NA, versionOnDisk = NA, updated = NA)
 	
 	for (countVar in seq_along(monthlyVarFile)) {
 
@@ -167,7 +176,9 @@ tcDownloadElev <- function(
 	filePath <- paste0(saveTo, '/', rastFileName)
 	alreadyHave <- file.exists(filePath)
 	
-	url <- 'https://climate.northwestknowledge.net/METDATA/data/metdata_elevationdata.nc'
+	# url <- 'https://climate.northwestknowledge.net/METDATA/data/metdata_elevationdata.nc'
+	# url <- 'https://climate.northwestknowledge.net/METDATA/data/metdata_elevationdata.nc'
+	url <- 'https://climate.northwestknowledge.net/METDATA/data/metdata_elevationdata_float.nc'
 	
 	success <- expand.grid(vars=vars, updated=NA)
 
@@ -175,9 +186,9 @@ tcDownloadElev <- function(
 	
 	if (verbose) {
 		if (doUpdate) {
-			cat(' | fetching')
+			cat('fetching')
 		} else {
-			cat(' | skipping')
+			cat('skipping')
 		}
 		flush.console()
 	}
@@ -191,8 +202,8 @@ tcDownloadElev <- function(
 			
 			downloaded <- TRUE
 			tryCatch(
-				utils::download.file(url, destfile=filePath, method='auto', quiet=TRUE),
-				error=function(e) { downloaded <<- FALSE }
+				utils::download.file(url, destfile = filePath, method = 'auto', quiet = TRUE),
+				error = function(e) { downloaded <<- FALSE }
 			)
 
 			Sys.sleep(1)

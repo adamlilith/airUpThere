@@ -19,5 +19,6 @@
 #' @examples
 #' data(airData)
 #' airData
-#' @export
-'airData'
+#'
+#' @name airData
+NULL

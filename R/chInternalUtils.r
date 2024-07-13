@@ -1,8 +1,9 @@
 #' Check ESM for CHELSA
+#'
 #' @param cmip CMIP (5 or 6)
 #' @param esm Name of the ESM. Case-sensitive!
-#' @return \code{TRUE} (invisible) or an error will be called.
-#' @keywords internal
+#' @return `TRUE` (invisible) or an error will be called.
+#' @noRd
 chCheckEsm_internal <- function(cmip, esm) {
 
 	valids <- chEsm(cmip)
@@ -21,9 +22,9 @@ chCheckEsm_internal <- function(cmip, esm) {
 }
 
 #' Are periods in short or long format?
-#' @param period
+#' @param period Character.
 #' @return \code{TRUE} (invisible) or an error will be called.
-#' @keywords internal
+#' @noRd
 chIsPeriodLong_internal <- function(period) {
 
 	long <- grepl(period, pattern='-')

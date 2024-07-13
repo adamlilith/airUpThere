@@ -15,7 +15,8 @@ prExtractAbsoluteDaily(
   vars,
   res = 4,
   rastSuffix = "bil",
-  longLat = NULL,
+  template = NULL,
+  removeNAs = FALSE,
   verbose = TRUE,
   ...
 )
@@ -28,7 +29,8 @@ prExtractAbsoluteMonthly(
   vars,
   res = 4,
   rastSuffix = "bil",
-  longLat = NULL,
+  template = NULL,
+  removeNAs = FALSE,
   verbose = TRUE,
   ...
 )
@@ -41,14 +43,15 @@ prExtractAbsoluteAnnual(
   vars,
   res = 4,
   rastSuffix = "bil",
-  longLat = NULL,
   annualDir = "annual",
+  template = NULL,
+  removeNAs = FALSE,
   verbose = TRUE,
   ...
 )
 }
 \arguments{
-\item{x}{"Points" object of class \code{SpatVector}, \code{data.frame}, or \code{matrix}.}
+\item{x}{\code{SpatVector}.}
 
 \item{startDate, endDate}{These define the beginning/ending date across which values are to be extracted. Either:
 \itemize{
@@ -74,19 +77,21 @@ prExtractAbsoluteAnnual(
 
 \item{rastSuffix}{Character. The "suffix" at the end of each weather raster. PRISM rasters are usually shipped in 'BIL' format, so normally this should be \code{bil}. However, any other suffix corresponding to a raster type that can be opened by the \code{\link[=terra:rast]{terra:rast()}} function can be used if the rasters have been converted to another format.}
 
-\item{longLat}{Character vector with two elements. If \code{x} is an object of class \code{data.frame}, this is the name of the columns in \code{x} with longitude and latitude (in that order). Coordinates will be assumed to be in the same coordinate reference system as the PRISM rasters. This argument is ignored if \code{x} is not a data frame.}
+\item{template}{Either \code{NULL} (default), or \code{SpatRaster} or path and filename of a PRISM raster. This argument is used to set the dimensions of the output data frame. If \code{x} is a "points" \code{SpatVector}, then \code{template} can be \code{NULL}, but cell number and coordinate cannot be returned (i.e., setting \code{cells = TRUE} and \code{xy = TRUE} in the \code{...} part of the function call). If \code{x} is a "lines" or "polygons" vector, then this \emph{must} be supplied so that the function can ascertain how many rows will be in the output table.}
 
-\item{verbose}{Logical. If \code{TRUE} (default), show progress.}
+\item{removeNAs}{Logical: If \code{TRUE}, remove columns in the output where all values are \code{NA}. The default is \code{FALSE}, which returns all columns, but this can result in a very large matrix.}
+
+\item{verbose}{Logical: If \code{TRUE} (default), show progress.}
 
 \item{...}{Argument(s) to pass to \code{\link[terra:extract]{terra::extract()}}.}
 
-\item{annualDir}{Name of the highest-level folder in which annual rasters are stored. If you use the \code{prDownloadAnnual()} function to download PRISM rasters, this will be \code{'annual'} (default). However, if you are extracting values from a purchased version of PRISM (i.e., that the PRISM staff sent you on a hard drive), the annual rasters are typically stored in the folder called \code{'monthly'}.}
+\item{annualDir}{Name of the highest-level folder in which annual rasters are stored. If you use the \code{prDownloadAnnual()} function to download PRISM rasters, this will be \code{'annual'} (default). However, if you are extracting values from a purchased version of PRISM (i.e., for which you have a license), the annual rasters are typically stored in the folder called \code{'monthly'}.}
 }
 \value{
-Matrix with one row per row in \code{x}. \code{NA} values represent days/months/years that did not fall within the specified window or for which rasters were unavailable.
+Matrix. \code{NA} values represent days/months/years that did not fall within the specified window or for which rasters were unavailable.
 }
 \description{
-These functions extract values from interpolated weather rasters from the Parameter Regression on Independent Slopes (PRISM) data product across a range of dates. For example, it could extract all values from 2014-04-22 to 2014-04-29from point, line or polygon locations. If you wish to extract values across a specified date range that varies by point (e.g., the 100 days prior to sampling at each point, then see \code{\link[=prExtractRelative]{prExtractRelative()}}. Extractions are done at points (versus polygons or lines, for example).
+These functions extract values from interpolated weather rasters from the Parameter Regression on Independent Slopes (PRISM) data product across a range of dates, and the range can vary for each geometry (point, line, or polygon). For example, it could extract all values from 2000-04-22 to 2022-04-22 for one point, and from 2019-01-01 to 2021-12-31 for another. If you wish to extract values across a fixed length of time relative to a specific date (e.g., the 100 days prior to sampling at each point), then see \code{\link[=prExtractRelative]{prExtractRelative()}}. Extractions are done at points (versus polygons or lines, for example).
 
 The basic input is an object of class \code{SpatVector}, or a \code{data.frame} or \code{matrix}, with each row representing a point location. The function also needs to be pointed toward a folder with PRISM data. The folder with PRISM data must be structured as:
 \itemize{
@@ -115,69 +120,71 @@ The function does not assume that data for all PRISM years are available, but it
 
 }}
 \examples{
-\dontrun{
-x <- data.frame(
-	long=rep(-97.66, 3),
-	lat=rep(38.37, 3),
- startDate=c('2014-04-22', '2014-04-25', '2014-04-22'),
-	endDate=c('2014-04-22', '2014-04-29', '2014-05-22')
-)
 
-prDir <- 'F:/ecology/Climate/PRISM/acquired_2020/an81'
-y <- prExtractAbsoluteDaily(
-	x,
-	startDate = 'startDate',
-	endDate = 'endDate',
-	longLat = c('long', 'lat'),
-	prDir = prDir,
-	vars = 'tmin',
-res = 30,
-	rastSuffix = 'tif',
-	verbose = TRUE
+library(terra)
+
+data(nad83)
+
+# Base folder with PRISM rasters
+prDir <- 'F:/ecology/PRISM/working/an81'
+
+# Example data (polygons)
+parks <- airExample('parks')
+crs(parks) <- nad83 # NB: More accurate than projecting from WGS84 to NAD83
+parks$startDate <- c('2011-09-01', '1859-09-01', '2022-09-01', '2055-09-01')
+parks$endDate <- c('2011-09-03', '1859-09-03', '2022-09-09', '2055-09-01')
+
+# Template raster only required for extracting to lines or polygons
+template <- rast('F:/ecology/PRISM/PRISM_us_dem_800m.tif')
+
+dy <- prExtractAbsoluteDaily(
+    x = parks,
+    startDate = 'startDate',
+    endDate = 'endDate',
+    prDir = prDir,
+    vars = 'tmin',
+    res = 30,
+    rastSuffix = 'tif',
+	template = template,
+	removeNAs = TRUE,
+    verbose = TRUE,
+	ID = TRUE, weights = TRUE, cells = TRUE, xy = TRUE
 )
 
 # monthly
-x <- data.frame(
-	long=rep(-97.66, 3),
-	lat=rep(38.37, 3),
- startDate=c('2014-04-22', '2014-06-01', '2014-05-22'),
-	endDate=c('2014-04-22', '2014-08-01', '2015-05-22')
-)
+parks$startDate <- c('2000-09-01', '1859-09-01', '2022-09-01', '2055-09-01')
+parks$endDate <- c('2000-09-03', '1859-09-03', '2022-11-30', '2055-09-01')
 
-prDir <- 'F:/ecology/Climate/PRISM/acquired_2020/lt81'
-y <- prExtractAbsoluteMonthly(
-	x,
-	startDate = 'startDate',
-	endDate = 'endDate',
-	longLat = c('long', 'lat'),
-	prDir = prDir,
- vars = 'tmin',
-res = 30,
- rastSuffix = 'tif',
-	verbose = TRUE
+mo <- prExtractAbsoluteMonthly(
+    x = parks,
+    startDate = 'startDate',
+    endDate = 'endDate',
+    prDir = prDir,
+    vars = 'tmin',
+    res = 30,
+    rastSuffix = 'tif',
+    template = template,
+	removeNAs = TRUE,
+    verbose = TRUE,
+	ID = TRUE, weights = TRUE, cells = TRUE, xy = TRUE
 )
 
 # annual
-x <- data.frame(
-	long=rep(-97.66, 3),
-	lat=rep(38.37, 3),
- startDate=c('2016-01-01', '2016-06-01', '2017-01-01'),
-	endDate=c('2016-12-31', '2018-08-01', '2120-01-01')
-)
+parks$startDate <- c('2000-09-01', '1859-09-01', '2020-09-01', '2055-09-01')
+parks$endDate <- c('2000-09-01', '1859-09-03', '2022-11-30', '2057-09-01')
 
-prDir <- 'F:/ecology/Climate/PRISM/acquired_2020/lt81'
-y <- prExtractAbsoluteAnnual(
-	x,
-	startDate = 'startDate',
-	endDate = 'endDate',
- longLat = c('long', 'lat'),
- prDir = prDir,
- vars = 'tmin',
-res = 30,
- rastSuffix = 'tif',
-	annualDir = 'monthly',
- verbose = TRUE
+yr <- prExtractAbsoluteAnnual(
+    x = parks,
+    startDate = 'startDate',
+    endDate = 'endDate',
+    prDir = prDir,
+    vars = 'tmin',
+    res = 30,
+    rastSuffix = 'tif',
+    annualDir = 'annual',
+	removeNAs = TRUE,
+	template = template,
+    verbose = TRUE,
+	ID = TRUE, weights = TRUE, cells = TRUE, xy = TRUE
 )
-
-}
 }

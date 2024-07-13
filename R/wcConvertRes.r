@@ -1,16 +1,15 @@
 #' Convert name resolution of WorldClim in "standard" and URL/file formats
 #' 
-#' Convert between the "standard" and "file/URL" versions of names of resolutions in WorldClim. You can see a full table of resolutions using \code{data(wcRes)}.
-#' @param ver Either \code{1.4} or \coed{2.1}.
-#' @param res Either "nice" names of resolutions (any of \code{10}, \code{5}, \code{2.5}, or \code{30}), or "file/URL" names:
-#' 	\itemize{
-#'		\item WorldClim Version 1.4, historical: \code{10m}, \code{5m}, \code{2-5m}, or \code{30s}
-#'		\item WorldClim Version 1.3, future: \code{10m}, \code{5m}, \code{2_5m}, or \code{30s}
-#'		\item WorldClim Version 2.1: \code{10m}, \code{5m}, \code{2.5m}, or \code{30s}
-#'	}
-#' @param period Either \code{'historical'}, \code{'future'}, or \code{'decadal'}.
-#' @param standardToFile If \code{TRUE}, \code{res} is assumed to be in "standard" format, so will be translated into "file/URL" format. If \code{FALSE}, then it will be assumed to be in "file/URL" format and will be translated into "standard" format (possibly with unit, if \code{incUnit} is \code{TRUE}).
-#' @param incUnit If \code{TRUE}, include unit if \code{standardToFile} is also \code{TRUE}. If \code{standardToFile} is \code{FALSE}, this is ignored.
+#' Convert between the "standard" and "file/URL" versions of names of resolutions in WorldClim. You can see a full table of resolutions using `data(wcRes)`.
+#' @param ver Either `1.4` or `2.1`.
+#' @param res Either "nice" names of resolutions (any of `10`, `5`, `2.5`, or `30`), or "file/URL" names:
+#'	* WorldClim Version 1.4, historical: `10m`, `5m`, `2-5m`, or `30s`
+#'	* WorldClim Version 1.3, future: `10m`, `5m`, `2_5m`, or `30s`
+#'	* WorldClim Version 2.1: `10m`, `5m`, `2.5m`, or `30s`
+#'
+#' @param period Either `'historical'`, `'future'`, or `'decadal'`.
+#' @param standardToFile If `TRUE`, `res` is assumed to be in "standard" format, so will be translated into "file/URL" format. If `FALSE`, then it will be assumed to be in "file/URL" format and will be translated into "standard" format (possibly with unit, if `incUnit` is `TRUE`).
+#' @param incUnit If `TRUE`, include unit if `standardToFile` is also `TRUE`. If `standardToFile` is `FALSE`, this is ignored.
 #' @return Character
 #' @examples
 #' wcConvertRes(1.4, 2.5, 'historical', TRUE)

@@ -4,7 +4,7 @@
 #' @param x Character (usually a URL or file name)
 #' @param ... Named arguments of values to fill in. Must be named any of: \code{ver}, \code{varFile}, \code{resFile}, \code{periodFile}, \code{ghgFile}, \code{esmFile}.
 #' @return Character.
-#' @example
+#' @examples
 #' 
 #' f1 <- function() {
 #' 	
@@ -17,7 +17,7 @@
 #' 
 #' out <- f1()
 #' 
-#' @keywords internal
+#' @noRd
 fillPattern_internal <- function(x) {
 
 	# construct list of file/URL parameters that exist in calling function/environment
@@ -69,7 +69,7 @@ fillPattern_internal <- function(x) {
 #' @param elevation \code{TRUE} or \code{FALSE}.
 #'
 #' @return URL or file name pattern
-#' @examples
+#' @noRd
 getFileOrURL_internal <- function(
 	what,
 	src,
