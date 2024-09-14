@@ -22,21 +22,24 @@ tcDownloadElev(saveTo, update = TRUE, forceUpdate = FALSE, verbose = TRUE)
 \item{saveTo}{Name of the base path to which to save the download. Subfolders will be created within this folder.}
 
 \item{vars}{Name(s) of variable(s) to download. Valid values include:
-* \code{elev}: elevation
-* \code{tmin}: minimum temperature
-* \code{tmax}: maximum temperature
-* \code{ppt}: accumulated precipitation
-* \code{swe}: snow water equivalent
-* \code{aet}: actual evapotranspiration
-* \code{pet}: reference (potential) evapotranspiration (ET0)
-* \code{def}: climate water deficit
-* \code{pdsi}: Palmer Drought Severity Index
-* \code{soilWater}: extractable soil moisture
-* \code{srad}: downward shortwave flux at the surface (solar radiation)
-* \code{windSpeed}: average wind speed
-* \code{q}: cumulative streamflow
-* \code{vap}: vapor pressure
-* \code{vpd}: vapor pressure deficit
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{* `elev`: elevation
+* `tmin`: minimum temperature
+* `tmax`: maximum temperature
+* `ppt`: accumulated precipitation
+* `swe`: snow water equivalent
+* `aet`: actual evapotranspiration
+* `pet`: reference (potential) evapotranspiration (ET0)
+* `def`: climate water deficit
+* `pdsi`: Palmer Drought Severity Index
+* `soilWater`: extractable soil moisture
+* `srad`: downward shortwave flux at the surface (solar radiation)
+* `windSpeed`: average wind speed
+* `q`: cumulative streamflow
+* `vap`: vapor pressure
+* `vpd`: vapor pressure deficit
+}\if{html}{\out{</div>}}
+
 `}
 
 \item{year}{Year(s) of the period from which to download monthly climate rasters. Valid years include 1958 through the present (often one or two years prior to the current year). This can be \code{NULL} only if the variable being downloaded is \code{elevation}.}

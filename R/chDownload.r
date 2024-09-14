@@ -1,58 +1,60 @@
-#' @name chDownload
-#' @rdname chDownload
-#' @title Download CHELSA TRACE21K (paleo) climate rasters
-
+#' Download CHELSA climate rasters
+#'
 #' @description These functions download \href{https://chelsa-climate.org/}{CHELSA} climate rasters, elevation, and permanent ice/snow cover and elevation thereof:
-#' \itemize{
-#'		\item \code{chDownloadPaleoBio}: Paleo/future climate BIOCLIM variables.
-#'		\item \code{chDownloadPaleoClim}: Paleo climate "basic" variables (precipitation, temperature).
-#'		\item \code{chDownloadPaleoElev}: Paleo elevation and ice cover.
-#'		\item \code{chDownloadFutureBio}: Paleo/future climate BIOCLIM variables.
-#'		\item \code{chDownloadTODOTODOTODO!!!!!!!!!!!!!!!!!!!!}: OTHER
-#'	}
+#'
+#'	* `chDownloadPaleoBio()`: Paleo/future climate BIOCLIM variables.
+#'	* `chDownloadPaleoClim()`: Paleo climate "basic" variables (precipitation, temperature).
+#'	* `chDownloadPaleoElev()`: Paleo elevation and ice cover.
+#'	* `chDownloadFutureBio()`: Paleo/future climate BIOCLIM variables.
+#'	* `chDownloadSeries()`: Monthly time series.
+#'	`
 #'
 #' @param saveTo Name of the base path to which to save the download. Sub-folders will be created within this folder.
 #' @param ver Version number. Valid version numbers depend on whether paleo, historical, or future coverages are desired:
-#' \itemize{
-#'		\item	Paleo (TraCE2K): 1.0
-#'		\item	Historical: XYZ
-#'		\item	Future under CMIP5: 1.2
-#'		\item	Future under CMIP6: 2.1
-#' }
+#'
+#'	* Paleo (TraCE2K): `1.0`
+#'	* Historical: `XYZ`
+#'	* Future under CMIP5: `1.2`
+#'	* Future under CMIP6: `2.1`
+#'
 #' @param vars Name(s) of variable(s) to download. Valid values depend on the version of WorldClim and whether near-present day or future rasters are fetched. Different versions and time periods of WorldClim use different names for the same variable (e.g., "prec" versus "ppt" versus "pr" for precipitation). To reduce confusion, variable names have been standardized (in this package) to be the same across versions and times. Valid values are:
-#' \itemize{
-#' 	\item \code{elev}: elevation (function \code{chDownloadPaleoElev})
-#' 	\item \code{iceMask}: mask for ice cover (\code{1} for ice or \code{NA} for none) (function \code{chDownloadPaleoElev})
-#' 	\item \code{iceElev}: elevation of ice (plus land) (function \code{chDownloadPaleoElev})
-#' 	\item \code{snowCoverDays}: days of snow cover (function \code{chDownloadPaleoClim})
-#' 	\item \code{swe}: snow water equivalent (function \code{chDownloadPaleoClim})
-#' 	\item \code{tmin}: minimum temperature (function \code{chDownloadPaleoClim})
-#' 	\item \code{tmax}: maximum temperature (function \code{chDownloadPaleoClim})
-#' 	\item \code{ppt}: accumulated precipitation (function \code{chDownloadPaleoClim})
-#' }
-#' @param cmip Number the Coupled Model Intercomparison Project (CMIP) future rasters to download. Valid values are either \code{5} or \code{6}.
-#' @param esm Abbreviations of available earth system models, depending on whether CMIP5 or CMIP6 is desired. A list of valid options can be obtained using \code{\link{chEsm}}.
-#' @param ghg Name of the emissions scenario of future rasters. Valid values depend on \code{cmip} (CMIP). For CMIP5 These are:
-#' \itemize{
-#' 		\item	\code{2.6}: RCP2.6
-#' 		\item	\code{4.5}: RCP4.5
-#' 		\item	\code{6.0}: RCP6.0
-#' 		\item	\code{8.5}: RCP8.5
-#' }
+#'
+#' * `elev`: elevation (function `chDownloadPaleoElev()`)
+#' * `iceMask`: mask for ice cover (`1` for ice or `NA` for none) (function `chDownloadPaleoElev()`)
+#' * `iceElev`: elevation of ice (plus land) (function `chDownloadPaleoElev()`)
+#' * `snowCoverDays`: days of snow cover (function `chDownloadPaleoClim()`)
+#' * `swe`: snow water equivalent (function `chDownloadPaleoClim()`)
+#' * `tmin`: minimum temperature (function `chDownloadPaleoClim()`)
+#' * `tmax`: maximum temperature (function `chDownloadPaleoClim()`)
+#' * `ppt`: accumulated precipitation (function `chDownloadPaleoClim()`)
+#'
+#' @param cmip Number the Coupled Model Intercomparison Project (CMIP) future rasters to download. Valid values are either `5` or `6`.
+#'
+#' @param esm Abbreviations of available earth system models, depending on whether CMIP5 or CMIP6 is desired. A list of valid options can be obtained using [chEsm()].
+#'
+#' @param ghg Name of the emissions scenario of future rasters. Valid values depend on `cmip` (CMIP). For CMIP5 These are:
+#'
+#' * `2.6`: RCP2.6
+#' * `4.5`: RCP4.5
+#' * `6.0`: RCP6.0
+#' * `8.5`: RCP8.5
+#'
 #' For CMIP6 these are:
-#' \itemize{
-#' 		\item	\code{126}: SSP126
-#' 		\item	\code{370}: SSP370
-#' 		\item	\code{585}: SSP585
-#' }
-#' @param period Period from which to earth system model climate predictions (which includes some "historic" predictions). The first year of the respective time period is used. Depending on \code{cmip} (CMIP), different values are valid. A list of valid values can be see using \code{\link{chPeriod}}.
+#' 
+#' * `126`: SSP126
+#' * `370`: SSP370
+#' * `585`: SSP585
+#'
+#' @param period Period from which to earth system model climate predictions (which includes some "historic" predictions). The first year of the respective time period is used. Depending on `cmip` (CMIP), different values are valid. A list of valid values can be see using [chPeriod()]
+#'
 #' @param centuries Century or centuries from which to download the paleo-climate/elevation/ice rasters. This can be a value from -200 (the -200th century, or 21000 to 20001 ybp) to 20 (i.e., the 20th century, 1900-1999 CE).
-#' @param bios The number of BIOCLIM variable(s) to get (any integers in \code{1:19}).
-#' @param months The number of month(s) to get (any integers in \code{1:12}).
-#' @param forceUpdate If \code{FALSE} (default), then all existing rasters will be overwritten, regardless of whether or not the existing ones are up-to-date or not.
-#' @param verbose If \code{TRUE} (default), display progress.
+#'
+#' @param bios The number of BIOCLIM variable(s) to get (any integers in `1:19`).
+#' @param months The number of month(s) to get (any integers in `1:12`).
+#' @param forceUpdate If `FALSE` (default), then all existing rasters will be overwritten, regardless of whether or not the existing ones are up-to-date or not.
+#' @param verbose If `TRUE` (default), display progress.
 #' @references
-#' Karger, D. N., Nobis, M. P., Normand, S., Graham, C. H., & Zimmermann, N. E. (2021): CHELSA-TraCE21k v1. 0. Downscaled transient temperature and precipitation data since the last glacial maximum. \emph{Climate of the Past Discussions} 1-27. doi: \href{https://dx.doi.org/10.5194/cp-2021-30}{10.5194/cp-2021-30}.
+#' Karger, D. N., Nobis, M. P., Normand, S., Graham, C. H., & Zimmermann, N. E. (2021): CHELSA-TraCE21k v1. 0. Downscaled transient temperature and precipitation data since the last glacial maximum. *Climate of the Past Discussions* 1-27. \doi{10.5194/cp-2021-30}.
 #' @examples
 #' 
 #' \dontrun{
@@ -62,7 +64,6 @@
 #' 
 #' }
 #' @export
-
 chDownloadPaleoBio <- function(
 	saveTo,
 	ver,
@@ -136,6 +137,8 @@ chDownloadPaleoBio <- function(
 
 }
 
+#' @rdname chDownload
+#' @export
 chDownloadPaleoClim <- function(
 	saveTo,
 	ver,
@@ -219,6 +222,8 @@ chDownloadPaleoClim <- function(
 
 }
 
+#' @rdname chDownload
+#' @export
 chDownloadPaleoElev <- function(
 	saveTo,
 	ver,
@@ -297,6 +302,8 @@ chDownloadPaleoElev <- function(
 
 }
 
+#' @rdname chDownload
+#' @export
 chDownloadFutureBio <- function(
 	saveTo,
 	ver,
@@ -398,4 +405,3 @@ chDownloadFutureBio <- function(
 	success
 
 }
-

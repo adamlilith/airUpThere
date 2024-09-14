@@ -61,7 +61,7 @@
 #' [trees][trees]: Location of trees in Saint Louis\cr
 #' [wgs84][wgs84]: World Geodetic System 1984 (WGS84)\cr
 #'
-#' @references
+#' @section References:
 #' **CHELSA**
 #' Karger, D.N., Conrad, O., Böhner, J., Kawohl, T., Kreft, H., Soria-Auza, R.W., Zimmermann, N.E., Linder, P., Kessler, M. (2017). Climatologies at high resolution for the Earth land surface areas. Scientific Data. 4 170122. \href{https://doi.org/10.1038/sdata.2017.122}{DOI: 10.1038/sdata.2017.122}
 #'
@@ -81,6 +81,6 @@
 #' Hijmans, R.J., Cameron, S.E., Parra, J.L., Jones, P.G., and Jarvis, A. 2005. Very high resolution interpolated climate surfaces for global land areas. \emph{International Journal of Climatology} 25:1965-1978. doi: \href{https://doi.org/10.1002/joc.1276}{10.1002/joc.1276}.
 #'
 #' @author Adam B. Smith
-#' @name airUpThere
+#' @name fasterRaster
 #' @keywords internal
 "_PACKAGE"

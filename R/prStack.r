@@ -26,8 +26,6 @@
 #'
 #' @param by Time interval by which to increment dates if `span` is `TRUE`: `"day"`, `"month"`, or `"year"`.
 #' 
-#' @param span If `FALSE` (default), then use the exact dates in `dates`. If `TRUE`, then extract a time series.
-#'
 #' @param res Resolution of the rasters. Valid values are either `30` or `800` (i.e., 30-arcsecond or the "800-m" resolution version of PRISM), *or* `1` or `4` (i.e., the 1-arcminute or "4-km" resolution version of PRISM).
 #'
 #' @param rastSuffix Character. The "suffix" at the end of each weather raster. PRISM rasters are usually shipped in 'BIL' format, so normally this should be `bil`. However, any other suffix corresponding to a raster type that can be opened by the [terra::rast()] function can be used if the rasters have been converted to another format.
